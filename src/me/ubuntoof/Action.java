@@ -6,7 +6,7 @@ public class Action {
     private String name;
     private String description;
 
-    Action(ActionType type, String name, String description)
+    public Action(ActionType type, String name, String description)
     {
         this.type = type;
         this.name = name;
@@ -17,7 +17,7 @@ public class Action {
     public String getName() { return name; }
     public String getDescription() { return description; }
 
-    enum ActionType
+    public enum ActionType
     {
         ATTACK, STATUS, OTHER
     }

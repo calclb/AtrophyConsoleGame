@@ -28,10 +28,6 @@ public class Main {
             playerActions[1] = new Action(Action.ActionType.ATTACK, "Poke", "Deal 2 damage to an enemy. Ignores resistances.");
             playerActions[2] = new Action(Action.ActionType.STATUS, "Heal", "Heal yourself or an ally for 3 health.");
 
-            Action[] enemyActions = new Action[2];
-            enemyActions[0] = new Action(Action.ActionType.ATTACK, "Punch", "Deal 3 damage to an enemy.");
-            enemyActions[1] = new Action(Action.ActionType.ATTACK, "Kick", "Deal 2 damage to an enemy. ");
-
             Actor player = new Actor(playerActions, 10);
 
             ah.startBattle(player, 2);

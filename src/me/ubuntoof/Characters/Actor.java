@@ -8,6 +8,7 @@ public class Actor {
     private Action[] actions;
     private int level;
 
+    private double maxHealth;
     private double health;
     private double strength;
     private double speed;
@@ -18,10 +19,16 @@ public class Actor {
         this.level = level;
     }
 
-    public int getLevel() { return level; }
+    protected int getLevel() { return level; }
 
+
+    public int getActionSize() { return actions.length; }
     public Action getAction(int index) { return actions[index]; }
-    public void setAction(Action action, int index) { actions[index] = action; }
+    protected void setAction(Action action, int index) { actions[index] = action; }
+
+
+    public double getMaxHealth() { return maxHealth; }
+    public void setMaxHealth(double maxHealth) { this.maxHealth = maxHealth; }
 
     public double getHealth() { return health; }
     public void setHealth(double health) { this.health = health; }
@@ -33,5 +40,6 @@ public class Actor {
     public void setSpeed(double speed) { this.speed = speed; }
 
     public boolean isAlive() { return health > 0; }
-    public void attack(Actor target, int actionIndex) {} // should be implemented by other classes
+
+    public void doAction(int actionIndex, Actor target) {} // should be implemented by other classes
 }

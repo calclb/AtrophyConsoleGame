@@ -1,8 +1,6 @@
 package me.ubuntoof.Handlers;
 
-import me.ubuntoof.Characters.Actor;
-import me.ubuntoof.Characters.Bandit;
-import me.ubuntoof.Characters.Goblin;
+import me.ubuntoof.Characters.*;
 import me.ubuntoof.Utils.Colorizer;
 
 import java.util.ArrayList;
@@ -10,6 +8,8 @@ import java.util.Arrays;
 import java.util.Random;
 
 class Battle {
+
+    Random random = new Random();
 
     Battle(Actor[] allies, Actor[] enemies)
     {
@@ -49,10 +49,17 @@ class Battle {
                 } else areEnemiesAlive = false;
             }
 
+            for(int i = 0; i < combatants.size(); i++)
+            {
+                // TODO do combat logic
+                // displayBattleStats();
+                // if(combatants.get(i) instanceof Player) combatants.get(i).doAction(getUserResponse());
+
+            }
 
         } while(areAlliesAlive && areEnemiesAlive);
         // while members of either side is alive
-            // go through turn in order of mobility
+            // go through turn
             // show battle status
                 // prompt user/enemy to use a move
                 // display their choice, then update status
@@ -75,10 +82,8 @@ class Battle {
 
         switch (index)
         {
-            case 0:
-                return new Bandit();
-            case 1:
-                return new Goblin();
+            case 0: return new Bandit(random.nextInt(10));
+            case 1: return new Goblin(random.nextInt(10));
         }
 
         return null;

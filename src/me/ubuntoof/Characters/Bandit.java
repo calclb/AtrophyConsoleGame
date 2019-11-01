@@ -4,10 +4,18 @@ import me.ubuntoof.Action;
 
 public class Bandit extends Actor {
 
-    // TODO - declare actions array
+    private static Action a1 = new Action(Action.ActionType.ATTACK, "Bop", "Deal 1 damage.");
+    private static Action a2 = new Action(Action.ActionType.STATUS, "Blipp", "Raises damage dealt by 1.");
 
-    public Bandit(Action[] actions, int level) {
+    private static Action[] actions = new Action[]{a1, a2};
+
+
+    public Bandit(int level) {
         super(actions, level);
+    }
+
+    @Override
+    public void doAction(int actionIndex, Actor target) {
     }
 
 
