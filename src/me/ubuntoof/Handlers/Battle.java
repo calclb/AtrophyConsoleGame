@@ -72,15 +72,15 @@ class Battle {
 
         for(int i = 0; i < count; i++)
         {
-            enemies.add(matchEnemyIndex(r.nextInt(2)));
+            enemies.add(matchEnemyIndex(r.nextInt(EnemyTypes.variants())));
         }
         return enemies;
 
     }
 
-    private Actor matchEnemyIndex(int index) {
+    private Actor matchEnemyIndex(int type) {
 
-        switch (index)
+        switch (type)
         {
             case 0: return new Bandit(random.nextInt(10));
             case 1: return new Goblin(random.nextInt(10));
@@ -89,4 +89,12 @@ class Battle {
         return null;
     }
 
+}
+
+enum EnemyTypes
+{
+    BANDIT,
+    GOBLIN;
+
+    public static int variants() { return EnemyTypes.values().length; }
 }
