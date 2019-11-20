@@ -41,5 +41,5 @@ public class Actor {
 
     public boolean isAlive() { return health > 0; }
 
-    public void doAction(int actionIndex, Actor target) { actions[actionIndex].commit(this, target); } // should be overridden by other classes
+    public void doAction(int actionIndex, Actor target) { actions[actionIndex].commit(this, target); }
 }
