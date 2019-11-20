@@ -1,11 +1,11 @@
 package me.ubuntoof.Characters;
 
-
 import me.ubuntoof.Action;
 
 public class Actor {
 
     private Action[] actions;
+    private int[] disabledActionIndexes;
     private int level;
 
     private double maxHealth;
@@ -30,8 +30,10 @@ public class Actor {
     public void setMaxHealth(double maxHealth) { this.maxHealth = maxHealth; }
 
     public double getHealth() { return health; }
-    public void setHealth(double health) { this.health = health; }
-    public void takeDamage(int dmg) { health -= dmg; }
+    public void setHealth(double health) { this.health = Math.min(health, maxHealth); }
+
+    public void takeDamage(double dmg) { health -= dmg; /* apply damage reduction here*/ }
+    public void takeDamage(double dmg, boolean trueDamage) { health -= dmg; }
 
     public double getStrength() { return strength; }
     public void setStrength(double strength) { this.strength = strength; }
@@ -39,7 +41,9 @@ public class Actor {
     public double getSpeed() { return speed; }
     public void setSpeed(double speed) { this.speed = speed; }
 
-    public boolean isAlive() { return health > 0; }
+    public boolean isAlive() { return health > 0d; }
 
     public void doAction(int actionIndex, Actor target) { actions[actionIndex].commit(this, target); }
+
+
 }

@@ -21,7 +21,7 @@ public abstract class Action {
     public ActionType getType() { return type; }
     public String getName() { return name; }
     public String getDescription() { return description; }
-    boolean isUsesContact() { return usesContact; }
+    boolean usesContact() { return usesContact; }
 
     public abstract void commit(Actor user, Actor target);
 

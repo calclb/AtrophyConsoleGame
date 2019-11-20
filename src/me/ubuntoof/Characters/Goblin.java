@@ -13,20 +13,25 @@ public class Goblin extends Actor {
 
         super(actions, level);
 
-        a1 = new Action(ActionType.ATTACK, "Pummel", "Deals damage equal to the user's level.", true) {
+        setMaxHealth(2 + level);
+        setHealth(getMaxHealth());
+        setStrength(1 + Math.sqrt(2*level));
+        setSpeed(2 + Math.sqrt(level));
+
+        a1 = new Action(ActionType.ATTACK, "Pummel", "Deals damage equal to half the user's level.", true) {
 
             @Override
             public void commit(Actor user, Actor target) {
-                target.takeDamage(user.getLevel());
+                // display attack notification
+                target.takeDamage(user.getLevel() * 0.5d);
             }
         };
 
-        a2 = new Action(ActionType.ATTACK, "Guard", "Take 60% normal damage.", true) {
+        a2 = new Action(ActionType.ATTACK, "Guard", "Take 50% normal damage until the next turn.", true) {
 
             @Override
             public void commit(Actor user, Actor target) {
                 // TODO add stat modifiers
-                target.takeDamage(user.getLevel());
             }
         };
 
