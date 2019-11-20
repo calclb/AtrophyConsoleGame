@@ -65,14 +65,14 @@ class Battle {
                 // display their choice, then update status
     }
 
-    public ArrayList<Actor> createEnemies(int count)
+    public Actor[] createEnemies(int count)
     {
         Random r = new Random();
-        ArrayList<Actor> enemies = new ArrayList<>();
+        Actor[] enemies = new Actor[count];
 
         for(int i = 0; i < count; i++)
         {
-            enemies.add(matchEnemyIndex(r.nextInt(EnemyTypes.variants())));
+            enemies[i] = matchEnemyIndex(r.nextInt(EnemyTypes.variants()));
         }
         return enemies;
 
@@ -80,21 +80,23 @@ class Battle {
 
     private Actor matchEnemyIndex(int type) {
 
-        switch (type)
-        {
-            case 0: return new Bandit(random.nextInt(10));
-            case 1: return new Goblin(random.nextInt(10));
-        }
-
-        return null;
+        return EnemyTypes.values()[type].getType();
     }
 
 }
 
 enum EnemyTypes
 {
-    BANDIT,
-    GOBLIN;
+    GOBLIN(Goblin.class);
 
-    public static int variants() { return EnemyTypes.values().length; }
+    private Class type;
+
+    EnemyTypes(Class c)
+    {
+        type = c;
+    }
+
+    public Actor getType() { try {return (Actor)this.type.newInstance();} catch(Exception ignored){} return null;}
+
+    static int variants() { return EnemyTypes.values().length; }
 }

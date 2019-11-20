@@ -1,21 +1,35 @@
 package me.ubuntoof.Characters;
 
 import me.ubuntoof.Action;
+import me.ubuntoof.Action.ActionType;
 
 public class Goblin extends Actor {
 
-    private static Action a1 = new Action(Action.ActionType.ATTACK, "Bop", "Deal 1 damage.");
-    private static Action a2 = new Action(Action.ActionType.ATTACK, "Crush", "Deal 3 damage.");
+    private static Action a1, a2;
 
     private static Action[] actions = new Action[]{a1, a2};
 
     public Goblin(int level) {
 
         super(actions, level);
+
+        a1 = new Action(ActionType.ATTACK, "Pummel", "Deals damage equal to the user's level.", true) {
+
+            @Override
+            public void commit(Actor user, Actor target) {
+                target.takeDamage(user.getLevel());
+            }
+        };
+
+        a2 = new Action(ActionType.ATTACK, "Guard", "Take 60% normal damage.", true) {
+
+            @Override
+            public void commit(Actor user, Actor target) {
+                target.takeDamage(user.getLevel());
+            }
+        };
+
     }
 
-    @Override
-    public void doAction(int actionIndex, Actor target) {
-        super.doAction(actionIndex, target);
-    }
+    public Action[] getActions() { return actions; }
 }

@@ -13,7 +13,7 @@ public class Main {
     public static void main(String[] args) throws IOException {
 
         System.out.println(Colorizer.GRAY + Colorizer.STRIKETHROUGH + "                                                  " + Colorizer.RESET + "\n");
-        System.out.println(Colorizer.PURPLE + Colorizer.BOLD + "Atrophy " + Colorizer.RESET + Colorizer.PURPLE + "|" + Colorizer.WHITE + " A rogue-like text game with battles. " + Colorizer.LIGHT_GRAY + Colorizer.ITALIC + "\n          Input 'start' to start." + Colorizer.RESET);
+        System.out.println(Colorizer.PURPLE + Colorizer.BOLD + "\uD83D\uDD31 Atrophy " + Colorizer.RESET + Colorizer.PURPLE + "|" + Colorizer.WHITE + " A rogue-like text game with battles. " + Colorizer.LIGHT_GRAY + Colorizer.ITALIC + "\n          Input 'start' to start." + Colorizer.RESET);
         System.out.println(Colorizer.GRAY + Colorizer.STRIKETHROUGH + "                                                  " + Colorizer.RESET);
 
         System.out.print(Colorizer.LIGHT_GREEN + "〉");
@@ -23,19 +23,11 @@ public class Main {
         {
             AdventureHandler ah = new AdventureHandler();
 
-            Action[] playerActions = new Action[3];
-            playerActions[0] = new Action(Action.ActionType.ATTACK, "Punch", "Deal 4 damage to an enemy.");
-            playerActions[1] = new Action(Action.ActionType.ATTACK, "Poke", "Deal 2 damage to an enemy. Ignores resistances.");
-            playerActions[2] = new Action(Action.ActionType.STATUS, "Heal", "Heal yourself or an ally for 3 health.");
-
-            Actor player = new Actor(playerActions, 10);
-
-            ah.startBattle(player, 2);
             Colorizer.clear();
         }
     }
 
-    static String getResponse() throws IOException
+    private static String getResponse() throws IOException
     {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         return br.readLine();
