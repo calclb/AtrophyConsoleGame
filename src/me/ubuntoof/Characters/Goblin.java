@@ -25,6 +25,7 @@ public class Goblin extends Actor {
 
             @Override
             public void commit(Actor user, Actor target) {
+                // TODO add stat modifiers
                 target.takeDamage(user.getLevel());
             }
         };
