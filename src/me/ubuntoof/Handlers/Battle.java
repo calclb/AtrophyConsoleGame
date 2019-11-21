@@ -87,7 +87,8 @@ class Battle {
 
 enum EnemyTypes
 {
-    GOBLIN(Goblin.class);
+    GOBLIN(Goblin.class),
+    BANDIT(Bandit.class);
 
     private Class type;
 
