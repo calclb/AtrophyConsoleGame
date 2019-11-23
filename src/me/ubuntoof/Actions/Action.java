@@ -1,4 +1,4 @@
-package me.ubuntoof;
+package me.ubuntoof.Actions;
 
 import me.ubuntoof.Characters.Actor;
 import me.ubuntoof.Utils.TextFormatter;
@@ -21,7 +21,7 @@ public abstract class Action {
     public ActionType getType() { return type; }
     public String getName() { return name; }
     public String getDescription() { return description; }
-    boolean usesContact() { return usesContact; }
+    public boolean usesContact() { return usesContact; }
 
     public abstract void commit(Actor user, Actor target);
 
@@ -29,7 +29,7 @@ public abstract class Action {
 
     public enum ActionType
     {
-        ATTACK("Attack"), STATUS("Status"), OTHER("Other");
+        ATTACK("\uD83D\uDCA5"), STATUS("☯️"), OTHER("❓");
 
         private String val;
 

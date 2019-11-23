@@ -1,9 +1,12 @@
 package me.ubuntoof.Characters;
 
-import me.ubuntoof.Action;
-import me.ubuntoof.Action.ActionType;
+import me.ubuntoof.Actions.Action;
+import me.ubuntoof.Actions.Action.ActionType;
+import me.ubuntoof.Listeners.TurnListener;
+import me.ubuntoof.Modifiers.StatModifier;
+import me.ubuntoof.Stats;
 
-public class Goblin extends Actor {
+public class Goblin extends Actor implements TurnListener {
 
     private static Action a1, a2;
 
@@ -11,12 +14,12 @@ public class Goblin extends Actor {
 
     public Goblin(int level) {
 
-        super(actions, level);
+        super("Goblin", actions, level);
 
-        setMaxHealth(2 + level);
-        setHealth(getMaxHealth());
-        setStrength(1 + Math.sqrt(2*level));
-        setSpeed(2 + Math.sqrt(level));
+        setBaseMaxHealth(2 + level);
+        setBaseHealth(getBaseMaxHealth());
+        setBaseStrength(1 + Math.sqrt(2*level));
+        setBaseSpeed(2 + Math.sqrt(level));
 
         a1 = new Action(ActionType.ATTACK, "Pummel", "Deals damage equal to half the user's level.", true) {
 
@@ -27,11 +30,11 @@ public class Goblin extends Actor {
             }
         };
 
-        a2 = new Action(ActionType.ATTACK, "Guard", "Take 50% normal damage until the next turn.", true) {
+        a2 = new Action(ActionType.ATTACK, "Guard", "Increases defense by 50% until the next turn.", true) {
 
-            @Override
-            public void commit(Actor user, Actor target) {
-                // TODO add stat modifiers
+            @Override public void commit(Actor user, Actor target)
+            {
+                user.getStatModifiers().add(new StatModifier(Stats.DEFENSE, 1.5d, 0));
             }
         };
 

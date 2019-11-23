@@ -1,20 +1,38 @@
 package me.ubuntoof.Characters;
 
-import me.ubuntoof.Action;
+import me.ubuntoof.Actions.Action;
+import me.ubuntoof.Listeners.TurnListener;
+import me.ubuntoof.Modifiers.Ailment;
+import me.ubuntoof.Modifiers.StatModifier;
+import me.ubuntoof.Stats;
 
-public class Actor {
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Set;
+
+public class Actor implements TurnListener {
 
     private Action[] actions;
-    private int[] disabledActionIndexes;
+    private ArrayList<StatModifier> statModifiers = new ArrayList<>();
+    private Set<Integer> disabledActionIndex = Collections.emptySet();
+    private Set<Ailment> ailments = Collections.emptySet();
+
     private int level;
+    private String name;
+    private boolean eligibleToAct = true;
 
-    private double maxHealth;
-    private double health;
-    private double strength;
-    private double speed;
+    private double weight;
 
-    public Actor(Action[] actions, int level)
+    private double baseMaxHealth;
+    private double baseHealth;
+    private double baseStrength;
+    private double baseDefense;
+    private double baseArmor;
+    private double baseSpeed;
+
+    public Actor(String name, Action[] actions, int level)
     {
+        this.name = name;
         this.actions = actions;
         this.level = level;
     }
@@ -22,28 +40,92 @@ public class Actor {
     public int getLevel() { return level; }
 
 
-    public int getActionSize() { return actions.length; }
-    public Action getAction(int index) { return actions[index]; }
-    protected void setAction(Action action, int index) { actions[index] = action; }
+    // Action-related methods
+    public Action[] getActions() { return actions; }
+    protected void setAction(int index, Action action) { actions[index] = action; }
+    public void doAction(Actor target, int actionIndex) { actions[actionIndex].commit(this, target); }
+    public boolean getEligibleToAct() { return eligibleToAct; }
+    public void setEligibleToAct(boolean to) { eligibleToAct = to; }
 
-    public double getMaxHealth() { return maxHealth; }
-    public void setMaxHealth(double maxHealth) { this.maxHealth = maxHealth; }
+    // Damage-related methods
+    public void takeDamage(double dmg) { baseHealth -= dmg; /* apply damage reduction here*/ }
+    public void takeDamage(double dmg, boolean trueDamage) { baseHealth -= dmg; }
 
-    public double getHealth() { return health; }
-    public void setHealth(double health) { this.health = Math.min(health, maxHealth); }
+    // Override this.
+    public double getWeight()
+    {
+        double w = 0;
+        w += baseMaxHealth;
+        w += baseHealth;
+        w += baseStrength*2;
+        w += baseDefense*2;
+        w += baseArmor*2;
+        w += baseSpeed;
+        w += actions.length*4;
+        w += level;
+        return w;
+    }
 
-    public void takeDamage(double dmg) { health -= dmg; /* apply damage reduction here*/ }
-    public void takeDamage(double dmg, boolean trueDamage) { health -= dmg; }
+    // Stat-related methods
+    public double getBaseMaxHealth() { return baseMaxHealth; }
+    public double getBaseHealth() { return baseHealth; }
+    public double getBaseStrength() { return baseStrength; }
+    public double getBaseDefense() { return baseStrength; }
+    public double getBaseArmor() { return baseStrength; }
+    public double getBaseSpeed() { return baseSpeed; }
 
-    public double getStrength() { return strength; }
-    public void setStrength(double strength) { this.strength = strength; }
+    public void setBaseMaxHealth(double maxHealth) { baseMaxHealth = maxHealth; }
+    public void setBaseHealth(double health) { baseHealth = Math.min(health, baseMaxHealth); }
+    public void setBaseStrength(double strength) { baseStrength = strength; }
+    public void setBaseDefense(double defense) { baseDefense = defense; }
+    public void setBaseArmor(double armor) { baseArmor = armor; }
+    public void setBaseSpeed(double speed) { baseSpeed = speed; }
 
-    public double getSpeed() { return speed; }
-    public void setSpeed(double speed) { this.speed = speed; }
+    public double getMaxHealth()
+    {
+        double mod = 1d;
+        for(StatModifier sm : statModifiers) if(sm.getModifierType() == Stats.MAX_HEALTH) mod *= sm.getMultiplier();
+        return mod * baseMaxHealth;
+    }
 
-    public boolean isAlive() { return health > 0d; }
+    public double getHealth()
+    {
+        return baseHealth;
+    }
 
-    public void doAction(int actionIndex, Actor target) { actions[actionIndex].commit(this, target); }
+    public double getStrength()
+    {
+        double mod = 1d;
+        for(StatModifier sm : statModifiers) if(sm.getModifierType() == Stats.STRENGTH) mod *= sm.getMultiplier();
+        return mod * baseStrength;
+    }
 
+    public double getDefense()
+    {
+        double mod = 1d;
+        for(StatModifier sm : statModifiers) if(sm.getModifierType() == Stats.DEFENSE) mod *= sm.getMultiplier();
+        return mod * baseDefense;
+    }
+
+    public double getArmor()
+    {
+        double mod = 1d;
+        for(StatModifier sm : statModifiers) if(sm.getModifierType() == Stats.ARMOR) mod *= sm.getMultiplier();
+        return mod * baseArmor;
+    }
+
+    public double getSpeed()
+    {
+        double mod = 1d;
+        for(StatModifier sm : statModifiers) if(sm.getModifierType() == Stats.SPEED) mod *= sm.getMultiplier();
+        return mod * baseSpeed;
+    }
+
+    // State and modifier-related methods
+    public boolean isAlive() { return baseHealth > 0d; }
+    public Set<Ailment> getAilments() { return ailments; }
+    public ArrayList<StatModifier> getStatModifiers() { return statModifiers; }
+    public void applyAilmentEffects() { for(Ailment ailment : ailments) ailment.applyEffects(this); }
+    public String toString() { return name; }
 
 }

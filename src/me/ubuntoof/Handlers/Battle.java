@@ -1,71 +1,53 @@
 package me.ubuntoof.Handlers;
 
 import me.ubuntoof.Characters.*;
+import me.ubuntoof.Listeners.TurnListener;
+import me.ubuntoof.Modifiers.GlobalCondition;
 import me.ubuntoof.Utils.Colorizer;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Random;
+import java.util.*;
 
 class Battle {
 
-    Random random = new Random();
+    private Set<GlobalCondition> globalConditions = Collections.emptySet();
+    private Actor[] combatants;
+    private List<TurnListener> turnListeners = new ArrayList<>();
+
+    Battle(Actor[] allies, int numEnemies)
+    {
+        Actor[] enemies = createEnemies(numEnemies);
+        combatants = new Actor[allies.length + enemies.length];
+        System.arraycopy(allies, 0, combatants, 0, allies.length);
+        System.arraycopy(enemies, 0, combatants, 0, combatants.length);
+
+    }
 
     Battle(Actor[] allies, Actor[] enemies)
     {
-        ArrayList<Actor> combatants = new ArrayList<>();
-        ArrayList<Actor> friendlies = new ArrayList<>(Arrays.asList(allies));
-        ArrayList<Actor> foes = new ArrayList<>(Arrays.asList(enemies));
+        combatants = new Actor[allies.length + enemies.length];
+        System.arraycopy(allies, 0, combatants, 0, allies.length);
+        System.arraycopy(enemies, 0, combatants, 0, combatants.length);
+    }
 
-        combatants.addAll(friendlies);
-        combatants.addAll(foes);
+    public void startBattle()
+    {
+        turnListeners.addAll(Arrays.asList(combatants));
+        // TODO do this
+        // sort combatants every turn by speed
+        // run through combatant listeners every turn
 
-
-        /*System.arraycopy(allies, 0, combatants, 0, allies.length);
-        System.arraycopy(enemies, 0, combatants, allies.length, enemies.length);*/
-
-        boolean areAlliesAlive = false;
-        boolean areEnemiesAlive = false;
+        for(TurnListener tl : turnListeners) tl.onBattleStarted();
 
         do
         {
-            for(Actor friendly : friendlies)
-            {
-                if(friendly.isAlive())
-                {
-                    System.out.println(Colorizer.GRAY + "Ally " + friendly.toString() + " is alive.");
-                    areAlliesAlive = true;
-                    break;
-                } else areAlliesAlive = false;
-            }
+            Arrays.sort(combatants);
 
-            for(Actor foe : foes)
-            {
-                if(foe.isAlive())
-                {
-                    System.out.println(Colorizer.GRAY + "Foe " + foe.toString() + " is alive.");
-                    areEnemiesAlive = true;
-                    break;
-                } else areEnemiesAlive = false;
-            }
+            for(GlobalCondition gc : globalConditions) gc.applyEffects(combatants);
 
-            for(int i = 0; i < combatants.size(); i++)
-            {
-                // TODO do combat logic
-                // displayBattleStats();
-                // if(combatants.get(i) instanceof Player) combatants.get(i).doAction(getUserResponse());
-
-            }
-
-        } while(areAlliesAlive && areEnemiesAlive);
-        // while members of either side is alive
-            // go through turn
-            // show battle status
-                // prompt user/enemy to use a move
-                // display their choice, then update status
+        } while(true); // TODO while there are combatants of both sides; end battle otherwise.
     }
 
-    public Actor[] createEnemies(int count)
+    private Actor[] createEnemies(int count)
     {
         Random r = new Random();
         Actor[] enemies = new Actor[count];
@@ -78,10 +60,9 @@ class Battle {
 
     }
 
-    private Actor matchEnemyIndex(int type) {
+    private Actor matchEnemyIndex(int type) { return EnemyTypes.values()[type].getType(); }
 
-        return EnemyTypes.values()[type].getType();
-    }
+    public Actor[] getCombatants() { return combatants; }
 
 }
 
@@ -97,7 +78,7 @@ enum EnemyTypes
         type = c;
     }
 
-    public Actor getType() { try {return (Actor)this.type.newInstance();} catch(Exception ignored){} return null;}
+    public Actor getType() { try {return (Actor)type.newInstance();} catch(Exception ignored){} return null;}
 
     static int variants() { return EnemyTypes.values().length; }
 }

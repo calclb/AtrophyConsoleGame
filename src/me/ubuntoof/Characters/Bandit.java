@@ -1,24 +1,23 @@
 package me.ubuntoof.Characters;
 
-import me.ubuntoof.Action;
-import me.ubuntoof.Action.ActionType;
+import me.ubuntoof.Actions.Action;
+import me.ubuntoof.Actions.Action.ActionType;
+import me.ubuntoof.Listeners.TurnListener;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-public class Bandit extends Actor {
+public class Bandit extends Actor implements TurnListener {
 
     private static Action a1, a2;
-
     private static Action[] actions = new Action[]{a1, a2};
 
     public Bandit(int level) {
+        super("Bandit", actions, level);
 
-        super(actions, level);
-
-        setMaxHealth(2 + Math.sqrt(level));
-        setHealth(getMaxHealth());
-        setSpeed(4 + Math.sqrt(Math.pow(level, 1.4d)));
-        setStrength(2 + Math.sqrt(level));
+        setBaseMaxHealth(2 + Math.sqrt(level));
+        setBaseHealth(getMaxHealth());
+        setBaseSpeed(4 + Math.sqrt(Math.pow(level, 1.4d)));
+        setBaseStrength(2 + Math.sqrt(level));
 
         a1 = new Action(ActionType.ATTACK, "Chip Away", "Reduces target HP by 10% as true damage.", true) {
 
@@ -43,5 +42,22 @@ public class Bandit extends Actor {
 
     }
 
-    public Action[] getActions() { return actions; }
+    @Override
+    public void onBattleStarted() {
+
+    }
+
+    @Override
+    public void onUserTurn() {
+    }
+
+    @Override
+    public void onGlobalTurnEnded() {
+
+    }
+
+    @Override
+    public void onBattleEnded() {
+
+    }
 }
