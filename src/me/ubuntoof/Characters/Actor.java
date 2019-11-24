@@ -1,6 +1,7 @@
 package me.ubuntoof.Characters;
 
 import me.ubuntoof.Actions.Action;
+import me.ubuntoof.Handlers.Battle;
 import me.ubuntoof.Listeners.TurnListener;
 import me.ubuntoof.Modifiers.Ailment;
 import me.ubuntoof.Modifiers.StatModifier;
@@ -13,6 +14,7 @@ import java.util.Set;
 public class Actor implements TurnListener {
 
     private Action[] actions;
+    private Battle battle;
     private ArrayList<StatModifier> statModifiers = new ArrayList<>();
     private Set<Integer> disabledActionIndex = Collections.emptySet();
     private Set<Ailment> ailments = Collections.emptySet();
@@ -21,8 +23,6 @@ public class Actor implements TurnListener {
     private String name;
     private boolean eligibleToAct = true;
 
-    private double weight;
-
     private double baseMaxHealth;
     private double baseHealth;
     private double baseStrength;
@@ -30,8 +30,9 @@ public class Actor implements TurnListener {
     private double baseArmor;
     private double baseSpeed;
 
-    public Actor(String name, Action[] actions, int level)
+    public Actor(Battle battle, String name, Action[] actions, int level)
     {
+        this.battle = battle;
         this.name = name;
         this.actions = actions;
         this.level = level;
@@ -39,6 +40,7 @@ public class Actor implements TurnListener {
 
     public int getLevel() { return level; }
 
+    protected Battle getBattle() { return battle; }
 
     // Action-related methods
     public Action[] getActions() { return actions; }
@@ -51,7 +53,7 @@ public class Actor implements TurnListener {
     public void takeDamage(double dmg) { baseHealth -= dmg; /* apply damage reduction here*/ }
     public void takeDamage(double dmg, boolean trueDamage) { baseHealth -= dmg; }
 
-    // Override this.
+    // Probably going to be replaced at some point.
     public double getWeight()
     {
         double w = 0;
@@ -68,7 +70,6 @@ public class Actor implements TurnListener {
 
     // Stat-related methods
     public double getBaseMaxHealth() { return baseMaxHealth; }
-    public double getBaseHealth() { return baseHealth; }
     public double getBaseStrength() { return baseStrength; }
     public double getBaseDefense() { return baseStrength; }
     public double getBaseArmor() { return baseStrength; }

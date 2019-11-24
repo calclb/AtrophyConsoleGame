@@ -7,23 +7,28 @@ import me.ubuntoof.Utils.Colorizer;
 
 import java.util.*;
 
-class Battle {
+public class Battle {
 
     private Set<GlobalCondition> globalConditions = Collections.emptySet();
     private Actor[] combatants;
+    private Actor[] allies;
+    private Actor[] enemies;
     private List<TurnListener> turnListeners = new ArrayList<>();
 
-    Battle(Actor[] allies, int numEnemies)
+    public Battle(Actor[] allies, int numEnemies)
     {
-        Actor[] enemies = createEnemies(numEnemies);
+        this.allies = allies;
+        this.enemies = createEnemies(numEnemies);
         combatants = new Actor[allies.length + enemies.length];
         System.arraycopy(allies, 0, combatants, 0, allies.length);
         System.arraycopy(enemies, 0, combatants, 0, combatants.length);
 
     }
 
-    Battle(Actor[] allies, Actor[] enemies)
+    public Battle(Actor[] allies, Actor[] enemies)
     {
+        this.allies = allies;
+        this.enemies = enemies;
         combatants = new Actor[allies.length + enemies.length];
         System.arraycopy(allies, 0, combatants, 0, allies.length);
         System.arraycopy(enemies, 0, combatants, 0, combatants.length);
@@ -63,6 +68,21 @@ class Battle {
     private Actor matchEnemyIndex(int type) { return EnemyTypes.values()[type].getType(); }
 
     public Actor[] getCombatants() { return combatants; }
+
+    public Actor[] getOpposition(Actor user)
+    {
+        for(Actor actor : allies) if(actor == user)
+        {
+            return enemies;
+        }
+
+        for(Actor actor : enemies) if(actor == user)
+        {
+            return allies;
+        }
+
+        throw new IllegalArgumentException("Actor " + user + " doesn't exist in either the allies' or enemies' arrays.");
+    }
 
 }
 

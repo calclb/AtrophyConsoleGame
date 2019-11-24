@@ -1,14 +1,15 @@
 package me.ubuntoof.Characters;
 
 import me.ubuntoof.Actions.Action;
+import me.ubuntoof.Handlers.Battle;
 import me.ubuntoof.Listeners.TurnListener;
 
 public class Player extends Actor implements TurnListener {
 
     int exp = 0;
 
-    public Player(String name, Action[] actions, int level) {
-        super(name, actions, level);
+    public Player(Battle battle, String name, Action[] actions, int level) {
+        super(battle, name, actions, level);
     }
 
     @Override
@@ -37,6 +38,10 @@ public class Player extends Actor implements TurnListener {
 
     private void promptUser()
     {
-        System.out.println("");
+        System.out.println("Select an action to use: \n");
+        for(Action action : getActions())
+        {
+            System.out.println("[");
+        }
     }
 }

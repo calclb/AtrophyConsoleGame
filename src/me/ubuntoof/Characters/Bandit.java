@@ -2,17 +2,20 @@ package me.ubuntoof.Characters;
 
 import me.ubuntoof.Actions.Action;
 import me.ubuntoof.Actions.Action.ActionType;
+import me.ubuntoof.Handlers.Battle;
 import me.ubuntoof.Listeners.TurnListener;
 
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Bandit extends Actor implements TurnListener {
 
     private static Action a1, a2;
     private static Action[] actions = new Action[]{a1, a2};
+    Random random = new Random();
 
-    public Bandit(int level) {
-        super("Bandit", actions, level);
+    public Bandit(Battle battle, int level) {
+        super(battle, "Bandit", actions, level);
 
         setBaseMaxHealth(2 + Math.sqrt(level));
         setBaseHealth(getMaxHealth());
@@ -43,21 +46,8 @@ public class Bandit extends Actor implements TurnListener {
     }
 
     @Override
-    public void onBattleStarted() {
-
-    }
-
-    @Override
     public void onUserTurn() {
-    }
-
-    @Override
-    public void onGlobalTurnEnded() {
-
-    }
-
-    @Override
-    public void onBattleEnded() {
-
+        Actor[] potentialTargets = getBattle().getOpposition(this);
+        doAction(potentialTargets[random.nextInt(potentialTargets.length)], random.nextInt(actions.length));
     }
 }

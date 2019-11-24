@@ -56,14 +56,14 @@ public class Colorizer {
         String div = "";
         for(int i = 0; i < len; i++) div += " ";
 
-        System.out.println(Colorizer.GRAY + Colorizer.STRIKETHROUGH + div + Colorizer.RESET + "\n");
+        System.out.print(Colorizer.GRAY + Colorizer.STRIKETHROUGH + div + Colorizer.RESET + "\n");
     }
 
     public static void printBlockDivider(int len)
     {
         String div = "";
         for(int i = 0; i < len; i++) div += "█";
-        System.out.println(Colorizer.GRAY + Colorizer.BOLD + div + Colorizer.RESET + "\n");
+        System.out.print(Colorizer.GRAY + Colorizer.BOLD + div + Colorizer.RESET + "\n");
     }
 }
 

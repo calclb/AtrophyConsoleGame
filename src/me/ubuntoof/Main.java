@@ -1,36 +1,33 @@
 package me.ubuntoof;
 
-import me.ubuntoof.Characters.Actor;
 import me.ubuntoof.Handlers.AdventureHandler;
 import me.ubuntoof.Utils.Colorizer;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-
+import me.ubuntoof.Utils.UserInputReader;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
 
 
-        Colorizer.printDivider(50);
-        System.out.println(Colorizer.PURPLE + Colorizer.BOLD + "\uD83D\uDD31 Atrophy " + Colorizer.RESET + Colorizer.PURPLE + "|" + Colorizer.WHITE + " A rogue-like text game with battles. " + Colorizer.LIGHT_GRAY + Colorizer.ITALIC + "\n            Input 'start' to start.\n" + Colorizer.RESET);
-        Colorizer.printDivider(50);
+        Colorizer.printDivider(60);
 
-        System.out.print(Colorizer.LIGHT_GREEN + "〉");
-        boolean started = getResponse().equals("start");
+        System.out.println(Colorizer.PURPLE + Colorizer.BOLD + "\n\uD83D\uDD31 Atrophy " + Colorizer.RESET + Colorizer.PURPLE + "|" +
+                Colorizer.WHITE + " A rogue-like console game with battles. " +
+                Colorizer.LIGHT_GRAY + Colorizer.ITALIC + "\n             Input 'start' to start.\n" + Colorizer.RESET);
 
+        Colorizer.printDivider(60);
 
-        if(started)
+        boolean started = UserInputReader.getResponse().equals("start");
+
+        while(true)
         {
-            Colorizer.clear();
-            AdventureHandler ah = new AdventureHandler();
+            if(started)
+            {
+                Colorizer.clear();
+                AdventureHandler adventureHandler = new AdventureHandler();
+                break;
+            }
+            System.out.println(Colorizer.ITALIC + "Just say the word when you're ready to go." + Colorizer.RESET);
+            started = UserInputReader.getResponse().equals("start");
         }
-    }
-
-    private static String getResponse() throws IOException
-    {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        return br.readLine();
     }
 }
