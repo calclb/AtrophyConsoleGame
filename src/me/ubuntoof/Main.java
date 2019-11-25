@@ -24,6 +24,7 @@ public class Main {
             {
                 Colorizer.clear();
                 AdventureHandler adventureHandler = new AdventureHandler();
+                adventureHandler.begin();
                 break;
             }
             System.out.println(Colorizer.ITALIC + "Just say the word when you're ready to go." + Colorizer.RESET);

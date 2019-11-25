@@ -23,6 +23,8 @@ public abstract class Action {
     public String getDescription() { return description; }
     public boolean usesContact() { return usesContact; }
 
+    /* has to have 'user' parameter so actions which have dedicated classes can reference their properties (anonymous classes wouldn't require it
+       since they have the class reference itself */
     public abstract void commit(Actor user, Actor target);
 
     public String toString() { return TextFormatter.formatAction(type, name, description); }

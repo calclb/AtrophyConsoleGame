@@ -1,7 +1,12 @@
 package me.ubuntoof.Handlers;
 
 import me.ubuntoof.Characters.Actor;
+import me.ubuntoof.Characters.Player;
+import me.ubuntoof.Utils.Colorizer;
 import me.ubuntoof.Utils.TextFormatter;
+import me.ubuntoof.Utils.UserInputReader;
+
+import javax.smartcardio.TerminalFactory;
 
 
 public class AdventureHandler {
@@ -29,8 +34,26 @@ public class AdventureHandler {
 
     public void begin() {
 
-        TextFormatter.imitateTyping("...I know it may be rude to ask, but I can't place a finger on what I should call you.", 100);
-        // TODO begin the storyline.
+        TextFormatter.imitatePrinting(new String[]{
+                Colorizer.ITALIC + "...I know it may be rude to ask, but I can't place a finger on what I should call you.\n"},
+                new int[]{0}); // 1000
+
+        String playerName = UserInputReader.getResponse();
+
+        String[] strings = {Colorizer.ITALIC + "I hope you're not playing me for a fool. ",
+                "Please understand, ",
+                "in all honesty, ",
+                "that I'm in much of the same predicament as you.\n" + Colorizer.RESET};
+
+        int[] delays = {0, 0, 0, 0};
+        //int[] delays = {1600, 1100, 1000, 1150};
+
+        TextFormatter.imitatePrinting(strings, delays);
+
+        Player player = new Player(playerName, Player.getDefaultActions(), 1);
+
+        Battle battle = new Battle(new Actor[]{player}, 2);
+        battle.startBattle();
     }
 
 }

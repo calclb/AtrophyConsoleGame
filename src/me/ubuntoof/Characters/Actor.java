@@ -2,7 +2,7 @@ package me.ubuntoof.Characters;
 
 import me.ubuntoof.Actions.Action;
 import me.ubuntoof.Handlers.Battle;
-import me.ubuntoof.Listeners.TurnListener;
+import me.ubuntoof.Listeners.BattleInteractions;
 import me.ubuntoof.Modifiers.Ailment;
 import me.ubuntoof.Modifiers.StatModifier;
 import me.ubuntoof.Stats;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Set;
 
-public class Actor implements TurnListener {
+public abstract class Actor implements BattleInteractions {
 
     private Action[] actions;
     private Battle battle;
@@ -30,42 +30,40 @@ public class Actor implements TurnListener {
     private double baseArmor;
     private double baseSpeed;
 
-    public Actor(Battle battle, String name, Action[] actions, int level)
+    public Actor(String name, Action[] actions, int level)
     {
-        this.battle = battle;
         this.name = name;
         this.actions = actions;
         this.level = level;
     }
 
     public int getLevel() { return level; }
+    public String getName() { return name; }
+
 
     protected Battle getBattle() { return battle; }
 
     // Action-related methods
     public Action[] getActions() { return actions; }
     protected void setAction(int index, Action action) { actions[index] = action; }
-    public void doAction(Actor target, int actionIndex) { actions[actionIndex].commit(this, target); }
+    public void doAction(Actor primaryTarget, int actionIndex) { actions[actionIndex].commit(this, primaryTarget); }
     public boolean getEligibleToAct() { return eligibleToAct; }
     public void setEligibleToAct(boolean to) { eligibleToAct = to; }
 
     // Damage-related methods
-    public void takeDamage(double dmg) { baseHealth -= dmg; /* apply damage reduction here*/ }
-    public void takeDamage(double dmg, boolean trueDamage) { baseHealth -= dmg; }
-
-    // Probably going to be replaced at some point.
-    public double getWeight()
+    public void takeDamage(double dmg)
     {
-        double w = 0;
-        w += baseMaxHealth;
-        w += baseHealth;
-        w += baseStrength*2;
-        w += baseDefense*2;
-        w += baseArmor*2;
-        w += baseSpeed;
-        w += actions.length*4;
-        w += level;
-        return w;
+        baseHealth -= dmg; /* apply damage reduction here */
+        onDamageTaken();
+    }
+    public void takeDamage(double dmg, boolean trueDamage)
+    {
+        if(trueDamage)
+        {
+            baseHealth -= dmg;
+            onDamageTaken();
+        }
+        else takeDamage(dmg);
     }
 
     // Stat-related methods
@@ -129,4 +127,8 @@ public class Actor implements TurnListener {
     public void applyAilmentEffects() { for(Ailment ailment : ailments) ailment.applyEffects(this); }
     public String toString() { return name; }
 
+    // Interface overrides & other listeners
+    protected void onDamageTaken() {}
+
+    @Override public void onBattleStarted(Battle battle) { this.battle = battle; }
 }

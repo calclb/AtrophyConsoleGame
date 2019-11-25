@@ -62,7 +62,7 @@ public class Colorizer {
     public static void printBlockDivider(int len)
     {
         String div = "";
-        for(int i = 0; i < len; i++) div += "█";
+        for(int i = 0; i < len; i++) div += "️◼️️️";
         System.out.print(Colorizer.GRAY + Colorizer.BOLD + div + Colorizer.RESET + "\n");
     }
 }
