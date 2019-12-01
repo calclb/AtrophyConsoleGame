@@ -15,8 +15,8 @@ public class Player extends Actor {
 
         setBaseMaxHealth(10 + level);
         setBaseHealth(getBaseMaxHealth());
-        setBaseStrength(4 + Math.sqrt(level));
-        setBaseSpeed(4 + Math.sqrt(level));
+        setBaseStrength((int)(4 + Math.sqrt(level)));
+        setBaseSpeed((int)(4 + Math.sqrt(level)));
     }
 
     public static Action[] getDefaultActions() { return new Action[]{new Bop()}; }
@@ -88,8 +88,6 @@ public class Player extends Actor {
                     erroneousInput = true;
                 }
             }
-
-            if(erroneousInput) System.out.println("Please reference an action by typing a unique part of its name or the number associated to it.");
         }
 
         boolean validTarget = false;
@@ -98,16 +96,17 @@ public class Player extends Actor {
             if(!erroneousInput) System.out.println("Select a target: ");
             erroneousInput = false;
 
-            for(int i = 0; i < getBattle().getCombatants().length; i++)
+            Actor[] combatants = getBattle().getCombatants();
+            for(int i = 0; i < combatants.length; i++)
             {
-                System.out.println("[" + i + "] " + getBattle().getCombatants()[i]);
+                if(combatants[i].isAlive()) System.out.println("[" + i + "] " + combatants[i]);
             }
 
             String uinput = UserInputReader.getResponse().toLowerCase();
 
             Actor matchingActor = null;
             int matches = 0;
-            for(Actor actor : getBattle().getCombatants())
+            for(Actor actor : combatants)
             {
 
                 if(actor.getName().toLowerCase().contains(uinput))
@@ -128,7 +127,7 @@ public class Player extends Actor {
             {
                 try
                 {
-                    targetActor = getBattle().getCombatants()[Integer.parseInt(uinput)];
+                    targetActor = combatants[Integer.parseInt(uinput)];
                     validTarget = true;
                 }
                 catch (Exception e)

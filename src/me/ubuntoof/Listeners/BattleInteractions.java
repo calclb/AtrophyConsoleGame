@@ -1,9 +1,6 @@
 package me.ubuntoof.Listeners;
 
-import me.ubuntoof.Characters.Actor;
 import me.ubuntoof.Handlers.Battle;
-import me.ubuntoof.Modifiers.Ailment;
-import me.ubuntoof.Modifiers.StatModifier;
 
 public interface BattleInteractions {
 

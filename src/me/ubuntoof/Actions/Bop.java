@@ -12,8 +12,7 @@ public class Bop extends Action {
 
     @Override
     public void commit(Actor user, Actor target) {
-        double dmg = user.getStrength();
+        int dmg = target.takeDamage(user.getStrength());
         System.out.println(user + " used " + getName() + " on " + target + ", dealing " + Colorizer.RED + dmg + Colorizer.RESET + " damage.");
-        target.takeDamage(dmg);
     }
 }

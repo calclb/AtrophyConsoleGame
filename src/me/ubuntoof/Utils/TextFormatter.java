@@ -4,6 +4,7 @@ import me.ubuntoof.Actions.Action;
 import me.ubuntoof.Actions.Action.ActionType;
 import me.ubuntoof.Stats;
 
+import java.text.DecimalFormat;
 import java.util.HashMap;
 
 public class TextFormatter {
@@ -30,4 +31,5 @@ public class TextFormatter {
     public static String formatAilment(String i, String n, String d) { return i; }
 
     public static String formatStat(Stats stat) { return "[" + stat.getIcon() + "] " + stat.getName() + " - " + stat.getDescription(); }
+
 }

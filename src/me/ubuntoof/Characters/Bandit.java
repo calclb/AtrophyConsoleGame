@@ -3,33 +3,37 @@ package me.ubuntoof.Characters;
 import me.ubuntoof.Actions.Action;
 import me.ubuntoof.Actions.Action.ActionType;
 import me.ubuntoof.Handlers.Battle;
+import me.ubuntoof.Modifiers.StatModifier;
 import me.ubuntoof.Utils.Colorizer;
+import me.ubuntoof.Utils.TextFormatter;
 
+import java.text.DecimalFormat;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Bandit extends Actor {
-    Random random = new Random();
+
+    private Random random = new Random();
 
     private static Action a1 = new Action(ActionType.ATTACK, "Chip Away", "Reduces target HP by 10% as true damage.", true) {
 
         @Override
         public void commit(Actor user, Actor target) {
-            // display attack notification
-            double dmg = user.getMaxHealth() / 10d;
+            int dmg = target.takeDamage(Math.max(user.getMaxHealth() / 10, 1), true);
             System.out.println(user + " used " + a1.getName() + " on " + target + ", dealing " + Colorizer.RED + dmg + Colorizer.RESET + " damage.");
-            target.takeDamage(dmg);
         }
     };
 
     private static Action a2 = new Action(ActionType.ATTACK, "Lunge", "Has a 25% chance of dealing double damage.", true) {
 
+        private Random random = new Random();
+
         @Override
         public void commit(Actor user, Actor target) {
-            double randResult = ThreadLocalRandom.current().nextDouble();
-            double dmg = Math.sqrt(user.getLevel()) + 2d;
+
+            double randResult = random.nextDouble();
+            int dmg = target.takeDamage((int)((0.25d > randResult ? 2d : 1d) * Math.sqrt((user.getLevel() + 2d))));
             System.out.println(user + " used " + a2.getName() + " on " + target + ", dealing " + Colorizer.RED + dmg + Colorizer.RESET + " damage.");
-            target.takeDamage(0.25d > randResult ? dmg : dmg * 2d);
         }
     };
 
@@ -38,15 +42,17 @@ public class Bandit extends Actor {
     public Bandit(int level) {
         super("Bandit", actions, level);
 
-        setBaseMaxHealth(2 + Math.sqrt(level));
+        setBaseMaxHealth((int)(2 + Math.sqrt(level)));
         setBaseHealth(getMaxHealth());
-        setBaseSpeed(4 + Math.sqrt(Math.pow(level, 1.4d)));
-        setBaseStrength(2 + Math.sqrt(level));
+        setBaseStrength((int)(2 + Math.sqrt(level)));
+        setBaseDefense(level/8);
+        setBaseArmor((int)(Math.sqrt(level)));
+        setBaseSpeed((int)(4 + Math.sqrt(Math.pow(level, 1.4d))));
     }
 
     @Override
     public void onUserTurn() {
         Actor[] potentialTargets = getBattle().getOpposition(this);
-        doAction(potentialTargets[random.nextInt(potentialTargets.length)], random.nextInt(actions.length));
+        doAction(random.nextInt(actions.length), potentialTargets[random.nextInt(potentialTargets.length)]);
     }
 }

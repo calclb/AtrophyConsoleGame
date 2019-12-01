@@ -6,9 +6,11 @@ import me.ubuntoof.Listeners.BattleInteractions;
 import me.ubuntoof.Modifiers.Ailment;
 import me.ubuntoof.Modifiers.StatModifier;
 import me.ubuntoof.Stats;
+import me.ubuntoof.Utils.Colorizer;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 public abstract class Actor implements BattleInteractions {
@@ -16,19 +18,19 @@ public abstract class Actor implements BattleInteractions {
     private Action[] actions;
     private Battle battle;
     private ArrayList<StatModifier> statModifiers = new ArrayList<>();
-    private Set<Integer> disabledActionIndex = Collections.emptySet();
-    private Set<Ailment> ailments = Collections.emptySet();
+    private Set<Integer> disabledActionIndex = new HashSet<>();
+    private Set<Ailment> ailments = new HashSet<>();
 
     private int level;
     private String name;
     private boolean eligibleToAct = true;
 
-    private double baseMaxHealth;
-    private double baseHealth;
-    private double baseStrength;
-    private double baseDefense;
-    private double baseArmor;
-    private double baseSpeed;
+    private int baseMaxHealth;
+    private int baseHealth;
+    private int baseStrength;
+    private int baseDefense;
+    private int baseArmor;
+    private int baseSpeed;
 
     public Actor(String name, Action[] actions, int level)
     {
@@ -46,17 +48,25 @@ public abstract class Actor implements BattleInteractions {
     // Action-related methods
     public Action[] getActions() { return actions; }
     protected void setAction(int index, Action action) { actions[index] = action; }
-    public void doAction(Actor primaryTarget, int actionIndex) { actions[actionIndex].commit(this, primaryTarget); }
+
+    // going to transition to the upper method
+    public void doAction(Action action, Actor primaryTarget) { action.commit(this, primaryTarget); }
+
+    public void doAction(int actionIndex, Actor primaryTarget) { actions[actionIndex].commit(this, primaryTarget); }
     public boolean getEligibleToAct() { return eligibleToAct; }
     public void setEligibleToAct(boolean to) { eligibleToAct = to; }
 
     // Damage-related methods
-    public void takeDamage(double dmg)
+    public int takeDamage(int dmg)
     {
-        baseHealth -= dmg; /* apply damage reduction here */
+        if(dmg < getArmor()) dmg = 0;
+        else dmg -= getDefense();
+
+        baseHealth -= dmg;
         onDamageTaken();
+        return dmg;
     }
-    public void takeDamage(double dmg, boolean trueDamage)
+    public int takeDamage(int dmg, boolean trueDamage)
     {
         if(trueDamage)
         {
@@ -64,60 +74,75 @@ public abstract class Actor implements BattleInteractions {
             onDamageTaken();
         }
         else takeDamage(dmg);
+        return dmg;
     }
 
     // Stat-related methods
-    public double getBaseMaxHealth() { return baseMaxHealth; }
-    public double getBaseStrength() { return baseStrength; }
-    public double getBaseDefense() { return baseStrength; }
-    public double getBaseArmor() { return baseStrength; }
-    public double getBaseSpeed() { return baseSpeed; }
+    public int getBaseMaxHealth() { return baseMaxHealth; }
+    public int getBaseStrength() { return baseStrength; }
+    public int getBaseDefense() { return baseStrength; }
+    public int getBaseArmor() { return baseStrength; }
+    public int getBaseSpeed() { return baseSpeed; }
 
-    public void setBaseMaxHealth(double maxHealth) { baseMaxHealth = maxHealth; }
-    public void setBaseHealth(double health) { baseHealth = Math.min(health, baseMaxHealth); }
-    public void setBaseStrength(double strength) { baseStrength = strength; }
-    public void setBaseDefense(double defense) { baseDefense = defense; }
-    public void setBaseArmor(double armor) { baseArmor = armor; }
-    public void setBaseSpeed(double speed) { baseSpeed = speed; }
+    public void setBaseMaxHealth(int maxHealth) { baseMaxHealth = maxHealth; }
+    public void setBaseHealth(int health) { baseHealth = Math.min(health, baseMaxHealth); }
+    public void setBaseStrength(int strength) { baseStrength = strength; }
+    public void setBaseDefense(int defense) { baseDefense = defense; }
+    public void setBaseArmor(int armor) { baseArmor = armor; }
+    public void setBaseSpeed(int speed) { baseSpeed = speed; }
 
-    public double getMaxHealth()
+    public int getMaxHealth()
     {
         double mod = 1d;
         for(StatModifier sm : statModifiers) if(sm.getModifierType() == Stats.MAX_HEALTH) mod *= sm.getMultiplier();
-        return mod * baseMaxHealth;
+        return (int)(mod * baseMaxHealth);
     }
 
-    public double getHealth()
+    public int getHealth()
     {
         return baseHealth;
     }
 
-    public double getStrength()
+    public int getStrength()
     {
         double mod = 1d;
         for(StatModifier sm : statModifiers) if(sm.getModifierType() == Stats.STRENGTH) mod *= sm.getMultiplier();
-        return mod * baseStrength;
+        return (int)(mod * baseStrength);
     }
 
-    public double getDefense()
+    public int getDefense()
     {
         double mod = 1d;
         for(StatModifier sm : statModifiers) if(sm.getModifierType() == Stats.DEFENSE) mod *= sm.getMultiplier();
-        return mod * baseDefense;
+        return (int)(mod * baseDefense);
     }
 
-    public double getArmor()
+    public int getArmor()
     {
         double mod = 1d;
         for(StatModifier sm : statModifiers) if(sm.getModifierType() == Stats.ARMOR) mod *= sm.getMultiplier();
-        return mod * baseArmor;
+        return (int)(mod * baseArmor);
     }
 
-    public double getSpeed()
+    public int getSpeed()
     {
         double mod = 1d;
         for(StatModifier sm : statModifiers) if(sm.getModifierType() == Stats.SPEED) mod *= sm.getMultiplier();
-        return mod * baseSpeed;
+        return (int)(mod * baseSpeed);
+    }
+
+    public String getHealthBarAsString()
+    {
+        double healthPercentage = (double)baseHealth / getMaxHealth();
+        StringBuilder str = new StringBuilder();
+        int len = 10;
+
+        for(int i = 1; i <= len; i++)
+        {
+            str.append(healthPercentage >= (double)i / len ? Colorizer.LIGHT_GREEN : Colorizer.RED);
+            str.append("▪");
+        }
+        return str.toString();
     }
 
     // State and modifier-related methods
@@ -127,7 +152,7 @@ public abstract class Actor implements BattleInteractions {
     public void applyAilmentEffects() { for(Ailment ailment : ailments) ailment.applyEffects(this); }
     public String toString() { return name; }
 
-    // Interface overrides & other listeners
+    // Interface overrides & other events/listeners
     protected void onDamageTaken() {}
 
     @Override public void onBattleStarted(Battle battle) { this.battle = battle; }

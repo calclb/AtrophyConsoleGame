@@ -14,8 +14,8 @@ public class Poison extends Ailment {
 
     @Override
     public void applyEffects(Actor actor) {
-        double dmg = actor.getMaxHealth()/(Math.max(16d-2*turns, 3d));
-        System.out.println(Colorizer.PURPLE + getIcon() + Colorizer.RESET + actor + " took " + (int)dmg + " damage to " + getName());
+        int dmg = (int)Math.max(actor.getMaxHealth()/(Math.max(16d-2*turns, 3d)), 1);
+        System.out.println(Colorizer.PURPLE + getIcon() + Colorizer.RESET + actor + " took " + dmg + " damage to " + getName());
         actor.takeDamage(dmg);
         turns++;
         decrementTurnsRemaining();

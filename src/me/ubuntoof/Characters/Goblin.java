@@ -6,6 +6,7 @@ import me.ubuntoof.Handlers.Battle;
 import me.ubuntoof.Modifiers.StatModifier;
 import me.ubuntoof.Stats;
 import me.ubuntoof.Utils.Colorizer;
+import me.ubuntoof.Utils.TextFormatter;
 
 import java.util.Random;
 
@@ -15,25 +16,24 @@ public class Goblin extends Actor {
 
         @Override public void commit(Actor user, Actor target) {
 
-            double dmg = user.getLevel() * 0.5d;
+            int dmg = target.takeDamage((int)(user.getLevel() * 0.5d), false);
             System.out.println(user + " used " + a1.getName() + " on " + target + ", dealing " + Colorizer.RED + dmg + Colorizer.RESET + " damage.");
-            target.takeDamage(dmg, false);
         }
     };
 
-    private static Action a2 = new Action(ActionType.ATTACK, "Guard", "Reduces damage taken by 50% until next turn.", true) {
+    private static Action a2 = new Action(ActionType.STATUS, "Guard", "Reduces damage taken by 50% until next turn.", true) {
 
         @Override public void commit(Actor user, Actor target)
         {
 
-            System.out.println(user + " used " + a2.getName() + " on " + target + ".");
+            System.out.println(user + " used " + a2.getName() + " on " + target + ", increasing defense by 50% until the next turn.");
             user.getStatModifiers().add(new StatModifier(Stats.DEFENSE, 1.5d, 0));
             // TODO use listeners to reduce damage
         }
     };
 
     private static Action[] actions = new Action[]{a1, a2};
-    Random random = new Random();
+    private Random random = new Random();
 
     public Goblin(int level) {
 
@@ -41,14 +41,27 @@ public class Goblin extends Actor {
 
         setBaseMaxHealth(2 + level);
         setBaseHealth(getBaseMaxHealth());
-        setBaseStrength(1 + Math.sqrt(2*level));
-        setBaseSpeed(2 + Math.sqrt(level));
+        setBaseStrength((int)(1 + Math.sqrt(2*level)));
+        setBaseDefense(level/5);
+        setBaseArmor((int)(1 + Math.sqrt(level)));
+        setBaseSpeed((int)(2 + Math.sqrt(level)));
     }
 
     // Interface overrides
     @Override
     public void onUserTurn() {
-        Actor[] potentialTargets = getBattle().getOpposition(this);
-        doAction(potentialTargets[random.nextInt(potentialTargets.length)], random.nextInt(actions.length-1));
+        Actor[] potentialTargets;
+        Action action = getActions()[random.nextInt(actions.length)];
+
+        switch (action.getType())
+        {
+            case STATUS: potentialTargets = getBattle().getFriendlies(this);
+            default: potentialTargets = getBattle().getOpposition(this);
+        }
+
+        Actor target = potentialTargets[random.nextInt(potentialTargets.length)];
+
+
+        doAction(action, target);
     }
 }
