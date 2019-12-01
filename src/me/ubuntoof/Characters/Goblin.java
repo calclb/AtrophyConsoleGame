@@ -56,6 +56,7 @@ public class Goblin extends Actor {
         switch (action.getType())
         {
             case STATUS: potentialTargets = getBattle().getFriendlies(this);
+                break;
             default: potentialTargets = getBattle().getOpposition(this);
         }
 
