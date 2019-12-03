@@ -59,5 +59,6 @@ public class Goblin extends Actor {
         else target = potentialTargets[random.nextInt(potentialTargets.length)];
 
         doAction(action, target);
+
     }
 }
