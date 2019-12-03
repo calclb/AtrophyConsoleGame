@@ -11,7 +11,7 @@ public class Paralysis extends Ailment {
 
     Random random = new Random();
 
-    Paralysis(int durationInTurns)
+    public Paralysis(int durationInTurns)
     {
         super("\uD83D\uDDF2", "Paralysis", "Reduces target speed and has a chance of cancelling their actions.", durationInTurns);
     }

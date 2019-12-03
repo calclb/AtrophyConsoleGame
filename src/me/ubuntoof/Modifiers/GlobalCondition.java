@@ -4,6 +4,10 @@ import me.ubuntoof.Characters.Actor;
 
 public abstract class GlobalCondition extends Decrementable {
 
+    protected String icon;
+    protected String name;
+    protected String description;
+
     protected GlobalCondition()
     {
         setPermanent();
@@ -15,4 +19,8 @@ public abstract class GlobalCondition extends Decrementable {
     }
 
     public abstract void applyEffects(Actor[] targets);
+
+    public String getIcon() { return icon; }
+    public String getName() { return name; }
+    public String getDescription() { return description; }
 }

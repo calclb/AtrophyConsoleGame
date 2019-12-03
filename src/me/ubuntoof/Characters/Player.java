@@ -46,7 +46,7 @@ public class Player extends Actor {
         boolean erroneousInput = false;
         while(!validActionIndex)
         {
-            if(!erroneousInput) System.out.println("Select an action to use: ");
+            if(!erroneousInput) System.out.println(Colorizer.UNDERLINE + "Select an action to use" + Colorizer.RESET + ": ");
             erroneousInput = false;
 
             for(int i = 0; i < getActions().length; i++)
@@ -93,13 +93,13 @@ public class Player extends Actor {
         boolean validTarget = false;
         while(!validTarget)
         {
-            if(!erroneousInput) System.out.println("Select a target: ");
+            if(!erroneousInput) System.out.println(Colorizer.UNDERLINE + "Select a target" + Colorizer.RESET + ": ");
             erroneousInput = false;
 
             Actor[] combatants = getBattle().getCombatants();
             for(int i = 0; i < combatants.length; i++)
             {
-                if(combatants[i].isAlive()) System.out.println("[" + i + "] " + combatants[i]);
+                //if(combatants[i].isAlive()) System.out.println("[" + i + "] " + combatants[i]);
             }
 
             String uinput = UserInputReader.getResponse().toLowerCase();

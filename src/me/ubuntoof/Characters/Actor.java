@@ -6,11 +6,10 @@ import me.ubuntoof.Listeners.BattleInteractions;
 import me.ubuntoof.Modifiers.Ailment;
 import me.ubuntoof.Modifiers.StatModifier;
 import me.ubuntoof.Stats;
-import me.ubuntoof.Utils.Colorizer;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 public abstract class Actor implements BattleInteractions {
@@ -22,6 +21,7 @@ public abstract class Actor implements BattleInteractions {
     private Set<Ailment> ailments = new HashSet<>();
 
     private int level;
+    private int exp;
     private String name;
     private boolean eligibleToAct = true;
 
@@ -37,13 +37,15 @@ public abstract class Actor implements BattleInteractions {
         this.name = name;
         this.actions = actions;
         this.level = level;
+        exp = 0;
     }
 
     public int getLevel() { return level; }
+    public int addExp(int expToAdd) { this.exp += expToAdd; return exp; }
     public String getName() { return name; }
 
 
-    protected Battle getBattle() { return battle; }
+    public Battle getBattle() { return battle; }
 
     // Action-related methods
     public Action[] getActions() { return actions; }
@@ -66,6 +68,8 @@ public abstract class Actor implements BattleInteractions {
         onDamageTaken();
         return dmg;
     }
+
+
     public int takeDamage(int dmg, boolean trueDamage)
     {
         if(trueDamage)
@@ -131,29 +135,32 @@ public abstract class Actor implements BattleInteractions {
         return (int)(mod * baseSpeed);
     }
 
-    public String getHealthBarAsString()
-    {
-        double healthPercentage = (double)baseHealth / getMaxHealth();
-        StringBuilder str = new StringBuilder();
-        int len = 10;
-
-        for(int i = 1; i <= len; i++)
-        {
-            str.append(healthPercentage >= (double)i / len ? Colorizer.LIGHT_GREEN : Colorizer.RED);
-            str.append("▪");
-        }
-        return str.toString();
-    }
-
     // State and modifier-related methods
     public boolean isAlive() { return baseHealth > 0d; }
     public Set<Ailment> getAilments() { return ailments; }
     public ArrayList<StatModifier> getStatModifiers() { return statModifiers; }
-    public void applyAilmentEffects() { for(Ailment ailment : ailments) ailment.applyEffects(this); }
+
     public String toString() { return name; }
 
     // Interface overrides & other events/listeners
     protected void onDamageTaken() {}
 
     @Override public void onBattleStarted(Battle battle) { this.battle = battle; }
+
+    @Override public void onGlobalTurnEnded() {
+
+        for (int i = 0; i < statModifiers.size(); i++)
+        {
+            StatModifier sm = statModifiers.get(i);
+            assert sm.getDurationInTurns() >= 0;
+            if (sm.getDurationInTurns() == 0) statModifiers.remove(sm);
+        }
+
+        for (Ailment ailment : ailments)
+        {
+            assert ailment.getDurationInTurns() >= 0;
+            ailment.applyEffects(this);
+            if (ailment.getDurationInTurns() == 0) ailments.remove(ailment);
+        }
+    }
 }

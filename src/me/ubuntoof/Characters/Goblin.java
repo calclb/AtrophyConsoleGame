@@ -12,21 +12,21 @@ import java.util.Random;
 
 public class Goblin extends Actor {
 
-    private static Action a1 = new Action(ActionType.ATTACK, "Pummel", "Deals damage equal to half the user's level.", true) {
+    private static Action a1 = new Action(ActionType.ATTACK, "Pummel", "Deals damage equal to half the user's level.", false, true) {
 
         @Override public void commit(Actor user, Actor target) {
 
             int dmg = target.takeDamage((int)(user.getLevel() * 0.5d), false);
-            System.out.println(user + " used " + a1.getName() + " on " + target + ", dealing " + Colorizer.RED + dmg + Colorizer.RESET + " damage.");
+            System.out.println(user + " used " + a1.getName() + " on " + (target == user ? "itself" : target.getName()) + ", dealing " + Colorizer.RED + dmg + Colorizer.RESET + " damage.");
         }
     };
 
-    private static Action a2 = new Action(ActionType.STATUS, "Guard", "Reduces damage taken by 50% until next turn.", true) {
+    private static Action a2 = new Action(ActionType.STATUS, "Guard", "Reduces damage taken by 50% until next turn.", true, false) {
 
         @Override public void commit(Actor user, Actor target)
         {
 
-            System.out.println(user + " used " + a2.getName() + " on " + target + ", increasing defense by 50% until the next turn.");
+            System.out.println(user + " used " + a2.getName() + " on " + (target == user ? "itself" : target.getName()) + ", increasing defense by 50% until the next turn.");
             user.getStatModifiers().add(new StatModifier(Stats.DEFENSE, 1.5d, 0));
             // TODO use listeners to reduce damage
         }
@@ -38,7 +38,6 @@ public class Goblin extends Actor {
     public Goblin(int level) {
 
         super("Goblin", actions, level);
-
         setBaseMaxHealth(2 + level);
         setBaseHealth(getBaseMaxHealth());
         setBaseStrength((int)(1 + Math.sqrt(2*level)));
@@ -47,20 +46,17 @@ public class Goblin extends Actor {
         setBaseSpeed((int)(2 + Math.sqrt(level)));
     }
 
-    // Interface overrides
     @Override
     public void onUserTurn() {
         Actor[] potentialTargets;
         Action action = getActions()[random.nextInt(actions.length)];
+        Actor target;
 
-        switch (action.getType())
-        {
-            case STATUS: potentialTargets = getBattle().getFriendlies(this);
-            default: potentialTargets = getBattle().getOpposition(this);
-        }
+        if(action.isSupportive()) potentialTargets = getBattle().getFriendlies(this);
+        else potentialTargets = getBattle().getOpposition(this);
 
-        Actor target = potentialTargets[random.nextInt(potentialTargets.length)];
-
+        if(action == a2) target = this;
+        else target = potentialTargets[random.nextInt(potentialTargets.length)];
 
         doAction(action, target);
     }

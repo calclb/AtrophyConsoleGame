@@ -5,9 +5,9 @@ import me.ubuntoof.Utils.TextFormatter;
 
 public abstract class Ailment extends Decrementable {
 
-    private String icon;
-    private String name;
-    private String description;
+    protected String icon;
+    protected String name;
+    protected String description;
 
     protected Ailment(String icon, String name, String description, boolean permanent)
     {

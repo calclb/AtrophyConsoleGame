@@ -5,6 +5,7 @@ import me.ubuntoof.Listeners.BattleInteractions;
 import me.ubuntoof.Modifiers.*;
 import me.ubuntoof.Modifiers.GlobalConditions.*;
 import me.ubuntoof.Utils.Colorizer;
+import me.ubuntoof.Utils.TextFormatter;
 
 import java.util.*;
 
@@ -55,14 +56,19 @@ public class Battle {
             for(Actor actor : combatants)
             {
                 if(!actor.isAlive()) continue;
-                System.out.println(Colorizer.RESET + Colorizer.REVERSE + actor.getName() + "'s turn." + Colorizer.RESET);
-                actor.applyAilmentEffects();
+                System.out.println(Colorizer.RESET + "\n" + Colorizer.REVERSE + actor.getName() + "'s turn." + Colorizer.RESET);
                 if(!actor.isAlive()) continue;
                 for(StatModifier sm : actor.getStatModifiers()) sm.decrementTurnsRemaining();
                 actor.onUserTurn();
             }
 
-            for(GlobalCondition gc : globalConditions) gc.applyEffects(combatants);
+            for(GlobalCondition gc : globalConditions)
+            {
+                gc.applyEffects(combatants);
+                assert gc.getDurationInTurns() >= 0;
+                if(gc.getDurationInTurns() == 0) globalConditions.remove(gc);
+            }
+
             for(BattleInteractions bi : battleInteractionsListeners) bi.onGlobalTurnEnded();
 
         } while(checkCombatantSidesAreAlive());
@@ -74,14 +80,33 @@ public class Battle {
     private void displayGlobalBattle()
     {
         Colorizer.printDivider(60);
-        System.out.println(Colorizer.GRAY + "Turn " + turn + "\n" + Colorizer.RESET);
+        System.out.println(Colorizer.GRAY + "Turn " + turn + "" + Colorizer.RESET);
 
-        for(Actor actor : combatants) if(actor.isAlive())
+        for(GlobalCondition gc : globalConditions) System.out.println(gc.getIcon() + " " + gc.getName() + " - " + gc.getDurationInTurns() + " turn" + (gc.getDurationInTurns() == 1 ? "" : "s") + " remaining" + Colorizer.RESET);
+        System.out.println();
+
+        for(int i = 0; i < allies.length; i++) if(allies[i].isAlive())
         {
-            System.out.println(actor.getName() + " (" + actor.getHealth() + "/" + actor.getMaxHealth() + ") " + actor.getHealthBarAsString() + Colorizer.RESET);
+            Actor actor = allies[i];
+            System.out.println(Colorizer.LIGHT_GRAY + "[" + i + "] " + Colorizer.BLUE + actor.getName() + Colorizer.LIGHT_GRAY + " (" + actor.getHealth() + "/" + actor.getMaxHealth() + ") " +
+                    TextFormatter.formatAsProgressBar(actor.getHealth(), actor.getMaxHealth(), 10) + " " + returnAilmentIcons(actor) + Colorizer.RESET);
         }
 
+        for(int i = 0; i < enemies.length; i++) if(enemies[i].isAlive())
+        {
+            Actor actor = enemies[i];
+            System.out.println(Colorizer.LIGHT_GRAY + "[" + (i + allies.length) + "] " + Colorizer.RED + actor.getName() + Colorizer.LIGHT_GRAY + " (" + actor.getHealth() + "/" + actor.getMaxHealth() + ") " +
+                    TextFormatter.formatAsProgressBar(actor.getHealth(), actor.getMaxHealth(), 10) + " " + returnAilmentIcons(actor) + Colorizer.RESET);
+        }
+
+        System.out.println(Colorizer.GRAY + "\nSee /stats <target> to display properties of a character." + Colorizer.RESET);
         Colorizer.printDivider(60);
+    }
+
+    private String returnAilmentIcons(Actor actor) {
+        StringBuilder sb = new StringBuilder();
+        for(Ailment ailment : actor.getAilments()) sb.append(ailment.getIcon());
+        return sb.toString();
     }
 
     private boolean checkCombatantSidesAreAlive()
@@ -111,8 +136,9 @@ public class Battle {
 
         switch (type)
         {
-            case 0: return new Bandit(random.nextInt(8));
-            case 1: return new Goblin(random.nextInt(8));
+            case 0: return new Bandit(random.nextInt(15));
+            case 1: return new Goblin(random.nextInt(15));
+            case 2: return new Spaelcaster(random.nextInt(15));
         }
         return null;
     }
@@ -139,7 +165,8 @@ public class Battle {
 enum EnemyTypes
 {
     GOBLIN(Goblin.class),
-    BANDIT(Bandit.class);
+    BANDIT(Bandit.class),
+    SPAELCASTER(Spaelcaster.class);
 
     private Class type;
 

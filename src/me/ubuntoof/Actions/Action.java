@@ -8,19 +8,22 @@ public abstract class Action {
     private ActionType type;
     private String name;
     private String description;
+    private boolean supportive;
     private boolean usesContact;
 
-    protected Action(ActionType type, String name, String description, boolean usesContact)
+    protected Action(ActionType type, String name, String description, boolean supportive, boolean usesContact)
     {
         this.type = type;
         this.name = name;
         this.description = description;
+        this.supportive = supportive;
         this.usesContact = usesContact;
     }
 
     public ActionType getType() { return type; }
     public String getName() { return name; }
     public String getDescription() { return description; }
+    public boolean isSupportive() { return supportive; }
     public boolean usesContact() { return usesContact; }
 
     /* has to have 'user' parameter so actions which have dedicated classes can reference their properties (anonymous classes wouldn't require it
@@ -35,7 +38,10 @@ public abstract class Action {
 
         private String val;
 
-        ActionType(String assignedValue) { val = assignedValue; }
+        ActionType(String assignedValue)
+        {
+            val = assignedValue;
+        }
 
         @Override public String toString() { return val; }
 

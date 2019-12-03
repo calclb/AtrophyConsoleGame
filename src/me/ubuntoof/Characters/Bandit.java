@@ -15,16 +15,16 @@ public class Bandit extends Actor {
 
     private Random random = new Random();
 
-    private static Action a1 = new Action(ActionType.ATTACK, "Chip Away", "Reduces target HP by 10% as true damage.", true) {
+    private static Action a1 = new Action(ActionType.ATTACK, "Chip Away", "Reduces target HP by 10% as true damage.", false, true) {
 
         @Override
         public void commit(Actor user, Actor target) {
-            int dmg = target.takeDamage(Math.max(user.getMaxHealth() / 10, 1), true);
-            System.out.println(user + " used " + a1.getName() + " on " + target + ", dealing " + Colorizer.RED + dmg + Colorizer.RESET + " damage.");
+            int dmg = target.takeDamage(Math.max(target.getMaxHealth() / 10, 1), true);
+            System.out.println(user + " used " + a1.getName() + " on " + (target == user ? "itself" : target.getName()) + ", dealing " + Colorizer.RED + dmg + Colorizer.RESET + " damage.");
         }
     };
 
-    private static Action a2 = new Action(ActionType.ATTACK, "Lunge", "Has a 25% chance of dealing double damage.", true) {
+    private static Action a2 = new Action(ActionType.ATTACK, "Lunge", "Has a 25% chance of dealing double damage.", false, true) {
 
         private Random random = new Random();
 
@@ -33,7 +33,7 @@ public class Bandit extends Actor {
 
             double randResult = random.nextDouble();
             int dmg = target.takeDamage((int)((0.25d > randResult ? 2d : 1d) * Math.sqrt((user.getLevel() + 2d))));
-            System.out.println(user + " used " + a2.getName() + " on " + target + ", dealing " + Colorizer.RED + dmg + Colorizer.RESET + " damage.");
+            System.out.println(user + " used " + a2.getName() + " on " + (target == user ? "itself" : target.getName()) + ", dealing " + Colorizer.RED + dmg + Colorizer.RESET + " damage.");
         }
     };
 
@@ -52,7 +52,14 @@ public class Bandit extends Actor {
 
     @Override
     public void onUserTurn() {
-        Actor[] potentialTargets = getBattle().getOpposition(this);
-        doAction(random.nextInt(actions.length), potentialTargets[random.nextInt(potentialTargets.length)]);
+        Actor[] potentialTargets;
+        Action action = getActions()[random.nextInt(actions.length)];
+
+        if(action.isSupportive()) potentialTargets = getBattle().getFriendlies(this);
+        else potentialTargets = getBattle().getOpposition(this);
+
+        Actor target = potentialTargets[random.nextInt(potentialTargets.length)];
+
+        doAction(action, target);
     }
 }
