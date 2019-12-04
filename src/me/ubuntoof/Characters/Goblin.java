@@ -33,7 +33,6 @@ public class Goblin extends Actor {
     };
 
     private static Action[] actions = new Action[]{a1, a2};
-    private Random random = new Random();
 
     public Goblin(int level) {
 

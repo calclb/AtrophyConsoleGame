@@ -30,13 +30,12 @@ public class Spaelcaster extends Actor {
         {
             target.setBaseHealth(target.getHealth() + user.getStrength());
             System.out.println(user + " used " + a2.getName() + " on " + (target == user ? "itself" : target.getName()) + ", healing "
-                    + Colorizer.GREEN + user.getLevel() + Colorizer.RESET + " health.");
+                    + Colorizer.GREEN + user.getLevel()/2 + Colorizer.RESET + " health.");
             // TODO use listeners to reduce damage
         }
     };
 
     private static Action[] actions = new Action[]{a1, a2};
-    private Random random = new Random();
 
     public Spaelcaster(int level) {
 

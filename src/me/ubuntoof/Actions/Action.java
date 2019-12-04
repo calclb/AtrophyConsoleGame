@@ -3,6 +3,8 @@ package me.ubuntoof.Actions;
 import me.ubuntoof.Characters.Actor;
 import me.ubuntoof.Utils.TextFormatter;
 
+import java.util.Random;
+
 public abstract class Action {
 
     private ActionType type;
@@ -10,6 +12,7 @@ public abstract class Action {
     private String description;
     private boolean supportive;
     private boolean usesContact;
+    protected final static Random random = new Random();
 
     protected Action(ActionType type, String name, String description, boolean supportive, boolean usesContact)
     {
@@ -27,7 +30,7 @@ public abstract class Action {
     public boolean usesContact() { return usesContact; }
 
     /* has to have 'user' parameter so actions which have dedicated classes can reference their properties (anonymous classes wouldn't require it
-       since they have the class reference itself */
+       since they have the class reference itself) */
     public abstract void commit(Actor user, Actor target);
 
     public String toString() { return TextFormatter.formatAction(type, name, description); }

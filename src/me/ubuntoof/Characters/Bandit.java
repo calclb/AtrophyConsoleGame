@@ -13,8 +13,6 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Bandit extends Actor {
 
-    private Random random = new Random();
-
     private static Action a1 = new Action(ActionType.ATTACK, "Chip Away", "Reduces target HP by 10% as true damage.", false, true) {
 
         @Override
@@ -25,8 +23,6 @@ public class Bandit extends Actor {
     };
 
     private static Action a2 = new Action(ActionType.ATTACK, "Lunge", "Has a 25% chance of dealing double damage.", false, true) {
-
-        private Random random = new Random();
 
         @Override
         public void commit(Actor user, Actor target) {

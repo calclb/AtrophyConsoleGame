@@ -14,23 +14,19 @@ public class Combah extends Action {
 
     @Override
     public void commit(Actor user, Actor target) {
-
-        Random random = new Random();
         int hits = random.nextInt(3) + 1;
         int dmg;
 
         System.out.print(user + " used " + getName() + " on " + (target == user ? "itself" : target.getName()) + ", hitting " + hits + " time" + (hits == 1 ? "" : "s") + " for ");
 
         // TODO fix
-        for(int i = 0; i < hits; i++)
+        for(int i = 1; i <= hits; i++)
         {
             dmg = target.takeDamage(Math.max(((user.getStrength() + random.nextInt(user.getStrength()/4) - user.getStrength()/4) / 2), 1));
 
             System.out.print(Colorizer.RED + dmg + Colorizer.RESET);
-            if(hits - i > 1) System.out.print(", ");
-            else if(hits - i == 1) System.out.print(" and ");
-
-            //System.out.print((i >= 1 && i == hits - 1 ? "and " : "") + Colorizer.RED + dmg + Colorizer.RESET + (i >= 1 && i == hits - 1 ? "," : ""));
+            if(hits > 2 && hits - i > 1) System.out.print(", ");
+            if(hits > 1 && hits - i == 1) System.out.print(" and ");
         }
 
         System.out.print(" damage.");

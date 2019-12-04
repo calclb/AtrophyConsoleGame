@@ -7,11 +7,12 @@ import me.ubuntoof.Modifiers.GlobalConditions.*;
 import me.ubuntoof.Utils.Colorizer;
 import me.ubuntoof.Utils.TextFormatter;
 
+import java.io.IOException;
 import java.util.*;
 
 public class Battle {
 
-    private Set<GlobalCondition> globalConditions = new HashSet<>();
+    private Set<GlobalCondition> globalConditions = new LinkedHashSet<>();
     private Actor[] combatants;
     private Actor[] allies;
     private Actor[] enemies;
@@ -56,11 +57,13 @@ public class Battle {
             for(Actor actor : combatants)
             {
                 if(!actor.isAlive()) continue;
-                System.out.println(Colorizer.RESET + "\n" + Colorizer.REVERSE + actor.getName() + "'s turn." + Colorizer.RESET);
-                if(!actor.isAlive()) continue;
+                System.out.println(Colorizer.RESET + "\n" + Colorizer.REVERSE + Colorizer.LIGHT_GRAY + "[] " + actor.getName() + "'s turn." + Colorizer.RESET);
                 for(StatModifier sm : actor.getStatModifiers()) sm.decrementTurnsRemaining();
                 actor.onUserTurn();
+                try {Thread.sleep(900); } catch(InterruptedException e) { e.printStackTrace(); }
             }
+
+            System.out.println();
 
             for(GlobalCondition gc : globalConditions)
             {
@@ -68,6 +71,8 @@ public class Battle {
                 assert gc.getDurationInTurns() >= 0;
                 if(gc.getDurationInTurns() == 0) globalConditions.remove(gc);
             }
+
+            System.out.println();
 
             for(BattleInteractions bi : battleInteractionsListeners) bi.onGlobalTurnEnded();
 
@@ -136,9 +141,9 @@ public class Battle {
 
         switch (type)
         {
-            case 0: return new Bandit(random.nextInt(15));
-            case 1: return new Goblin(random.nextInt(15));
-            case 2: return new Spaelcaster(random.nextInt(15));
+            case 0: return new Bandit(random.nextInt(25));
+            case 1: return new Goblin(random.nextInt(25));
+            case 2: return new Spaelcaster(random.nextInt(25));
         }
         return null;
     }
@@ -178,4 +183,6 @@ enum EnemyTypes
     public Actor getType() { try {return (Actor)type.newInstance();} catch(Exception ignored){} return null;}
 
     static int variants() { return EnemyTypes.values().length; }
+
+
 }

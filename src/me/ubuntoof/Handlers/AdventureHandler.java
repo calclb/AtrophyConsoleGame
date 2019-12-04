@@ -52,7 +52,7 @@ public class AdventureHandler {
 
         TextFormatter.imitatePrinting(strings, delays);
 
-        Player player = new Player(playerName, new Action[]{new Bop(), new Combah()}, 50);
+        Player player = new Player(playerName, new Action[]{new Bop(), new Combah(), new Panic(), new EsophagealBurn()}, 50);
         Spaelcaster spaelcaster = new Spaelcaster(30);
 
         Battle battle = new Battle(new Actor[]{player, spaelcaster}, 5);

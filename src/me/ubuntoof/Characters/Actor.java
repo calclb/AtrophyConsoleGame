@@ -6,11 +6,9 @@ import me.ubuntoof.Listeners.BattleInteractions;
 import me.ubuntoof.Modifiers.Ailment;
 import me.ubuntoof.Modifiers.StatModifier;
 import me.ubuntoof.Stats;
+import me.ubuntoof.Utils.Colorizer;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 public abstract class Actor implements BattleInteractions {
 
@@ -19,6 +17,7 @@ public abstract class Actor implements BattleInteractions {
     private ArrayList<StatModifier> statModifiers = new ArrayList<>();
     private Set<Integer> disabledActionIndex = new HashSet<>();
     private Set<Ailment> ailments = new HashSet<>();
+    protected final static Random random = new Random();
 
     private int level;
     private int exp;
@@ -143,7 +142,10 @@ public abstract class Actor implements BattleInteractions {
     public String toString() { return name; }
 
     // Interface overrides & other events/listeners
-    protected void onDamageTaken() {}
+    protected void onDamageTaken()
+    {
+        if(baseHealth <= 0) System.out.println(Colorizer.RED + Colorizer.REVERSE + Colorizer.BOLD + getName() + " has been eliminated." + Colorizer.RESET);
+    }
 
     @Override public void onBattleStarted(Battle battle) { this.battle = battle; }
 
@@ -156,6 +158,7 @@ public abstract class Actor implements BattleInteractions {
             if (sm.getDurationInTurns() == 0) statModifiers.remove(sm);
         }
 
+        // TODO find out why ConcurrentModificationException is thrown (Actor, line 161)
         for (Ailment ailment : ailments)
         {
             assert ailment.getDurationInTurns() >= 0;
