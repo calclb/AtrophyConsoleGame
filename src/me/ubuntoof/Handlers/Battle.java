@@ -60,6 +60,7 @@ public class Battle {
                 System.out.println(Colorizer.RESET + "\n" + Colorizer.REVERSE + Colorizer.LIGHT_GRAY + "[] " + actor.getName() + "'s turn." + Colorizer.RESET);
                 for(StatModifier sm : actor.getStatModifiers()) sm.decrementTurnsRemaining();
                 actor.onUserTurn();
+                if(!actor.isAlive()) System.out.println(Colorizer.RED + Colorizer.REVERSE + Colorizer.BOLD + actor.getName() + " has been eliminated." + Colorizer.RESET);
                 try {Thread.sleep(900); } catch(InterruptedException e) { e.printStackTrace(); }
             }
 

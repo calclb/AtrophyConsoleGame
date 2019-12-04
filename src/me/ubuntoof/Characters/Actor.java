@@ -64,7 +64,6 @@ public abstract class Actor implements BattleInteractions {
         else dmg -= getDefense();
 
         baseHealth -= dmg;
-        onDamageTaken();
         return dmg;
     }
 
@@ -74,10 +73,13 @@ public abstract class Actor implements BattleInteractions {
         if(trueDamage)
         {
             baseHealth -= dmg;
-            onDamageTaken();
         }
         else takeDamage(dmg);
         return dmg;
+    }
+
+    public void onDamageTaken() {
+
     }
 
     // Stat-related methods
@@ -141,29 +143,24 @@ public abstract class Actor implements BattleInteractions {
 
     public String toString() { return name; }
 
-    // Interface overrides & other events/listeners
-    protected void onDamageTaken()
-    {
-        if(baseHealth <= 0) System.out.println(Colorizer.RED + Colorizer.REVERSE + Colorizer.BOLD + getName() + " has been eliminated." + Colorizer.RESET);
-    }
-
     @Override public void onBattleStarted(Battle battle) { this.battle = battle; }
 
     @Override public void onGlobalTurnEnded() {
 
-        for (int i = 0; i < statModifiers.size(); i++)
+        for (Iterator<StatModifier> it = statModifiers.iterator(); it.hasNext(); )
         {
-            StatModifier sm = statModifiers.get(i);
+            StatModifier sm = it.next();
             assert sm.getDurationInTurns() >= 0;
             if (sm.getDurationInTurns() == 0) statModifiers.remove(sm);
         }
 
-        // TODO find out why ConcurrentModificationException is thrown (Actor, line 161)
-        for (Ailment ailment : ailments)
+
+        for (Iterator<Ailment> it = ailments.iterator(); it.hasNext(); )
         {
+            Ailment ailment = it.next();
             assert ailment.getDurationInTurns() >= 0;
             ailment.applyEffects(this);
-            if (ailment.getDurationInTurns() == 0) ailments.remove(ailment);
+            if (ailment.getDurationInTurns() == 0) it.remove();
         }
     }
 }

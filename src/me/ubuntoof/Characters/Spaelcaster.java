@@ -18,7 +18,7 @@ public class Spaelcaster extends Actor {
 
         @Override public void commit(Actor user, Actor target) {
 
-            Poison poison = new Poison(3);
+            Poison poison = new Poison(5);
             System.out.println(user + " used " + getName() + " on " + (target == user ? "itself" : target.getName()) + ", afflicting " + poison.getName() + " for " + poison.getDurationInTurns() + " turns.");
             target.getAilments().add(poison);
         }
