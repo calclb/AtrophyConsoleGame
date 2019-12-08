@@ -59,6 +59,7 @@ public class Player extends Actor {
         this.exp += expToAdd;
         if(exp >= expTillNextLevel)
         {
+            exp = 0;
             levelUp();
             System.out.println(Colorizer.LIGHT_YELLOW + Colorizer.BOLD + getName() + Colorizer.RESET + Colorizer.LIGHT_YELLOW + " leveled up to Lv. " + getLevel() + "!");
         }
