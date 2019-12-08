@@ -26,11 +26,11 @@ public class TextFormatter {
         }
     }
 
-    public static String formatAction(ActionType type, String name, String description) { return "(" + type + ") " + name + " - " + description; }
+    public static String formatAction(ActionType type, String name, String description) { return "(" + type + ") " + name + " ― " + description; }
 
     public static String formatAilment(String i, String n, String d) { return i; }
 
-    public static String formatStat(Stats stat) { return "[" + stat.getIcon() + "] " + stat.getName() + " - " + stat.getDescription(); }
+    public static String formatStat(Stats stat) { return "[" + stat.getIcon() + "] " + stat.getName() + " ― " + stat.getDescription(); }
 
     public static String formatAsProgressBar(int base, int max, int barLength)
     {

@@ -4,6 +4,7 @@ import me.ubuntoof.Actions.Action;
 import me.ubuntoof.Actions.Action.ActionType;
 import me.ubuntoof.Handlers.Battle;
 import me.ubuntoof.Modifiers.Ailment;
+import me.ubuntoof.Modifiers.Ailments.Paralysis;
 import me.ubuntoof.Modifiers.Ailments.Poison;
 import me.ubuntoof.Modifiers.StatModifier;
 import me.ubuntoof.Stats;
@@ -19,23 +20,42 @@ public class Spaelcaster extends Actor {
         @Override public void commit(Actor user, Actor target) {
 
             Poison poison = new Poison(5);
-            System.out.println(user + " used " + getName() + " on " + (target == user ? "itself" : target.getName()) + ", afflicting " + poison.getName() + " for " + poison.getDurationInTurns() + " turns.");
+            System.out.println(user + " used " + getName() + " on " + (target == user ? "itself" : target.getName()) + ", afflicting " + poison.name + Colorizer.RESET + " for " + poison.getDurationInTurns() + " turns.");
             target.getAilments().add(poison);
         }
     };
 
-    private static Action a2 = new Action(ActionType.STATUS, "Rejuvenate", "Heals target health by user's Strength.", true, false) {
+    private static Action a2 = new Action(ActionType.ATTACK, "Sting", "Deals damage equal to user's speed, and has a chance of Paralyzing the target.", false, true) {
+
+        @Override public void commit(Actor user, Actor target) {
+
+            int dmg = target.takeDamage(user.getSpeed());
+            boolean doesParalysisApply = random.nextInt(5) < 2;
+
+            System.out.print(user + " used " + getName() + " on " + (target == user ? "itself" : target.getName()) + ", dealing " + Colorizer.RED + dmg + Colorizer.RESET + " damage"
+                    + (doesParalysisApply ? "" : ".\n"));
+
+            if(doesParalysisApply)
+            {
+                Paralysis paralysis = new Paralysis(3);
+                System.out.println(" and inflicting " + paralysis.name + Colorizer.RESET + " for " + paralysis.getDurationInTurns() + " turns.");
+                target.getAilments().add(paralysis);
+            }
+        }
+    };
+
+
+    private static Action a3 = new Action(ActionType.STATUS, "Rejuvenate", "Heals target health by user's Strength.", true, false) {
 
         @Override public void commit(Actor user, Actor target)
         {
             target.setBaseHealth(target.getHealth() + user.getStrength());
-            System.out.println(user + " used " + a2.getName() + " on " + (target == user ? "itself" : target.getName()) + ", healing "
+            System.out.println(user + " used " + getName() + " on " + (target == user ? "itself" : target.getName()) + ", healing "
                     + Colorizer.GREEN + user.getLevel()/2 + Colorizer.RESET + " health.");
-            // TODO use listeners to reduce damage
         }
     };
 
-    private static Action[] actions = new Action[]{a1, a2};
+    private static Action[] actions = new Action[]{a1, a2, a3};
 
     public Spaelcaster(int level) {
 
@@ -58,7 +78,8 @@ public class Spaelcaster extends Actor {
         if(action.isSupportive()) potentialTargets = getBattle().getFriendlies(this);
         else potentialTargets = getBattle().getOpposition(this);
 
-        Actor target = potentialTargets[random.nextInt(potentialTargets.length)];
+        Actor target;
+        do {target = potentialTargets[random.nextInt(potentialTargets.length)]; } while(!target.isAlive());
 
         doAction(action, target);
     }

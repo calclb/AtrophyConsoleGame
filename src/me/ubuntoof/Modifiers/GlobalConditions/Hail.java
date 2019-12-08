@@ -8,11 +8,7 @@ public class Hail extends GlobalCondition {
 
     public Hail()
     {
-        super(4);
-        icon = Colorizer.LIGHT_BLUE + "❄";
-        name = "Hail";
-        description = "Deals 1/16 of a combatant's health as damage.";
-
+        super(Colorizer.LIGHT_BLUE + "❄", Colorizer.LIGHT_BLUE + "Hail", "Deals 1/16 of a combatant's health as damage.", 4);
         System.out.println(Colorizer.BOLD + Colorizer.LIGHT_BLUE + icon + " Hail begins to pelt the combatants." + Colorizer.RESET);
     }
 
@@ -26,5 +22,10 @@ public class Hail extends GlobalCondition {
         }
 
         decrementTurnsRemaining();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof Hail;
     }
 }

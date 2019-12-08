@@ -5,9 +5,9 @@ import me.ubuntoof.Utils.TextFormatter;
 
 public abstract class Ailment extends Decrementable {
 
-    protected String icon;
-    protected String name;
-    protected String description;
+    public final String icon;
+    public final String name;
+    public final String description;
 
     protected Ailment(String icon, String name, String description, boolean permanent)
     {
@@ -27,11 +27,9 @@ public abstract class Ailment extends Decrementable {
         setDurationInTurns(duration);
     }
 
-    public String getIcon() { return icon; }
-    public String getName() { return name; }
-    public String getDescription() { return description; }
-
     public abstract void applyEffects(Actor target);
 
     public String toString() { return TextFormatter.formatAilment(icon, name, description); }
+
+    @Override public abstract boolean equals(Object o);
 }

@@ -5,6 +5,7 @@ import me.ubuntoof.Handlers.Battle;
 import me.ubuntoof.Listeners.BattleInteractions;
 import me.ubuntoof.Modifiers.Ailment;
 import me.ubuntoof.Modifiers.StatModifier;
+import me.ubuntoof.Passives.Passive;
 import me.ubuntoof.Stats;
 import me.ubuntoof.Utils.Colorizer;
 
@@ -13,6 +14,7 @@ import java.util.*;
 public abstract class Actor implements BattleInteractions {
 
     private Action[] actions;
+    //private Passive passive; TODO add passives
     private Battle battle;
     private ArrayList<StatModifier> statModifiers = new ArrayList<>();
     private Set<Integer> disabledActionIndex = new HashSet<>();
@@ -20,9 +22,11 @@ public abstract class Actor implements BattleInteractions {
     protected final static Random random = new Random();
 
     private int level;
+    public final int expValue;
     private int exp;
     private String name;
     private boolean eligibleToAct = true;
+    private boolean eliminated = false;
 
     private int baseMaxHealth;
     private int baseHealth;
@@ -36,11 +40,21 @@ public abstract class Actor implements BattleInteractions {
         this.name = name;
         this.actions = actions;
         this.level = level;
+        this.expValue = level/2;
+        exp = 0;
+    }
+
+    public Actor(String name, Action[] actions, int level, int expValue)
+    {
+        this.name = name;
+        this.actions = actions;
+        this.level = level;
+        this.expValue = expValue;
         exp = 0;
     }
 
     public int getLevel() { return level; }
-    public int addExp(int expToAdd) { this.exp += expToAdd; return exp; }
+    public void levelUp() { level++; }
     public String getName() { return name; }
 
 
@@ -145,16 +159,24 @@ public abstract class Actor implements BattleInteractions {
 
     @Override public void onBattleStarted(Battle battle) { this.battle = battle; }
 
+    @Override public void onTurnChanged() {
+        handleElimination();
+    }
+
     @Override public void onGlobalTurnEnded() {
 
         for (Iterator<StatModifier> it = statModifiers.iterator(); it.hasNext(); )
         {
             StatModifier sm = it.next();
             assert sm.getDurationInTurns() >= 0;
-            if (sm.getDurationInTurns() == 0) statModifiers.remove(sm);
+            if (sm.getDurationInTurns() == 0) it.remove();
         }
 
+        handleElimination();
+    }
 
+    @Override public void onActorTurn()
+    {
         for (Iterator<Ailment> it = ailments.iterator(); it.hasNext(); )
         {
             Ailment ailment = it.next();
@@ -162,5 +184,25 @@ public abstract class Actor implements BattleInteractions {
             ailment.applyEffects(this);
             if (ailment.getDurationInTurns() == 0) it.remove();
         }
+
+        handleElimination();
+
+        if(!eligibleToAct)
+        {
+            System.out.println(Colorizer.RESET + getName() + " cannot move.");
+            if(!eligibleToAct) eligibleToAct = true;
+        } else onUserTurn();
+    }
+
+    protected abstract void onUserTurn();
+
+    private void handleElimination()
+    {
+        if (!isAlive() && !eliminated)
+        {
+            System.out.println(Colorizer.RED + Colorizer.REVERSE + Colorizer.BOLD + name + " has been eliminated." + Colorizer.RESET);
+            eliminated = true;
+        }
     }
 }
+

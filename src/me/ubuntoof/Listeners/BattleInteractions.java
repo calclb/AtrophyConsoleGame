@@ -5,10 +5,12 @@ import me.ubuntoof.Handlers.Battle;
 public interface BattleInteractions {
 
     void onBattleStarted(Battle battle);
-    void onUserTurn();
+    void onActorTurn();
     default void onGlobalTurnStarted() {}
     default void onGlobalTurnEnded() {}
     default void onBattleEnded() {}
+
+    void onTurnChanged();
 
     default void onAnyoneHealed() {}
     default void onAnyoneAttacked() {}

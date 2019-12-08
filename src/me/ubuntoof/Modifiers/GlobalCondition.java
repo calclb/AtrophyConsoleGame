@@ -4,23 +4,27 @@ import me.ubuntoof.Characters.Actor;
 
 public abstract class GlobalCondition extends Decrementable {
 
-    protected String icon;
-    protected String name;
-    protected String description;
+    public final String icon;
+    public final String name;
+    public final String description;
 
-    protected GlobalCondition()
+    protected GlobalCondition(String icon, String name, String description)
     {
+        this.icon = icon;
+        this.name = name;
+        this.description = description;
         setPermanent();
     }
 
-    protected GlobalCondition(int duration)
+    protected GlobalCondition(String icon, String name, String description, int duration)
     {
-       setDurationInTurns(duration);
+        this.icon = icon;
+        this.name = name;
+        this.description = description;
+        setDurationInTurns(duration);
     }
 
     public abstract void applyEffects(Actor[] targets);
 
-    public String getIcon() { return icon; }
-    public String getName() { return name; }
-    public String getDescription() { return description; }
+    @Override public abstract boolean equals(Object o);
 }

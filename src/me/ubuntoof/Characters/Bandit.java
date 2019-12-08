@@ -54,7 +54,8 @@ public class Bandit extends Actor {
         if(action.isSupportive()) potentialTargets = getBattle().getFriendlies(this);
         else potentialTargets = getBattle().getOpposition(this);
 
-        Actor target = potentialTargets[random.nextInt(potentialTargets.length)];
+        Actor target;
+        do {target = potentialTargets[random.nextInt(potentialTargets.length)]; } while(!target.isAlive());
 
         doAction(action, target);
     }

@@ -1,9 +1,7 @@
 package me.ubuntoof.Handlers;
 
 import me.ubuntoof.Actions.*;
-import me.ubuntoof.Characters.Actor;
-import me.ubuntoof.Characters.Player;
-import me.ubuntoof.Characters.Spaelcaster;
+import me.ubuntoof.Characters.*;
 import me.ubuntoof.Utils.Colorizer;
 import me.ubuntoof.Utils.TextFormatter;
 import me.ubuntoof.Utils.UserInputReader;
@@ -52,10 +50,11 @@ public class AdventureHandler {
 
         TextFormatter.imitatePrinting(strings, delays);
 
-        Player player = new Player(playerName, new Action[]{new Bop(), new Combah(), new Panic(), new EsophagealBurn()}, 50);
+        Player player = new Player(playerName, new Action[]{new Bop(), new Combah(), new Panic(), new EsophagealBurn(), new Taze()}, 20);
         Spaelcaster spaelcaster = new Spaelcaster(30);
+        Bandit bandit = new Bandit(30);
 
-        Battle battle = new Battle(new Actor[]{player, spaelcaster}, 5);
+        Battle battle = new Battle(new Actor[]{player, spaelcaster, bandit}, 5);
         battle.startBattle();
     }
 

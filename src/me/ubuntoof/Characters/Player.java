@@ -2,11 +2,13 @@ package me.ubuntoof.Characters;
 
 import me.ubuntoof.Actions.*;
 import me.ubuntoof.Utils.Colorizer;
+import me.ubuntoof.Utils.TextFormatter;
 import me.ubuntoof.Utils.UserInputReader;
 
 public class Player extends Actor {
 
     int exp = 0;
+    int expTillNextLevel;
     private Action using;
     private Actor targetActor;
 
@@ -15,8 +17,9 @@ public class Player extends Actor {
 
         setBaseMaxHealth(10 + level);
         setBaseHealth(getBaseMaxHealth());
-        setBaseStrength((int)(4 + Math.sqrt(level)));
-        setBaseSpeed((int)(4 + Math.sqrt(level)));
+        setBaseStrength((int)(5 + Math.sqrt(level) + level/3));
+        setBaseSpeed((int)(5 + Math.sqrt(level) + level/3));
+        expTillNextLevel = level;
     }
 
     public static Action[] getDefaultActions() { return new Action[]{new Bop()}; }
@@ -30,11 +33,39 @@ public class Player extends Actor {
     @Override
     public void onGlobalTurnStarted()
     {
-        promptUser();
+        if(isAlive()) promptUser();
     }
 
     @Override
     public void onBattleEnded()
+    {
+        int gainedExp = 0;
+
+        for(Actor actor : getBattle().getOpposition(this)) gainedExp += actor.expValue;
+
+        addExp(gainedExp);
+
+        System.out.println(Colorizer.WHITE + getName() + Colorizer.LIGHT_GRAY + " (Lv. " + getLevel() + ") " +
+                Colorizer.GRAY + Colorizer.REVERSE + "[" + Colorizer.RESET +
+                TextFormatter.formatAsProgressBar("", exp, expTillNextLevel, 20, Colorizer.LIGHT_BLUE + "▰", Colorizer.BLUE + "▱") +
+                Colorizer.GRAY + Colorizer.REVERSE + "]" + Colorizer.RESET + Colorizer.BOLD + Colorizer.CYAN + " +" + gainedExp + " XP" + Colorizer.RESET);
+
+
+    }
+
+
+    public int addExp(int expToAdd)
+    {
+        this.exp += expToAdd;
+        if(exp >= expTillNextLevel)
+        {
+            levelUp();
+            System.out.println(Colorizer.LIGHT_YELLOW + Colorizer.BOLD + getName() + Colorizer.RESET + Colorizer.LIGHT_YELLOW + " leveled up to Lv. " + getLevel() + "!");
+        }
+        return exp;
+    }
+
+    public void levelUp()
     {
 
     }

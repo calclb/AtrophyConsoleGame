@@ -55,7 +55,7 @@ public class Goblin extends Actor {
         else potentialTargets = getBattle().getOpposition(this);
 
         if(action == a2) target = this;
-        else target = potentialTargets[random.nextInt(potentialTargets.length)];
+        else do {target = potentialTargets[random.nextInt(potentialTargets.length)]; } while(!target.isAlive());
 
         doAction(action, target);
 
