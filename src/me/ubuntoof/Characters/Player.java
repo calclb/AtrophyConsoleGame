@@ -52,6 +52,7 @@ public class Player extends Actor {
 
         addExp(gainedExp);
 
+        // TODO fix improper progress bar for exp
         System.out.println(Colorizer.WHITE + getName() + Colorizer.LIGHT_GRAY + " (Lv. " + getLevel() + ") " +
                 Colorizer.GRAY + Colorizer.REVERSE + "[" + Colorizer.RESET +
                 TextFormatter.formatAsProgressBar("", exp, expTillNextLevel, 20, Colorizer.LIGHT_BLUE + "▰", Colorizer.GRAY + "▱") +
