@@ -5,6 +5,8 @@ import me.ubuntoof.Utils.Colorizer;
 import me.ubuntoof.Utils.TextFormatter;
 import me.ubuntoof.Utils.UserInputReader;
 
+import java.util.ArrayList;
+
 public class Player extends Actor {
 
     int exp = 0;
@@ -33,7 +35,12 @@ public class Player extends Actor {
     @Override
     public void onGlobalTurnStarted()
     {
-        if(isAlive()) promptUser();
+        Colorizer.clear();
+        if(isAlive())
+        {
+            getBattle().displayGlobalBattle(this);
+            promptUser();
+        }
     }
 
     @Override
@@ -47,7 +54,7 @@ public class Player extends Actor {
 
         System.out.println(Colorizer.WHITE + getName() + Colorizer.LIGHT_GRAY + " (Lv. " + getLevel() + ") " +
                 Colorizer.GRAY + Colorizer.REVERSE + "[" + Colorizer.RESET +
-                TextFormatter.formatAsProgressBar("", exp, expTillNextLevel, 20, Colorizer.LIGHT_BLUE + "▰", Colorizer.BLUE + "▱") +
+                TextFormatter.formatAsProgressBar("", exp, expTillNextLevel, 20, Colorizer.LIGHT_BLUE + "▰", Colorizer.GRAY + "▱") +
                 Colorizer.GRAY + Colorizer.REVERSE + "]" + Colorizer.RESET + Colorizer.BOLD + Colorizer.CYAN + " +" + gainedExp + " XP" + Colorizer.RESET);
 
 
@@ -56,23 +63,20 @@ public class Player extends Actor {
 
     public int addExp(int expToAdd)
     {
-        this.exp += expToAdd;
+        exp += expToAdd;
         if(exp >= expTillNextLevel)
         {
-            exp = 0;
+            exp =- expTillNextLevel;
             levelUp();
+            expTillNextLevel = getLevel();
             System.out.println(Colorizer.LIGHT_YELLOW + Colorizer.BOLD + getName() + Colorizer.RESET + Colorizer.LIGHT_YELLOW + " leveled up to Lv. " + getLevel() + "!");
         }
         return exp;
     }
 
-    public void levelUp()
-    {
-
-    }
-
     private void promptUser()
     {
+
         using = null;
         boolean validActionIndex = false;
         boolean erroneousInput = false;
@@ -128,7 +132,7 @@ public class Player extends Actor {
             if(!erroneousInput) System.out.println(Colorizer.UNDERLINE + "Select an intended target" + Colorizer.RESET + ": ");
             erroneousInput = false;
 
-            Actor[] combatants = getBattle().getCombatants();
+            ArrayList<Actor> combatants = getBattle().getCombatants();
 
             String uinput = UserInputReader.getResponse().toLowerCase();
 
@@ -155,7 +159,7 @@ public class Player extends Actor {
             {
                 try
                 {
-                    targetActor = combatants[Integer.parseInt(uinput)];
+                    targetActor = combatants.get(Integer.parseInt(uinput));
                     validTarget = true;
                 }
                 catch (Exception e)

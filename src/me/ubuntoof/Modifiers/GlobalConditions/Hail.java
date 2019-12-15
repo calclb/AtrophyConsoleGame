@@ -17,10 +17,11 @@ public class Hail extends GlobalCondition {
         for(Actor actor : targets) if(actor.isAlive())
         {
             int dmg = actor.takeDamage((int)Math.max(actor.getMaxHealth()/16d, 1), true);
-            System.out.println(Colorizer.LIGHT_BLUE + icon + " " + actor + " was buffeted by hail, taking " + Colorizer.RED + dmg + Colorizer.LIGHT_BLUE + " damage." + Colorizer.RESET);
+            System.out.println(icon + " " + actor.getAndFormatThisCombatantIndex() + " " + Colorizer.LIGHT_BLUE + actor.getName() + " was buffeted by hail, taking " + Colorizer.RED + dmg + Colorizer.LIGHT_BLUE + " damage." + Colorizer.RESET);
 
         }
 
+        if(getDurationInTurns() == 0) System.out.println(Colorizer.BOLD + Colorizer.LIGHT_BLUE + icon + " The hail subsided." + Colorizer.RESET);
         decrementTurnsRemaining();
     }
 

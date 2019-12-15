@@ -13,6 +13,6 @@ public class Bop extends Action {
     @Override
     public void commit(Actor user, Actor target) {
         int dmg = target.takeDamage(user.getStrength());
-        System.out.println(user + " used " + getName() + " on " + (target == user ? "itself" : target.getName()) + ", dealing " + Colorizer.RED + dmg + Colorizer.RESET + " damage.");
+        System.out.println(user + " used " + getName() + " on " + (target == user ? "itself" : target) + ", dealing " + Colorizer.RED + dmg + Colorizer.RESET + " damage.");
     }
 }

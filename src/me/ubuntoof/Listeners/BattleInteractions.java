@@ -5,7 +5,6 @@ import me.ubuntoof.Handlers.Battle;
 public interface BattleInteractions {
 
     void onBattleStarted(Battle battle);
-    void onActorTurn();
     default void onGlobalTurnStarted() {}
     default void onGlobalTurnEnded() {}
     default void onBattleEnded() {}

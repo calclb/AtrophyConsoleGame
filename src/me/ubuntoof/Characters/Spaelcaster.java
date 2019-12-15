@@ -20,7 +20,7 @@ public class Spaelcaster extends Actor {
         @Override public void commit(Actor user, Actor target) {
 
             Poison poison = new Poison(5);
-            System.out.println(user + " used " + getName() + " on " + (target == user ? "itself" : target.getName()) + ", afflicting " + poison.name + Colorizer.RESET + " for " + poison.getDurationInTurns() + " turns.");
+            System.out.println(user + " used " + getName() + " on " + (target == user ? "itself" : target) + ", afflicting " + poison.name + Colorizer.RESET + " for " + poison.getDurationInTurns() + " turns.");
             target.getAilments().add(poison);
         }
     };
@@ -32,7 +32,7 @@ public class Spaelcaster extends Actor {
             int dmg = target.takeDamage(user.getSpeed());
             boolean doesParalysisApply = random.nextInt(5) < 2;
 
-            System.out.print(user + " used " + getName() + " on " + (target == user ? "itself" : target.getName()) + ", dealing " + Colorizer.RED + dmg + Colorizer.RESET + " damage"
+            System.out.print(user + " used " + getName() + " on " + (target == user ? "itself" : target) + ", dealing " + Colorizer.RED + dmg + Colorizer.RESET + " damage"
                     + (doesParalysisApply ? "" : ".\n"));
 
             if(doesParalysisApply)
@@ -49,9 +49,10 @@ public class Spaelcaster extends Actor {
 
         @Override public void commit(Actor user, Actor target)
         {
-            target.setBaseHealth(target.getHealth() + user.getStrength());
-            System.out.println(user + " used " + getName() + " on " + (target == user ? "itself" : target.getName()) + ", healing "
-                    + Colorizer.GREEN + user.getLevel()/2 + Colorizer.RESET + " health.");
+            int healAmt = user.getStrength();
+            target.setBaseHealth(target.getHealth() + healAmt);
+            System.out.println(user + " used " + getName() + " on " + (target == user ? "itself" : target) + ", healing "
+                    + Colorizer.GREEN + healAmt + Colorizer.RESET + " health.");
         }
     };
 
@@ -68,7 +69,6 @@ public class Spaelcaster extends Actor {
         setBaseSpeed((int)(3 + Math.sqrt(level)));
     }
 
-    /* TODO Possible decision AI class? */
     @Override
     public void onUserTurn() {
 

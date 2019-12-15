@@ -18,7 +18,7 @@ public class Bandit extends Actor {
         @Override
         public void commit(Actor user, Actor target) {
             int dmg = target.takeDamage(Math.max(target.getMaxHealth() / 10, 1), true);
-            System.out.println(user + " used " + a1.getName() + " on " + (target == user ? "itself" : target.getName()) + ", dealing " + Colorizer.RED + dmg + Colorizer.RESET + " damage.");
+            System.out.println(user + " used " + getName() + " on " + (target == user ? "itself" : target) + ", dealing " + Colorizer.RED + dmg + Colorizer.RESET + " damage.");
         }
     };
 
@@ -29,7 +29,7 @@ public class Bandit extends Actor {
 
             double randResult = random.nextDouble();
             int dmg = target.takeDamage((int)((0.25d > randResult ? 2d : 1d) * Math.sqrt((user.getLevel() + 2d))));
-            System.out.println(user + " used " + a2.getName() + " on " + (target == user ? "itself" : target.getName()) + ", dealing " + Colorizer.RED + dmg + Colorizer.RESET + " damage.");
+            System.out.println(user + " used " + getName() + " on " + (target == user ? "itself" : target) + ", dealing " + Colorizer.RED + dmg + Colorizer.RESET + " damage.");
         }
     };
 

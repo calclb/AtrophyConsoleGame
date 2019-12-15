@@ -17,7 +17,7 @@ public class Goblin extends Actor {
         @Override public void commit(Actor user, Actor target) {
 
             int dmg = target.takeDamage((int)(user.getLevel() * 0.5d), false);
-            System.out.println(user + " used " + a1.getName() + " on " + (target == user ? "itself" : target.getName()) + ", dealing " + Colorizer.RED + dmg + Colorizer.RESET + " damage.");
+            System.out.println(user + " used " + getName() + " on " + (target == user ? "itself" : target) + ", dealing " + Colorizer.RED + dmg + Colorizer.RESET + " damage.");
         }
     };
 
@@ -26,7 +26,7 @@ public class Goblin extends Actor {
         @Override public void commit(Actor user, Actor target)
         {
 
-            System.out.println(user + " used " + a2.getName() + " on " + (target == user ? "itself" : target.getName()) + ", increasing defense by 50% until the next turn.");
+            System.out.println(user + " used " + getName() + " on " + (target == user ? "itself" : target) + ", increasing defense by 50% until the next turn.");
             user.getStatModifiers().add(new StatModifier(Stats.DEFENSE, 1.5d, 0));
             // TODO use listeners to reduce damage
         }

@@ -1,7 +1,7 @@
 package me.ubuntoof.Modifiers;
-public class Decrementable implements Comparable<Decrementable> {
+public abstract class Decrementable implements Comparable<Decrementable> {
 
-    public final int TILL_END_OF_TURN = 0;
+    public static final int TILL_END_OF_TURN = 0;
 
     private boolean isPermanent = false;
     private int durationInTurns = 0;

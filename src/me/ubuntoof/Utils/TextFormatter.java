@@ -47,12 +47,29 @@ public class TextFormatter {
 
     public static String formatAsProgressBar(String unit, int base, int max, int barLength, String onColor, String offColor)
     {
-        double healthPercentage = (double)base / max;
+        double percentage = (double)base / max;
         StringBuilder sb = new StringBuilder();
 
         for(int i = 1; i <= barLength; i++)
         {
-            sb.append(healthPercentage >= (double)i / barLength ? onColor : offColor);
+            sb.append(percentage >= (double)i / barLength ? onColor : offColor);
+            sb.append(unit);
+        }
+        return sb.toString();
+    }
+
+    public static String formatAsHealthBar(String unit, int base, int max, int barLength, String onString, String offString)
+    {
+
+        double healthPercentage = (double)base / max;
+        String on = (healthPercentage > 1d ? Colorizer.LIGHT_CYAN : healthPercentage > 0.5d ? Colorizer.GREEN : healthPercentage > 0.25d ? Colorizer.YELLOW : Colorizer.RED) + onString;
+        String off = Colorizer.GRAY + offString;
+
+        StringBuilder sb = new StringBuilder();
+
+        for(int i = 1; i <= barLength; i++)
+        {
+            sb.append(healthPercentage >= (double)i / barLength ? on : off);
             sb.append(unit);
         }
         return sb.toString();

@@ -2,12 +2,11 @@ package me.ubuntoof.Handlers;
 
 import me.ubuntoof.Actions.*;
 import me.ubuntoof.Characters.*;
+import me.ubuntoof.Passives.Inflame;
+import me.ubuntoof.Team;
 import me.ubuntoof.Utils.Colorizer;
 import me.ubuntoof.Utils.TextFormatter;
 import me.ubuntoof.Utils.UserInputReader;
-
-import javax.smartcardio.TerminalFactory;
-
 
 public class AdventureHandler {
 
@@ -22,14 +21,6 @@ public class AdventureHandler {
     public AdventureHandler(Areas area)
     {
         this.currentArea = area;
-    }
-
-    public void startBattle(Actor player, int enemies)
-    {
-        Actor[] friendlies = new Actor[1];
-        friendlies[0] = player;
-
-        Battle battle = new Battle(friendlies, enemies);
     }
 
     public void begin() {
@@ -50,11 +41,16 @@ public class AdventureHandler {
 
         TextFormatter.imitatePrinting(strings, delays);
 
-        Player player = new Player(playerName, new Action[]{new Bop(), new Combah(), new Panic(), new EsophagealBurn(), new Taze()}, 20);
+        Player player = new Player(playerName, new Action[]{new Bop(), new Combah(), new Panic(), new EsophagealBurn(), new Taze(), new Panacea()}, 20);
+        player.setPassive(new Inflame(player));
         Spaelcaster spaelcaster = new Spaelcaster(30);
-        Bandit bandit = new Bandit(30);
+        Druid druid = new Druid(30);
+        Player ally = new Player("Allydude", new Action[]{new Bop(), new Combah()}, 10);
 
-        Battle battle = new Battle(new Actor[]{player, spaelcaster, bandit}, 5);
+        Team playerTeam = new Team(new Actor[]{player, spaelcaster});
+        Team otherPlayerTeam = new Team(new Actor[]{ally, druid});
+
+        Battle battle = new Battle(new Team[]{playerTeam, otherPlayerTeam}, 4);
         battle.startBattle();
     }
 

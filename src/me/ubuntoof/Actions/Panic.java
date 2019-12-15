@@ -11,10 +11,11 @@ public class Panic extends Action {
     @Override
     public void commit(Actor user, Actor target)
     {
-        int targetIndex = random.nextInt(user.getBattle().getCombatants().length);
-        target = user.getBattle().getCombatants()[targetIndex];
+        // TODO only target living actors - implement getAliveCombatants()
+        int targetIndex = random.nextInt(user.getBattle().getLivingCombatants().size());
+        target = user.getBattle().getLivingCombatants().get(targetIndex);
         int dmg = target.takeDamage(random.nextInt(user.getLevel() + target.getLevel()));
-        System.out.println(user + " used " + getName() + " on " + (target == user ? "itself" : target.getName()) + ", dealing " + Colorizer.RED + dmg + Colorizer.RESET + " damage.");
+        System.out.println(user + " used " + getName() + " on " + (target == user ? "itself" : target) + ", dealing " + Colorizer.RED + dmg + Colorizer.RESET + " damage.");
 
     }
 }

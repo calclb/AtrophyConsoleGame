@@ -9,7 +9,7 @@ public abstract class Ailment extends Decrementable {
     public final String name;
     public final String description;
 
-    protected Ailment(String icon, String name, String description, boolean permanent)
+    public Ailment(String icon, String name, String description, boolean permanent)
     {
         this.icon = icon;
         this.name = name;
@@ -19,7 +19,7 @@ public abstract class Ailment extends Decrementable {
         else setDurationInTurns(0);
     }
 
-    protected Ailment(String icon, String name, String description, int duration)
+    public Ailment(String icon, String name, String description, int duration)
     {
         this.icon = icon;
         this.name = name;

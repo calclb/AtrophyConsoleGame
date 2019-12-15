@@ -2,6 +2,7 @@ package me.ubuntoof.Characters;
 
 import me.ubuntoof.Actions.Action;
 import me.ubuntoof.Handlers.Battle;
+import me.ubuntoof.Listeners.ActorInteractions;
 import me.ubuntoof.Listeners.BattleInteractions;
 import me.ubuntoof.Modifiers.Ailment;
 import me.ubuntoof.Modifiers.StatModifier;
@@ -11,19 +12,20 @@ import me.ubuntoof.Utils.Colorizer;
 
 import java.util.*;
 
-public abstract class Actor implements BattleInteractions {
+public abstract class Actor implements BattleInteractions, ActorInteractions {
 
     private Action[] actions;
-    //private Passive passive; TODO add passives
+    private Passive passive;
     private Battle battle;
     private ArrayList<StatModifier> statModifiers = new ArrayList<>();
-    private Set<Integer> disabledActionIndex = new HashSet<>();
+    private Set<ActorInteractions> actorInteractions = new HashSet<>();
+    private Set<Integer> disabledActionIndex = new HashSet<>(); // obsolete?
     private Set<Ailment> ailments = new HashSet<>();
     protected final static Random random = new Random();
 
     private int level;
     public final int expValue;
-    private int exp;
+    private int exp = 0;
     private String name;
     private boolean eligibleToAct = true;
     private boolean eliminated = false;
@@ -41,7 +43,6 @@ public abstract class Actor implements BattleInteractions {
         this.actions = actions;
         this.level = level;
         this.expValue = level/2;
-        exp = 0;
     }
 
     public Actor(String name, Action[] actions, int level, int expValue)
@@ -50,7 +51,6 @@ public abstract class Actor implements BattleInteractions {
         this.actions = actions;
         this.level = level;
         this.expValue = expValue;
-        exp = 0;
     }
 
     public int getLevel() { return level; }
@@ -63,6 +63,10 @@ public abstract class Actor implements BattleInteractions {
     // Action-related methods
     public Action[] getActions() { return actions; }
     protected void setAction(int index, Action action) { actions[index] = action; }
+    public Passive getPassive() { return passive; }
+    public void setPassive(Passive passive) { this.passive = passive; }
+
+    public Set<ActorInteractions> getActorInteractions() { return actorInteractions; }
 
     // going to transition to the upper method
     public void doAction(Action action, Actor primaryTarget) { action.commit(this, primaryTarget); }
@@ -119,7 +123,9 @@ public abstract class Actor implements BattleInteractions {
 
     public int getHealth()
     {
-        return baseHealth;
+        double mod = 1d;
+        for(StatModifier sm : statModifiers) if(sm.getModifierType() == Stats.HEALTH) mod *= sm.getMultiplier();
+        return (int)(mod * baseHealth);
     }
 
     public int getStrength()
@@ -155,7 +161,7 @@ public abstract class Actor implements BattleInteractions {
     public Set<Ailment> getAilments() { return ailments; }
     public ArrayList<StatModifier> getStatModifiers() { return statModifiers; }
 
-    public String toString() { return name; }
+    public String toString() { return getAndFormatThisCombatantIndex() + " " + Colorizer.RESET + name; }
 
     @Override public void onBattleStarted(Battle battle) { this.battle = battle; }
 
@@ -200,9 +206,14 @@ public abstract class Actor implements BattleInteractions {
     {
         if (!isAlive() && !eliminated)
         {
-            System.out.println(Colorizer.RED + Colorizer.REVERSE + Colorizer.BOLD + name + " has been eliminated." + Colorizer.RESET);
+            System.out.println(Colorizer.RED + Colorizer.REVERSE + Colorizer.BOLD + "\uD83D\uDC80 " + name + " has been eliminated." + Colorizer.RESET);
             eliminated = true;
         }
+    }
+
+    public String getAndFormatThisCombatantIndex()
+    {
+        return Colorizer.ITALIC + Colorizer.GRAY + "[" + getBattle().getCombatantIndex(this) + "]" + Colorizer.RESET;
     }
 }
 

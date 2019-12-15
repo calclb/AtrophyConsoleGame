@@ -17,9 +17,8 @@ public class Combah extends Action {
         int hits = random.nextInt(3) + 1;
         int dmg;
 
-        System.out.print(user + " used " + getName() + " on " + (target == user ? "itself" : target.getName()) + ", hitting " + hits + " time" + (hits == 1 ? "" : "s") + " for ");
+        System.out.print(user + " used " + getName() + " on " + (target == user ? "itself" : target) + ", hitting " + hits + " time" + (hits == 1 ? "" : "s") + " for ");
 
-        // TODO fix
         for(int i = 1; i <= hits; i++)
         {
             dmg = target.takeDamage(Math.max(((user.getStrength() + random.nextInt(user.getStrength()/4) - user.getStrength()/4) / 2), 1));
