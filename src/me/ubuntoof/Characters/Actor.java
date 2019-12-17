@@ -79,7 +79,7 @@ public abstract class Actor implements BattleInteractions, ActorInteractions {
     public int takeDamage(int dmg)
     {
         if(dmg < getArmor()) dmg = 0;
-        else dmg -= getDefense();
+        else dmg = Math.max(dmg - getDefense(), 0);
 
         baseHealth -= dmg;
         return dmg;
@@ -183,7 +183,7 @@ public abstract class Actor implements BattleInteractions, ActorInteractions {
 
     @Override public void onActorTurn()
     {
-        for (Iterator<Ailment> it = ailments.iterator(); it.hasNext(); )
+        if(!eliminated) for (Iterator<Ailment> it = ailments.iterator(); it.hasNext(); )
         {
             Ailment ailment = it.next();
             assert ailment.getDurationInTurns() >= 0;
@@ -191,7 +191,7 @@ public abstract class Actor implements BattleInteractions, ActorInteractions {
             if (ailment.getDurationInTurns() == 0) it.remove();
         }
 
-        handleElimination();
+        if(handleElimination()) return;
 
         if(!eligibleToAct)
         {
@@ -202,13 +202,14 @@ public abstract class Actor implements BattleInteractions, ActorInteractions {
 
     protected abstract void onUserTurn();
 
-    private void handleElimination()
+    private boolean handleElimination()
     {
         if (!isAlive() && !eliminated)
         {
             System.out.println(Colorizer.RED + Colorizer.REVERSE + Colorizer.BOLD + "\uD83D\uDC80 " + name + " has been eliminated." + Colorizer.RESET);
             eliminated = true;
         }
+        return eliminated;
     }
 
     public String getAndFormatThisCombatantIndex()

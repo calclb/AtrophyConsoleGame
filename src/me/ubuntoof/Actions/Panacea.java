@@ -7,6 +7,8 @@ import me.ubuntoof.Utils.Colorizer;
 
 public class Panacea extends Action {
 
+
+    // TODO cooldowns
     int cooldownInTurns = 0;
 
     public Panacea() {
@@ -17,7 +19,7 @@ public class Panacea extends Action {
     public void commit(Actor user, Actor target) {
         if(cooldownInTurns != 0)
         {
-            System.out.println(user + " attempted to use " + getName() + " , but it had no effect. " +
+            System.out.println(user + " attempted to use " + getName() + ", but it had no effect. " +
                     Colorizer.ITALIC + Colorizer.GRAY + "(On cooldown for " + cooldownInTurns + " turns.)" + Colorizer.RESET);
             return;
         }

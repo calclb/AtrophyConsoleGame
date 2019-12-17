@@ -11,7 +11,6 @@ public class Panic extends Action {
     @Override
     public void commit(Actor user, Actor target)
     {
-        // TODO only target living actors - implement getAliveCombatants()
         int targetIndex = random.nextInt(user.getBattle().getLivingCombatants().size());
         target = user.getBattle().getLivingCombatants().get(targetIndex);
         int dmg = target.takeDamage(random.nextInt(user.getLevel() + target.getLevel()));

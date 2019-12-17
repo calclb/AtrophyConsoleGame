@@ -41,14 +41,15 @@ public class AdventureHandler {
 
         TextFormatter.imitatePrinting(strings, delays);
 
-        Player player = new Player(playerName, new Action[]{new Bop(), new Combah(), new Panic(), new EsophagealBurn(), new Taze(), new Panacea()}, 20);
+         Player player = new Player(playerName, new Action[]{new Combah(), new Panic(), new Panacea(), new Taze()}, 50);
         player.setPassive(new Inflame(player));
+
         Spaelcaster spaelcaster = new Spaelcaster(30);
         Druid druid = new Druid(30);
-        Player ally = new Player("Allydude", new Action[]{new Bop(), new Combah()}, 10);
+        //Player player2 = new Player("someotherguy", new Action[]{new Bop(), new Combah(), new Panic(), new EsophagealBurn(), new Taze(), new Panacea()}, 25);
 
-        Team playerTeam = new Team(new Actor[]{player, spaelcaster});
-        Team otherPlayerTeam = new Team(new Actor[]{ally, druid});
+        Team playerTeam = new Team(new Actor[]{spaelcaster, new Goblin(15), new Bandit(100)});
+        Team otherPlayerTeam = new Team(new Actor[]{druid, player});
 
         Battle battle = new Battle(new Team[]{playerTeam, otherPlayerTeam}, 4);
         battle.startBattle();

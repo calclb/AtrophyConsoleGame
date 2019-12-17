@@ -103,14 +103,16 @@ public class Battle {
 
         do
         {
-
             sortActorsBySpeed(combatants, false);
             turn++;
             for(BattleInteractions bi : battleInteractionsListeners) bi.onGlobalTurnStarted();
 
+            int playersLeft = 0;
+            for(Actor actor : combatants) if(actor instanceof Player && actor.isAlive()) playersLeft++;
+            if(playersLeft == 0) displayGlobalBattle();
+
             for(Actor actor : combatants) if(actor.isAlive())
             {
-
                 System.out.println(Colorizer.RESET + "\n" + Colorizer.REVERSE + Colorizer.LIGHT_GRAY + "[" + getCombatantIndex(actor) + "] " + actor.getName() + "'s turn." + Colorizer.RESET);
                 for(StatModifier sm : actor.getStatModifiers()) sm.decrementTurnsRemaining();
                 actor.onActorTurn();
@@ -122,8 +124,8 @@ public class Battle {
 
             System.out.println();
 
-            if(!battleEnded) {
-
+            if(!battleEnded)
+            {
                 // used for global conditions
                 Actor[] tempCombatantsArray = new Actor[combatants.size()];
                 for(int i = 0; i < combatants.size(); i++) tempCombatantsArray[i] = combatants.get(i);
@@ -143,8 +145,6 @@ public class Battle {
 
         } while(checkCombatantSidesAreAlive());
 
-        for(BattleInteractions bi : battleInteractionsListeners) bi.onBattleEnded();
-
         Team winningTeam = getTeamOf(getLivingCombatants().get(0));
         int teamsLeft = 1;
         for(Actor a : getLivingCombatants())
@@ -153,17 +153,24 @@ public class Battle {
             if(!(aTeam == winningTeam)) teamsLeft++;
         }
 
-        Colorizer.printDivider(60);
+        Colorizer.printDivider(80);
         if(teamsLeft == 1)
         {
             System.out.println(Colorizer.RESET + Colorizer.BOLD + Colorizer.YELLOW + "\n\uD83D\uDD31" + Colorizer.RESET +
                     winningTeam.format + " Team " + winningTeam + " emerged victorious!" + Colorizer.RESET);
             for(Actor oa : winningTeam.originalActors) System.out.println(Colorizer.RESET + " - " + oa);
+
+            System.out.println();
+            Colorizer.printSubdivider(50);
+            System.out.println();
+
+            for(BattleInteractions bi : battleInteractionsListeners) bi.onBattleEnded();
+
         } else System.out.println(Colorizer.RED + "Something went wrong; battle ended with " + teamsLeft + " teams remaining.");
-        Colorizer.printDivider(60);
+        Colorizer.printDivider(80);
     }
 
-    // Selection sorting algo which orders actors by speed
+    // Selection sorting algorithm which orders actors by speed
     private void sortActorsBySpeed(ArrayList<Actor> actorsToSort, boolean isAscending)
     {
         int index; // used to index the 'temporary' Actor before replacement
@@ -174,11 +181,10 @@ public class Battle {
 
             for(int j = i + 1; j < actorsToSort.size(); j++) // retrieves the next element(s)
             {
-                if(isAscending)
+                if(!isAscending)
                 {
-                    if (actorsToSort.get(i).getSpeed() > actorsToSort.get(j).getSpeed()) index = j;
-                } else if (actorsToSort.get(i).getSpeed() < actorsToSort.get(j).getSpeed()) index = j;
-
+                    if (actorsToSort.get(index).getSpeed() < actorsToSort.get(j).getSpeed()) index = j;
+                } else if (actorsToSort.get(index).getSpeed() > actorsToSort.get(j).getSpeed()) index = j;
             }
 
             Actor temp = actorsToSort.get(index); // exists for storing the actor whose index is going to be replaced in the selection sort
@@ -269,6 +275,12 @@ public class Battle {
         return false;
     }
 
+    public Team generateTeam(int actors, double difficulty)
+    {
+        Team team = new Team(createEnemies(actors));
+        return team;
+    }
+
     private Actor[] createEnemies(int count)
     {
         Random r = new Random();
@@ -276,10 +288,9 @@ public class Battle {
 
         for(int i = 0; i < count; i++)
         {
-            enemies[i] = matchEnemyIndex(r.nextInt(4)); // EnemyTypes.variants
+            enemies[i] = matchEnemyIndex(r.nextInt(4));
         }
         return enemies;
-
     }
 
     // Potential source of NPE
@@ -298,7 +309,7 @@ public class Battle {
 
     // new Arraylist is returned to prevent clients from adding or removing actors directly to/from the battle
     public ArrayList<Actor> getCombatants() { return new ArrayList<>(combatants); }
-    // TODO figure out if this is needed
+
     public ArrayList<Actor> getLivingCombatants()
     {
         ArrayList<Actor> livingCombatants = new ArrayList<>();
@@ -329,7 +340,7 @@ public class Battle {
             {
                 // require all actors to be added to combatants arraylist before teams
                 assert i + cumulativeIndexesPassed <= cumulativeSizeOfOpposition;
-                opposition[i + cumulativeIndexesPassed] = t.getActors().get(i); // TODO fix
+                opposition[i + cumulativeIndexesPassed] = t.getActors().get(i);
             }
             cumulativeIndexesPassed += t.size();
         }
@@ -352,26 +363,4 @@ public class Battle {
         try {Thread.sleep(900); } catch(InterruptedException e) { e.printStackTrace(); }
     }
     private void doNotablePause() { try {Thread.sleep(2000); } catch(InterruptedException e) { e.printStackTrace(); } }
-}
-
-// obsolete
-enum EnemyTypes
-{
-    GOBLIN(Goblin.class),
-    BANDIT(Bandit.class),
-    SPAELCASTER(Spaelcaster.class),
-    DRUID(Druid.class);
-
-    private Class type;
-
-    EnemyTypes(Class c)
-    {
-        type = c;
-    }
-
-    public Actor getType() { try {return (Actor)type.newInstance();} catch(Exception ignored){} return null;}
-
-    // only getter which is used within the enum
-    static int variants() { return EnemyTypes.values().length; }
-
 }

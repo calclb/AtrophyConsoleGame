@@ -22,6 +22,7 @@ public class Paralysis extends Ailment {
     public void applyEffects(Actor actor)
     {
         actor.getStatModifiers().add(new StatModifier(Stats.SPEED, (2/3d), getDurationInTurns()));
+        if(!actor.getEligibleToAct()) return;
         if(random.nextInt(2) < 1) {
             actor.setEligibleToAct(false);
             System.out.println(icon + " " + Colorizer.YELLOW + actor.getName() + "'s nerves rendered unresponsive." + Colorizer.RESET);

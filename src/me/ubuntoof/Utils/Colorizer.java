@@ -125,11 +125,19 @@ public class Colorizer {
 
     public enum Icons
     {
-        GHOST("\uD83D\uDC7B"),
-        SMILEY("☺"),
-        ALIEN("\uD83D\uDC7D"),
-        SOLDIER("\uD83D\uDC82"),
-        DIAGONAL_UP_RIGHT_ARROW("➹");
+        UNFILLED_KING("♔"),
+        UNFILLED_QUEEN("♕"),
+        UNFILLED_ROOK("♖"),
+        UNFILLED_BISHOP("♗"),
+        UNFILLED_KNIGHT("♘"),
+        UNFILLED_PAWN("♙"),
+
+        FILLED_KING("♚"),
+        FILLED_QUEEN("♛"),
+        FILLED_ROOK("♜"),
+        FILLED_BISHOP("♝"),
+        FILLED_KNIGHT("♞"),
+        FILLED_PAWN("♟");
 
         private String val;
         Icons(String val) { this.val = val; }
@@ -141,16 +149,24 @@ public class Colorizer {
 
     public static void clear()
     {
-        String div = "";
-        for(int i = 0; i < 100; i++) div += "\n";
+        StringBuilder div = new StringBuilder();
+        for(int i = 0; i < 100; i++) div.append("\n");
         System.out.println(div);
     }
     public static void printDivider(int len)
     {
-        String div = "";
-        for(int i = 0; i < len; i++) div += " ";
+        StringBuilder div = new StringBuilder();
+        for(int i = 0; i < len; i++) div.append(" ");
 
         System.out.print(Colorizer.GRAY + Colorizer.STRIKETHROUGH + div + Colorizer.RESET + "\n");
+    }
+
+    public static void printSubdivider(int len)
+    {
+        StringBuilder div = new StringBuilder();
+        for(int i = 0; i < len; i++) div.append(" ");
+
+        System.out.print(Colorizer.LIGHT_GRAY + Colorizer.STRIKETHROUGH + div + Colorizer.RESET + "\n");
     }
 }
 

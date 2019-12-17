@@ -38,7 +38,7 @@ public class Druid extends Actor {
 
         @Override public void commit(Actor user, Actor target) {
 
-            boolean occurs = random.nextInt(2) < 0;
+            boolean occurs = random.nextInt(2) > 0;
 
             System.out.println(user + " used " + getName() + ", "
                     + (occurs ? "creating two ally Druidimites." : "but it failed."));
