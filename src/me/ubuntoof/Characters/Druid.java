@@ -18,7 +18,7 @@ public class Druid extends Actor {
                 public void applyEffects(Actor target) {
                     int healAmt = (int)(Math.max(target.getMaxHealth()/20d, 1));
                     target.setBaseHealth(target.getHealth() + healAmt);
-                    System.out.println(Colorizer.RESET + target.getName() + " " + target.getName() + " was healed by "
+                    System.out.println(Colorizer.RESET + target.getName() + " " + " was healed by "
                             + name + " for " + Colorizer.GREEN + healAmt + Colorizer.RESET + " health.");
                 }
 
