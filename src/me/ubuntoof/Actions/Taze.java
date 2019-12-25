@@ -18,6 +18,6 @@ public class Taze extends Action {
         System.out.println(user + " used " + getName() + " on " + (target == user ? "itself" : target) + ", dealing " + Colorizer.RED + dmg + Colorizer.RESET +
                 " damage and inflicting " + paralysis.name + Colorizer.RESET + " for " + paralysis.getDurationInTurns() + (paralysis.getDurationInTurns() == 1 ? " turn." : " turns."));
 
-        target.getAilments().add(paralysis);
+        target.addAilment(paralysis);
     }
 }

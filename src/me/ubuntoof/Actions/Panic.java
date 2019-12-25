@@ -5,7 +5,7 @@ import me.ubuntoof.Utils.Colorizer;
 
 public class Panic extends Action {
     public Panic() {
-        super(ActionType.OTHER, "Panic", "SOS", false, true);
+        super(ActionType.OTHER, "Panic", "SOS", false, true, false);
     }
 
     @Override

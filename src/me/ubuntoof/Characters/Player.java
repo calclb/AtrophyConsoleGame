@@ -5,8 +5,6 @@ import me.ubuntoof.Utils.Colorizer;
 import me.ubuntoof.Utils.TextFormatter;
 import me.ubuntoof.Utils.UserInputReader;
 
-import java.util.ArrayList;
-
 public class Player extends Actor {
 
     int exp = 0;
@@ -39,7 +37,7 @@ public class Player extends Actor {
         if(isAlive())
         {
             getBattle().displayGlobalBattle(this);
-            promptUser();
+            promptUserTurnInput();
         }
     }
 
@@ -74,101 +72,90 @@ public class Player extends Actor {
         return exp;
     }
 
-    private void promptUser()
+    private void promptUserTurnInput()
     {
-
         using = null;
-        boolean validActionIndex = false;
-        boolean erroneousInput = false;
-        while(!validActionIndex)
+        boolean wereActionsShown = false;
+
+        while(using == null)
         {
-            if(!erroneousInput) System.out.println(Colorizer.UNDERLINE + "Select an action to use" + Colorizer.RESET + ": ");
-            erroneousInput = false;
+            // prompt user to select an action
+            System.out.println(Colorizer.RESET + Colorizer.UNDERLINE + "Select an action" + Colorizer.RESET + ": ");
+            if(!wereActionsShown) for(int i = 0; i < getActions().length; i++) System.out.println(Colorizer.LIGHT_GRAY + Colorizer.BOLD + "[" + i + "] " + Colorizer.RESET + TextFormatter.formatAction(getActions()[i]));
+            wereActionsShown = true;
+            String input = UserInputReader.getResponse().toLowerCase().trim();
+            if(checkForCommandInput(input)) continue; // used so input error feedback doesn't run
 
-            for(int i = 0; i < getActions().length; i++)
-            {
-                System.out.println("[" + i + "] " + getActions()[i]);
-            }
-
-            String uinput = UserInputReader.getResponse().toLowerCase();
-
-
-            int matches = 0;
             Action matchingAction = null;
-            for(Action action : getActions())
+            int matches = 0;
+            for(Action action : getActions()) if(action.getName().toLowerCase().contains(input))
             {
-
-                if(action.getName().toLowerCase().contains(uinput))
-                {
-                    matches++;
-                    matchingAction = action;
-                }
-
+                matches++;
+                matchingAction = action;
             }
 
-            if(matches == 1)
-            {
-                using = matchingAction;
-                validActionIndex = true;
-            }
+            if(matches == 1) { using = matchingAction; break; }
+            else if(matches > 1) { System.out.println(TextFormatter.formatError("More than one action was found with that input.")); continue; }
 
-            for(int i = 0; i < getActions().length; i++)
+            try
             {
-                try
-                {
-                    using = getActions()[Integer.parseInt(uinput)];
-                    validActionIndex = true;
-                }
-                catch (Exception e)
-                {
-                    erroneousInput = true;
-                }
-            }
+                using = getActions()[Integer.parseInt(input)];
+            } catch(Exception ignored) { System.out.println(TextFormatter.formatError("No actions were found with that input.")); }
+            /*else System.out.println(TextFormatter.formatError("No actions were found with that input."));*/
         }
 
-        boolean validTarget = false;
-        while(!validTarget)
+        while(using.getRequiresTarget())
         {
-            if(!erroneousInput) System.out.println(Colorizer.UNDERLINE + "Select an intended target" + Colorizer.RESET + ": ");
-            erroneousInput = false;
-
-            ArrayList<Actor> combatants = getBattle().getCombatants();
-
-            String uinput = UserInputReader.getResponse().toLowerCase();
+            System.out.println(Colorizer.RESET + Colorizer.UNDERLINE + "Select a target" + Colorizer.RESET + ": ");
+            /*for(Actor actor : getBattle().getCombatants()) if(actor.isAlive()) System.out.println(" - " + actor);*/
+            String input = UserInputReader.getResponse().toLowerCase().trim();
+            if(checkForCommandInput(input)) continue;
 
             Actor matchingActor = null;
             int matches = 0;
-            for(Actor actor : combatants)
+            for(Actor actor : getBattle().getCombatants()) if(actor.isAlive() && actor.getName().toLowerCase().contains(input))
             {
-
-                if(actor.getName().toLowerCase().contains(uinput))
-                {
-                    matches++;
-                    matchingActor = actor;
-                }
-
+                matches++;
+                matchingActor = actor;
             }
 
-            if(matches == 1)
-            {
-                targetActor = matchingActor;
-                validTarget = true;
-            }
+            if(matches == 1) { targetActor = matchingActor; break; }
+            else if(matches > 1) { System.out.println(TextFormatter.formatError("More than one potential target was found with that input.")); continue; }
 
-            for(int i = 0; i < getActions().length; i++)
+            try
             {
-                try
-                {
-                    targetActor = combatants.get(Integer.parseInt(uinput));
-                    validTarget = true;
-                }
-                catch (Exception e)
-                {
-                    erroneousInput = true;
-                }
-            }
-
-            if(erroneousInput) System.out.println("Please reference a target by typing a unique part of its name or the number associated to it.");
+                Actor a = getBattle().getCombatants().get(Integer.parseInt(input));
+                if(a != null && a.isAlive()) { targetActor = a; break; }
+            } catch(Exception ignored) { System.out.println(TextFormatter.formatError("No potential targets were found with that input.")); }
+            /*else System.out.println(TextFormatter.formatError("No actions were found with that input."));*/
         }
     }
+
+    public static boolean checkForCommandInput(String s)
+    {
+        String str = s.trim();
+        String commandOperand = "/";
+        if(!str.startsWith(commandOperand)) return false;
+
+        String[] args = str.substring(commandOperand.length()).split(" ");
+
+        if(args[0].equalsIgnoreCase("stats"))
+        {
+            System.out.println(TextFormatter.formatInfo("Stats command recognized."));
+            Actor viewActor;
+            int matches = 0;
+            /*for(int i = 0; i < getBattle().getLivingCombatants().size(); i++)
+            {
+
+            }*/
+        }
+
+        else if(args[0].equalsIgnoreCase("desc"))
+        {
+            System.out.println(TextFormatter.formatInfo("Description command recognized."));
+        }
+
+        return true;
+    }
+
 }

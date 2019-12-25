@@ -21,7 +21,7 @@ public class Spaelcaster extends Actor {
 
             Poison poison = new Poison(5);
             System.out.println(user + " used " + getName() + " on " + (target == user ? "itself" : target) + ", afflicting " + poison.name + Colorizer.RESET + " for " + poison.getDurationInTurns() + " turns.");
-            target.getAilments().add(poison);
+            target.addAilment(poison);
         }
     };
 
@@ -39,7 +39,7 @@ public class Spaelcaster extends Actor {
             {
                 Paralysis paralysis = new Paralysis(3);
                 System.out.println(" and inflicting " + paralysis.name + Colorizer.RESET + " for " + paralysis.getDurationInTurns() + " turns.");
-                target.getAilments().add(paralysis);
+                target.addAilment(paralysis);
             }
         }
     };

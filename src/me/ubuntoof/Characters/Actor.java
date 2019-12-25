@@ -159,9 +159,15 @@ public abstract class Actor implements BattleInteractions, ActorInteractions {
     // State and modifier-related methods
     public boolean isAlive() { return baseHealth > 0d; }
     public Set<Ailment> getAilments() { return ailments; }
+    public void addAilment(Ailment ailment)
+    {
+        for(Ailment a : ailments) if(ailment.equals(a) && ailment.compareTo(a) > 0) { ailments.remove(a); ailments.add(ailment); return; }
+        ailments.add(ailment);
+    }
+
     public ArrayList<StatModifier> getStatModifiers() { return statModifiers; }
 
-    public String toString() { return getAndFormatThisCombatantIndex() + " " + Colorizer.RESET + name; }
+    public String toString() { return getAndFormatThisCombatantIndex() + (this instanceof Player ? Colorizer.GRAY_BACKGROUND + " " + name + Colorizer.RESET : " " + name + Colorizer.RESET); }
 
     @Override public void onBattleStarted(Battle battle) { this.battle = battle; }
 
@@ -169,7 +175,8 @@ public abstract class Actor implements BattleInteractions, ActorInteractions {
         handleElimination();
     }
 
-    @Override public void onGlobalTurnEnded() {
+    @Override public void onGlobalTurnEnded()
+    {
 
         for (Iterator<StatModifier> it = statModifiers.iterator(); it.hasNext(); )
         {
@@ -214,6 +221,7 @@ public abstract class Actor implements BattleInteractions, ActorInteractions {
 
     public String getAndFormatThisCombatantIndex()
     {
+        if(this instanceof Player) return Colorizer.ITALIC + Colorizer.GRAY_BACKGROUND + "[" + getBattle().getCombatantIndex(this) + "]" + Colorizer.RESET;
         return Colorizer.ITALIC + Colorizer.GRAY + "[" + getBattle().getCombatantIndex(this) + "]" + Colorizer.RESET;
     }
 }

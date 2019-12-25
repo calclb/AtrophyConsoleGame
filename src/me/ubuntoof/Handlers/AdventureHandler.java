@@ -49,7 +49,7 @@ public class AdventureHandler {
         //Player player2 = new Player("someotherguy", new Action[]{new Bop(), new Combah(), new Panic(), new EsophagealBurn(), new Taze(), new Panacea()}, 25);
 
         Team playerTeam = new Team(new Actor[]{spaelcaster, new Goblin(15), new Bandit(100)});
-        Team otherPlayerTeam = new Team(new Actor[]{druid, player});
+        Team otherPlayerTeam = new Team(new Actor[]{druid, player, new Spaelcaster(10), new Spaelcaster(10)});
 
         Battle battle = new Battle(new Team[]{playerTeam, otherPlayerTeam}, 4);
         battle.startBattle();

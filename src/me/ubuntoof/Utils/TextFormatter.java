@@ -26,7 +26,25 @@ public class TextFormatter {
         }
     }
 
-    public static String formatAction(ActionType type, String name, String description) { return "(" + type + ") " + name + " ― " + description; }
+    public static void displayOnSecondCounter(String s, int seconds)
+    {
+        System.out.println();
+        for( ; seconds > 0; seconds--)
+        {
+            try
+            {
+                System.out.print("\r\r\r" + s + " " + Colorizer.BOLD + seconds + "s");
+                Thread.sleep(200);
+            } catch (InterruptedException e) {}
+        }
+        System.out.print("\r");
+    }
+
+    public static String formatInfo(String s) { return Colorizer.BOLD + Colorizer.BLUE + "[ℹ] " + Colorizer.RESET + Colorizer.BLUE + Colorizer.UNDERLINE + s + Colorizer.RESET; }
+    public static String formatWarning(String s) { return Colorizer.BOLD + Colorizer.YELLOW + "[⚠️] " + Colorizer.RESET + Colorizer.YELLOW + Colorizer.UNDERLINE + s + Colorizer.RESET; }
+    public static String formatError(String s) { return Colorizer.BOLD + Colorizer.RED + "[！] " + Colorizer.RESET + Colorizer.RED + Colorizer.UNDERLINE + s + Colorizer.RESET; }
+
+    public static String formatAction(Action action) { return "(" + action.getType() + ") " + action.getName() + " ― " + action.getDescription(); }
 
     public static String formatAilment(String i, String n, String d) { return i; }
 

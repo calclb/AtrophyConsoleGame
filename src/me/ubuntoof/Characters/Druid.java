@@ -12,17 +12,19 @@ public class Druid extends Actor {
 
         @Override public void commit(Actor user, Actor target) {
 
-            Ailment secondWindAilment = new Ailment("", getName(), getDescription(), 5) {
+            Ailment secondWindAilment = new Ailment("", getName(), getDescription(), 5)
+            {
                 @Override
                 public void applyEffects(Actor target) {
                     int healAmt = (int)(Math.max(target.getMaxHealth()/20d, 1));
                     target.setBaseHealth(target.getHealth() + healAmt);
-                    System.out.println(Colorizer.RESET + target.getAndFormatThisCombatantIndex() + " " + target.getName() + " was healed by "
+                    System.out.println(Colorizer.RESET + target.getName() + " " + target.getName() + " was healed by "
                             + name + " for " + Colorizer.GREEN + healAmt + Colorizer.RESET + " health.");
                 }
 
                 @Override
-                public boolean equals(Object o) {
+                public boolean equals(Object o)
+                {
                     return false;
                 }
             };
@@ -30,7 +32,7 @@ public class Druid extends Actor {
 
             System.out.println(user + " used " + getName() + " on " + (target == user ? "itself" : target) + ", applying " + secondWindAilment.name + " - " + secondWindAilment.description);
 
-            target.getAilments().add(secondWindAilment);
+            target.addAilment(secondWindAilment);
         }
     };
 

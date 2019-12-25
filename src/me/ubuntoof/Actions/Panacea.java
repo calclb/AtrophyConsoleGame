@@ -12,7 +12,7 @@ public class Panacea extends Action {
     int cooldownInTurns = 0;
 
     public Panacea() {
-        super(ActionType.STATUS, "Panacea", "Increases " + Stats.MAX_HEALTH.getName() + " by 50% for 3 turns.", true, false);
+        super(ActionType.STATUS, "Panacea", "Increases " + Stats.MAX_HEALTH.getName() + " by 50% for 3 turns.", true, false, false);
     }
 
     @Override
