@@ -4,7 +4,6 @@ import me.ubuntoof.actions.Action;
 import me.ubuntoof.actions.Action.ActionType;
 import me.ubuntoof.utils.Colorizer;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Bandit extends Actor

@@ -1,7 +1,7 @@
 package me.ubuntoof.utils;
 
-import me.ubuntoof.actions.Action;
 import me.ubuntoof.Stats;
+import me.ubuntoof.actions.Action;
 
 public class TextFormatter
 {

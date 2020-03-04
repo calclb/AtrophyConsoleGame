@@ -1,15 +1,18 @@
 package me.ubuntoof.handlers;
 
+import me.ubuntoof.Team;
 import me.ubuntoof.characters.*;
 import me.ubuntoof.events.globalconditions.GlobalConditionAddEvent;
 import me.ubuntoof.events.globalconditions.GlobalConditionRemoveEvent;
 import me.ubuntoof.events.globalconditions.GlobalConditionTriggerEvent;
 import me.ubuntoof.events.state.*;
-import me.ubuntoof.listeners.*;
-import me.ubuntoof.modifiers.*;
+import me.ubuntoof.listeners.BattleInteractions;
+import me.ubuntoof.modifiers.Ailment;
+import me.ubuntoof.modifiers.GlobalCondition;
+import me.ubuntoof.modifiers.StatModifier;
 import me.ubuntoof.modifiers.globalconditions.Hail;
-import me.ubuntoof.Team;
-import me.ubuntoof.utils.*;
+import me.ubuntoof.utils.Colorizer;
+import me.ubuntoof.utils.TextFormatter;
 
 import java.util.*;
 

@@ -1,7 +1,8 @@
 package me.ubuntoof;
 
-import me.ubuntoof.handlers.*;
-import me.ubuntoof.utils.*;
+import me.ubuntoof.handlers.AdventureHandler;
+import me.ubuntoof.utils.Colorizer;
+import me.ubuntoof.utils.UserInputReader;
 
 public class Main
 {

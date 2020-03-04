@@ -1,9 +1,9 @@
 package me.ubuntoof.modifiers.ailments;
 
+import me.ubuntoof.Stats;
 import me.ubuntoof.characters.Actor;
 import me.ubuntoof.modifiers.Ailment;
 import me.ubuntoof.modifiers.StatModifier;
-import me.ubuntoof.Stats;
 import me.ubuntoof.utils.Colorizer;
 
 import java.util.Random;

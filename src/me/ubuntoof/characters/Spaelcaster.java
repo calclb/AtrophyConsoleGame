@@ -2,7 +2,6 @@ package me.ubuntoof.characters;
 
 import me.ubuntoof.actions.Action;
 import me.ubuntoof.actions.Action.ActionType;
-import me.ubuntoof.events.ailments.AilmentAddEvent;
 import me.ubuntoof.modifiers.ailments.Paralysis;
 import me.ubuntoof.modifiers.ailments.Poison;
 import me.ubuntoof.utils.Colorizer;

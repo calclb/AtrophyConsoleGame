@@ -1,8 +1,7 @@
 package me.ubuntoof.actions;
 
-import me.ubuntoof.characters.Actor;
 import me.ubuntoof.Stats;
-import me.ubuntoof.handlers.Battle;
+import me.ubuntoof.characters.Actor;
 import me.ubuntoof.utils.Colorizer;
 
 public class Combah extends Action

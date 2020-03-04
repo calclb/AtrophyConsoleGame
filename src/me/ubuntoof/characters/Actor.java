@@ -1,5 +1,6 @@
 package me.ubuntoof.characters;
 
+import me.ubuntoof.Stats;
 import me.ubuntoof.actions.Action;
 import me.ubuntoof.events.Event;
 import me.ubuntoof.events.actors.ActorDeathEvent;
@@ -16,7 +17,6 @@ import me.ubuntoof.listeners.BattleInteractions;
 import me.ubuntoof.modifiers.Ailment;
 import me.ubuntoof.modifiers.StatModifier;
 import me.ubuntoof.passives.Passive;
-import me.ubuntoof.Stats;
 import me.ubuntoof.utils.Colorizer;
 
 import java.util.*;

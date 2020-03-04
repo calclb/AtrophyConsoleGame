@@ -1,12 +1,11 @@
 package me.ubuntoof.passives;
 
+import me.ubuntoof.Stats;
 import me.ubuntoof.characters.Actor;
 import me.ubuntoof.events.Event;
 import me.ubuntoof.events.actors.ActorDeathEvent;
-import me.ubuntoof.events.state.GlobalTurnEndEvent;
 import me.ubuntoof.handlers.Battle;
 import me.ubuntoof.modifiers.StatModifier;
-import me.ubuntoof.Stats;
 import me.ubuntoof.utils.Colorizer;
 
 import java.text.NumberFormat;

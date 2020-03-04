@@ -2,6 +2,7 @@ package me.ubuntoof.actions;
 
 import me.ubuntoof.characters.Actor;
 import me.ubuntoof.utils.TextFormatter;
+
 import java.util.Random;
 
 public abstract class Action

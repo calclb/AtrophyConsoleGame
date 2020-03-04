@@ -1,9 +1,9 @@
 package me.ubuntoof.characters;
 
+import me.ubuntoof.Stats;
 import me.ubuntoof.actions.Action;
 import me.ubuntoof.actions.Action.ActionType;
 import me.ubuntoof.modifiers.StatModifier;
-import me.ubuntoof.Stats;
 import me.ubuntoof.utils.Colorizer;
 
 public class Goblin extends Actor

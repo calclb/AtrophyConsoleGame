@@ -2,8 +2,6 @@ package me.ubuntoof.characters;
 
 import me.ubuntoof.actions.Action;
 import me.ubuntoof.actions.Action.ActionType;
-import me.ubuntoof.events.ailments.AilmentAddEvent;
-import me.ubuntoof.events.statmodifiers.StatModifierAddEvent;
 import me.ubuntoof.handlers.Battle;
 import me.ubuntoof.modifiers.Ailment;
 import me.ubuntoof.utils.Colorizer;

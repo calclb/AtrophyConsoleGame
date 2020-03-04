@@ -1,17 +1,18 @@
 package me.ubuntoof.handlers;
 
+import me.ubuntoof.Team;
 import me.ubuntoof.actions.*;
-import me.ubuntoof.characters.*;
+import me.ubuntoof.characters.Actor;
+import me.ubuntoof.characters.Druid;
+import me.ubuntoof.characters.Player;
+import me.ubuntoof.characters.Spaelcaster;
 import me.ubuntoof.passives.Bloodlust;
 import me.ubuntoof.passives.Immunity;
-import me.ubuntoof.passives.Inflame;
-import me.ubuntoof.Team;
 import me.ubuntoof.utils.Colorizer;
 import me.ubuntoof.utils.TextFormatter;
 import me.ubuntoof.utils.UserInputReader;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class AdventureHandler

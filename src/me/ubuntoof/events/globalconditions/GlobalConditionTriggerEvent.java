@@ -7,8 +7,6 @@ import me.ubuntoof.handlers.Battle;
 import me.ubuntoof.modifiers.GlobalCondition;
 import me.ubuntoof.utils.Colorizer;
 
-import java.util.List;
-
 public class GlobalConditionTriggerEvent extends Event implements Cancellable
 {
     private boolean cancelled;

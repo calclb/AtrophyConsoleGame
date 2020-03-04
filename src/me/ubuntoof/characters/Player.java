@@ -1,6 +1,7 @@
 package me.ubuntoof.characters;
 
-import me.ubuntoof.actions.*;
+import me.ubuntoof.actions.Action;
+import me.ubuntoof.actions.Bop;
 import me.ubuntoof.events.Event;
 import me.ubuntoof.events.state.BattleEndEvent;
 import me.ubuntoof.events.state.GlobalTurnStartEvent;
