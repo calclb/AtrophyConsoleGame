@@ -1,7 +1,7 @@
 package me.ubuntoof;
 
-import me.ubuntoof.Characters.Actor;
-import me.ubuntoof.Utils.Colorizer;
+import me.ubuntoof.characters.Actor;
+import me.ubuntoof.utils.Colorizer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,7 +11,7 @@ public class Team
     public final String icon;
     public final String format;
     public final Actor[] originalActors;
-    private ArrayList<Actor> actors = new ArrayList<>();
+    private final ArrayList<Actor> actors = new ArrayList<>();
 
     public Team(Actor actor)
     {

@@ -4,7 +4,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public enum Stats {
+public enum Stats
+{
     MAX_HEALTH("♥", "Max Health", "Maximum health capacity."),
     HEALTH("♡", "Health", "Used to determine the living state of a combatant."),
     STRENGTH("\uD83C\uDFCB", "Strength", "Damage multiplier applied to various attacks. More strength? More damage."),

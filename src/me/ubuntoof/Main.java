@@ -1,11 +1,12 @@
 package me.ubuntoof;
 
-import me.ubuntoof.Handlers.AdventureHandler;
-import me.ubuntoof.Utils.Colorizer;
-import me.ubuntoof.Utils.UserInputReader;
+import me.ubuntoof.handlers.*;
+import me.ubuntoof.utils.*;
 
-public class Main {
-    public static void main(String[] args) {
+public class Main
+{
+    public static void main(String[] args)
+    {
 
 
         Colorizer.printDivider(60);
