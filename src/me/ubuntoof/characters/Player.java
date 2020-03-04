@@ -33,7 +33,7 @@ public class Player extends Actor
 
     @Override public void onUserTurn()
     {
-        using.commit(this, targetActor);
+        doAction(using, targetActor);
     }
 
     @Override public void notifyEvent(Event e)
@@ -45,7 +45,7 @@ public class Player extends Actor
 
     public void onGlobalTurnStarted()
     {
-        Colorizer.clear();
+        //System.out.print(Colorizer.clear());
         if(isAlive())
         {
             getBattle().displayGlobalBattle(this);

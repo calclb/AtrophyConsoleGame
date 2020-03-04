@@ -3,6 +3,7 @@ package me.ubuntoof.characters;
 import me.ubuntoof.Stats;
 import me.ubuntoof.actions.Action;
 import me.ubuntoof.events.Event;
+import me.ubuntoof.events.actors.ActionCommitEvent;
 import me.ubuntoof.events.actors.ActorDeathEvent;
 import me.ubuntoof.events.ailments.AilmentAddEvent;
 import me.ubuntoof.events.ailments.AilmentRemoveEvent;
@@ -85,9 +86,17 @@ public abstract class Actor implements BattleInteractions
     public List<Passive> getPassives() { return passives; }
 
     // going to transition to the upper method
-    public void doAction(Action action, Actor primaryTarget) { action.commit(this, primaryTarget); }
+    public void doAction(Action action, Actor primaryTarget)
+    {
+        getBattle().battleInteractionsHandler.registerEvent(new ActionCommitEvent(this, action, primaryTarget));
+        // action.commit(this, primaryTarget); (old)
+    }
 
-    public void doAction(int actionIndex, Actor primaryTarget) { actions.get(actionIndex).commit(this, primaryTarget); }
+    public void doAction(int actionIndex, Actor primaryTarget)
+    {
+        getBattle().battleInteractionsHandler.registerEvent(new ActionCommitEvent(this, actions.get(actionIndex), primaryTarget));
+        // actions.get(actionIndex).commit(this, primaryTarget); (old)
+    }
     public boolean getEligibleToAct() { return eligibleToAct; }
     public void setEligibleToAct(boolean to) { eligibleToAct = to; }
 
@@ -198,7 +207,8 @@ public abstract class Actor implements BattleInteractions
         this.battle = battle;
     }
 
-    public void onTurnChanged() {
+    public void onTurnChanged()
+    {
         handleElimination();
     }
 
@@ -242,7 +252,7 @@ public abstract class Actor implements BattleInteractions
         } else onUserTurn();
     }
 
-    protected abstract void onUserTurn();
+    public abstract void onUserTurn();
 
     private boolean handleElimination()
     {

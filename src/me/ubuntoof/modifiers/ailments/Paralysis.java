@@ -23,7 +23,7 @@ public class Paralysis extends Ailment
         if(!actor.getEligibleToAct()) return;
         if(random.nextInt(2) < 1) {
             actor.setEligibleToAct(false);
-            System.out.println(icon + " " + Colorizer.YELLOW + actor.getName() + "'s nerves rendered unresponsive." + Colorizer.RESET);
+            actor.getBattle().println(icon + " " + Colorizer.YELLOW + actor.getName() + "'s nerves rendered unresponsive." + Colorizer.RESET);
         }
     }
 

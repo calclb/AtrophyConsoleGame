@@ -147,26 +147,26 @@ public class Colorizer
 
     }
 
-    public static void clear()
+    public static String clear()
     {
         StringBuilder div = new StringBuilder();
         for(int i = 0; i < 100; i++) div.append("\n");
-        System.out.println(div);
+        return div.toString();
     }
-    public static void printDivider(int len)
+    public static String getDivider(int len)
     {
         StringBuilder div = new StringBuilder();
         for(int i = 0; i < len; i++) div.append(" ");
 
-        System.out.print(Colorizer.GRAY + Colorizer.STRIKETHROUGH + div + Colorizer.RESET + "\n");
+        return Colorizer.GRAY + Colorizer.STRIKETHROUGH + div + Colorizer.RESET + "\n";
     }
 
-    public static void printSubdivider(int len)
+    public static String getSubdivider(int len)
     {
         StringBuilder div = new StringBuilder();
         for(int i = 0; i < len; i++) div.append(" ");
 
-        System.out.print(Colorizer.LIGHT_GRAY + Colorizer.STRIKETHROUGH + div + Colorizer.RESET + "\n");
+        return Colorizer.LIGHT_GRAY + Colorizer.STRIKETHROUGH + div + Colorizer.RESET + "\n";
     }
 }
 

@@ -3,6 +3,7 @@ package me.ubuntoof.passives;
 import me.ubuntoof.Stats;
 import me.ubuntoof.characters.Actor;
 import me.ubuntoof.events.Event;
+import me.ubuntoof.events.actors.ActionCommitEvent;
 import me.ubuntoof.events.actors.ActorDeathEvent;
 import me.ubuntoof.handlers.Battle;
 import me.ubuntoof.modifiers.StatModifier;
@@ -36,9 +37,11 @@ public class Bloodlust extends Passive
 
     @Override public void notifyEvent(Event e) // called by the Actor class
     {
-        if(!owner.isAlive() || !(e instanceof ActorDeathEvent)) return;
-        ActorDeathEvent ade = (ActorDeathEvent) e;
+        if(!owner.isAlive() || !(e instanceof ActionCommitEvent)) return;
+        ActionCommitEvent ace = (ActionCommitEvent) e;
+        if(ace.user != owner || ace.target.isAlive()) return;
+
         Battle battle = owner.getBattle();
-        if(owner.isAlive() && battle.getTeamOf(owner) != battle.getTeamOf(ade.actor)) activate();
+        if(battle.getTeamOf(owner) != battle.getTeamOf(ace.target)) activate();
     }
 }

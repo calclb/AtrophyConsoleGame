@@ -163,22 +163,20 @@ public class Battle
             if(!(aTeam == winningTeam)) teamsLeft++;
         }
 
-        Colorizer.printDivider(80);
+        println(Colorizer.getDivider(80));
         if(teamsLeft == 1)
         {
 
-            println(Colorizer.RESET + Colorizer.BOLD + Colorizer.YELLOW + "\n\uD83D\uDD31" + Colorizer.RESET +
+            announce(Colorizer.RESET + Colorizer.BOLD + Colorizer.YELLOW + "\n\uD83D\uDD31" + Colorizer.RESET +
                     winningTeam.format + " Team " + winningTeam + " emerged victorious!" + Colorizer.RESET);
-            for(Actor oa : winningTeam.originalActors) println(Colorizer.RESET + " - " + oa);
+            for(Actor oa : winningTeam.originalActors) announce(Colorizer.RESET + " - " + oa);
 
-            println();
-            Colorizer.printSubdivider(50);
-            println();
+            announce("\n" + Colorizer.getSubdivider(50));
 
             battleInteractionsHandler.registerEvent(new BattleEndEvent(this, winningTeam));
 
-        } else println(Colorizer.RED + "Something went wrong; battle ended with " + teamsLeft + " teams remaining.");
-        Colorizer.printDivider(80);
+        } else announce(Colorizer.RED + "Something went wrong; battle ended with " + teamsLeft + " teams remaining.");
+        announce(Colorizer.getDivider(80));
     }
 
     // Selection sorting algorithm which orders actors by speed
@@ -213,7 +211,7 @@ public class Battle
 
     public void displayGlobalBattle(Actor perspectiveActor)
     {
-        Colorizer.printDivider(60);
+        println(Colorizer.getDivider(60));
         println(Colorizer.GRAY + "Turn " + turn + " (Displaying by index)" + Colorizer.RESET);
 
         for(GlobalCondition gc : globalConditions) print(gc.name + " - " + gc.getDurationInTurns() + " turn" + (gc.getDurationInTurns() == 1 ? "" : "s") + " remaining" + Colorizer.RESET);
@@ -233,12 +231,12 @@ public class Battle
         }
 
         println(Colorizer.GRAY + "\nSee /stats <target> to display properties of a character." + Colorizer.RESET); // TODO implement commands (i.e. stats)
-        Colorizer.printDivider(60);
+        println(Colorizer.getDivider(60));
     }
 
     public void displayGlobalBattle()
     {
-        Colorizer.printDivider(60);
+        println(Colorizer.getDivider(60));
         println(Colorizer.GRAY + "Turn " + turn + " (Displaying by index)" + Colorizer.RESET);
 
         for(GlobalCondition gc : globalConditions) println(gc.name + " - " + gc.getDurationInTurns() + " turn" + (gc.getDurationInTurns() == 1 ? "" : "s") + " remaining" + Colorizer.RESET);
@@ -257,7 +255,7 @@ public class Battle
         }
 
         println(Colorizer.GRAY + "\nSee /stats <target> to display properties of a character." + Colorizer.RESET);
-        Colorizer.printDivider(60);
+        println(Colorizer.getDivider(60));
     }
 
     private boolean isActorOnSideOf(Actor perspectiveActor, Actor actor)

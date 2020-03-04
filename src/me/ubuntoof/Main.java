@@ -10,13 +10,13 @@ public class Main
     {
 
 
-        Colorizer.printDivider(60);
+        System.out.print(Colorizer.getDivider(60));
 
         System.out.println(Colorizer.PURPLE + Colorizer.BOLD + "\n\uD83D\uDD31 Atrophy " + Colorizer.RESET + Colorizer.PURPLE + "|" +
                 Colorizer.WHITE + " A rogue-like console game with battles. " +
                 Colorizer.LIGHT_GRAY + Colorizer.ITALIC + "\n             Input 'start' to start.\n" + Colorizer.RESET);
 
-        Colorizer.printDivider(60);
+        System.out.print(Colorizer.getDivider(60));
 
         boolean started = UserInputReader.getResponse().equals("start");
 
