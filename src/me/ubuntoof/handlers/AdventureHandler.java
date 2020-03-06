@@ -9,7 +9,7 @@ import me.ubuntoof.characters.Spaelcaster;
 import me.ubuntoof.passives.Bloodlust;
 import me.ubuntoof.passives.Explosive;
 import me.ubuntoof.passives.Immunity;
-import me.ubuntoof.passives.Streaker;
+import me.ubuntoof.passives.Persistence;
 import me.ubuntoof.utils.Colorizer;
 import me.ubuntoof.utils.TextFormatter;
 import me.ubuntoof.utils.UserInputReader;
@@ -34,26 +34,16 @@ public class AdventureHandler
 
     public void begin() {
 
-        TextFormatter.imitatePrinting(new String[]{
-                Colorizer.ITALIC + "...I know it may be rude to ask, but I can't place a finger on what I should call you.\n"},
-                new int[]{0}); // 1000
+        TextFormatter.imitatePrinting(Colorizer.ITALIC + "...I know it may be rude to ask, but I can't place a finger on what I should call you.\n", 10);
 
         String playerName = UserInputReader.getResponse();
 
-        String[] strings = {Colorizer.ITALIC + "I hope you're not playing me for a fool. ",
-                "Please understand, ",
-                "in all honesty, ",
-                "that I'm in much of the same predicament as you.\n" + Colorizer.RESET};
-
-        int[] delays = {0, 0, 0, 0};
-        //int[] delays = {1600, 1100, 1000, 1150};
-
-        TextFormatter.imitatePrinting(strings, delays);
+        TextFormatter.imitatePrinting(Colorizer.ITALIC + "I hope you're not playing me for a fool. Please understand, in all honesty, that I'm in much of the same predicament as you.\n" + Colorizer.RESET, 10);
 
         List<Action> p1moves = new ArrayList<>();
         p1moves.add(new Combah()); p1moves.add(new Bop()); p1moves.add(new EsophagealBurn()); p1moves.add(new Taze());
         Player player = new Player(playerName, p1moves, 50);
-        player.getPassives().add(new Streaker(player));
+        player.getPassives().add(new Persistence()); player.getPassives().add(new Bloodlust());
 
         Spaelcaster spaelcaster = new Spaelcaster(30);
         Druid druid = new Druid(30);
@@ -61,7 +51,7 @@ public class AdventureHandler
         List<Action> p2moves = new ArrayList<>();
         p2moves.add(new Panic()); p2moves.add(new FireBlast()); p2moves.add(new Panacea());
         Player player2 = new Player(playerName + "'s doppelganger", p2moves, 30);
-        player2.getPassives().add(new Immunity(player2)); player2.getPassives().add(new Explosive(player2));
+        player2.getPassives().add(new Immunity()); player2.getPassives().add(new Explosive());
 
 
         Team playerTeam = new Team(new Actor[]{spaelcaster, /*player2*/});

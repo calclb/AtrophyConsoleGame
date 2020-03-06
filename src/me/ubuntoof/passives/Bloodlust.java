@@ -15,9 +15,8 @@ public class Bloodlust extends Passive
 {
     private final NumberFormat pf = NumberFormat.getPercentInstance();
 
-    public Bloodlust(Actor owner)
+    public Bloodlust()
     {
-        super(owner);
         header = Colorizer.LIGHT_RED + "Bloodlust〉" + Colorizer.RESET;
     }
 
@@ -35,11 +34,11 @@ public class Bloodlust extends Passive
         owner.addStatModifier(new StatModifier(Stats.STRENGTH, mod, turnDuration));
     }
 
-    @Override public void notifyEvent(Event e) // called by the Actor class
+    @Override public void notifyEvent(Event e) // called by the Actor class; TODO activate on ActorDeathEvent (see Persistence class)
     {
         if(!owner.isAlive() || !(e instanceof ActionCommitEvent)) return;
         ActionCommitEvent ace = (ActionCommitEvent) e;
-        if(ace.user != owner || ace.target.isAlive()) return;
+        if(ace.user != owner || !ace.target.isAlive()) return;
 
         Battle battle = owner.getBattle();
         if(battle.getTeamOf(owner) != battle.getTeamOf(ace.target)) activate();

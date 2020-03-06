@@ -8,9 +8,8 @@ import me.ubuntoof.utils.Colorizer;
 public class Explosive extends Passive
 {
 
-    public Explosive(Actor owner)
+    public Explosive()
     {
-        super(owner);
         header = Colorizer.LIGHT_RED + "Explosive〉" + Colorizer.RESET;
     }
 

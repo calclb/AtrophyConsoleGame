@@ -5,40 +5,41 @@ import me.ubuntoof.actions.Action;
 
 public class TextFormatter
 {
-    public static void imitatePrinting(String[] strings, int[] msDelays)
+    public static void imitatePrinting(String s, int msDelay)
     {
-        for(int i = 0; i < msDelays.length; i++)
+        print("");
+        for(char c : s.toCharArray())
         {
             try
             {
-                Thread.sleep(msDelays[i]);
+                Thread.sleep(msDelay);
             }
             catch (InterruptedException e)
             {
                 e.printStackTrace();
             }
 
-            System.out.print(strings[i]);
+            System.out.print(c);
         }
     }
 
     public static void displayOnSecondCounter(String s, int seconds)
     {
-        System.out.println();
+        println();
         for( ; seconds > 0; seconds--)
         {
             try
             {
-                System.out.print("\r\r\r" + s + " " + Colorizer.BOLD + seconds + "s");
-                Thread.sleep(200);
+                print(s + " " + Colorizer.BOLD + seconds + "s");
+                print("\r".repeat(s.length()));
+                Thread.sleep(1000);
             } catch (InterruptedException ignored) {}
         }
-        System.out.print("\r");
     }
 
-    public static String formatInfo(String s) { return Colorizer.BOLD + Colorizer.BLUE + "[ℹ] " + Colorizer.RESET + Colorizer.BLUE + Colorizer.UNDERLINE + s + Colorizer.RESET; }
+    public static String formatInfo(String s) { return Colorizer.BOLD + Colorizer.BLUE + "[i] " + Colorizer.RESET + Colorizer.BLUE + Colorizer.UNDERLINE + s + Colorizer.RESET; }
     public static String formatWarning(String s) { return Colorizer.BOLD + Colorizer.YELLOW + "[⚠️] " + Colorizer.RESET + Colorizer.YELLOW + Colorizer.UNDERLINE + s + Colorizer.RESET; }
-    public static String formatError(String s) { return Colorizer.BOLD + Colorizer.RED + "[！] " + Colorizer.RESET + Colorizer.RED + Colorizer.UNDERLINE + s + Colorizer.RESET; }
+    public static String formatError(String s) { return Colorizer.BOLD + Colorizer.RED + "[!] " + Colorizer.RESET + Colorizer.RED + Colorizer.UNDERLINE + s + Colorizer.RESET; }
 
     public static String formatAction(Action action) { return "(" + action.getType() + ") " + action.getName() + " ― " + action.getDescription(); }
 
@@ -74,7 +75,6 @@ public class TextFormatter
 
     public static String formatAsHealthBar(String unit, int base, int max, int barLength, String onString, String offString)
     {
-
         double healthPercentage = (double)base / max;
         String on = (healthPercentage > 1d ? Colorizer.LIGHT_CYAN : healthPercentage > 0.5d ? Colorizer.GREEN : healthPercentage > 0.25d ? Colorizer.YELLOW : Colorizer.RED) + onString;
         String off = Colorizer.GRAY + offString;
@@ -87,6 +87,19 @@ public class TextFormatter
             sb.append(unit);
         }
         return sb.toString();
+    }
+
+    public static void print(String s)
+    {
+        System.out.print(Colorizer.indent() + s);
+    }
+    public static void println(String s)
+    {
+        System.out.println(Colorizer.indent() + s);
+    }
+    public static void println()
+    {
+        System.out.println();
     }
 
 }

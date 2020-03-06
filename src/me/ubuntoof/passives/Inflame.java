@@ -15,9 +15,8 @@ public class Inflame extends Passive
     private final NumberFormat pf = NumberFormat.getPercentInstance();
     private final Random random = new Random();
 
-    public Inflame(Actor owner)
+    public Inflame()
     {
-        super(owner);
         header = Colorizer.LIGHT_RED + "Inflame〉" + Colorizer.RESET;
     }
 

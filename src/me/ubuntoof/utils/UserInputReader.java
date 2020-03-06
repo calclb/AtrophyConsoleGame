@@ -6,11 +6,11 @@ import java.io.InputStreamReader;
 
 public class UserInputReader
 {
-    private static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    private static final BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
     public static String getResponse()
     {
-        System.out.print(Colorizer.RESET + "〉");
+        print("〉");
         String userInput = "";
 
         try
@@ -24,4 +24,6 @@ public class UserInputReader
 
         return userInput;
     }
+
+    private static void print(String s) { Colorizer.print(s); }
 }

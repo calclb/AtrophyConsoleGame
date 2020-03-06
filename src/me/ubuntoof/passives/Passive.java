@@ -6,11 +6,11 @@ import me.ubuntoof.listeners.BattleInteractions;
 public abstract class Passive implements BattleInteractions
 {
     protected String header;
-    protected Actor owner;
+    protected Actor owner; // imitates behavior of final variable
 
-    public Passive(Actor owner)
+    public void initOwner(Actor actor)
     {
-        this.owner = owner;
+        if(owner == null) owner = actor;
     }
 
     public abstract void activate();

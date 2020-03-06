@@ -182,7 +182,7 @@ public abstract class Actor implements BattleInteractions
     public void addAilment(Ailment ailment)
     {
         for(Iterator<Ailment> it = ailments.iterator(); it.hasNext(); ) if(ailment.equals(it.next())) it.remove();
-        // ailments.removeIf(a -> ailment.equals(a) && ailment.compareTo(a) > 0);
+        // ailments.removeIf(ailment::equals);
         getBattle().battleInteractionsHandler.registerEvent(new AilmentAddEvent(ailment, this)); // it.remove();
     }
 
@@ -205,6 +205,7 @@ public abstract class Actor implements BattleInteractions
     public void onBattleStart(Battle battle)
     {
         this.battle = battle;
+        for(Passive passive : passives) passive.initOwner(this);
     }
 
     public void onTurnChanged()

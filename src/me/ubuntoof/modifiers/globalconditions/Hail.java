@@ -18,7 +18,7 @@ public class Hail extends GlobalCondition implements BattleInteractions
         if(actor.isAlive())
         {
             int dmg = actor.takeDamage((int)Math.max(actor.getMaxHealth()/16d, 1), true);
-            actor.getBattle().println(icon + " " + actor.getAndFormatThisCombatantIndex() + " " + Colorizer.LIGHT_BLUE + actor.getName() + " was buffeted by hail, taking " + Colorizer.RED + dmg + Colorizer.LIGHT_BLUE + " damage." + Colorizer.RESET);
+            actor.getBattle().println(icon + " " + actor.getAndFormatThisCombatantIndex() + " " + actor.getName() + Colorizer.LIGHT_BLUE + " was buffeted by hail, taking " + Colorizer.RED + dmg + Colorizer.LIGHT_BLUE + " damage." + Colorizer.RESET);
         }
     }
 

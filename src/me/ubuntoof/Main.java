@@ -6,17 +6,20 @@ import me.ubuntoof.utils.UserInputReader;
 
 public class Main
 {
+    public static String[] myArgs;
+    public static boolean useTerminal = false;
     public static void main(String[] args)
     {
+        handleArgumentConfig(args);
 
-
-        System.out.print(Colorizer.getDivider(60));
-
-        System.out.println(Colorizer.PURPLE + Colorizer.BOLD + "\n\uD83D\uDD31 Atrophy " + Colorizer.RESET + Colorizer.PURPLE + "|" +
+        print(Colorizer.getDivider(60));
+        println();
+        println(Colorizer.PURPLE + Colorizer.BOLD + "\uD83D\uDD31 Atrophy " + Colorizer.RESET + Colorizer.PURPLE + "|" +
                 Colorizer.WHITE + " A rogue-like console game with battles. " +
-                Colorizer.LIGHT_GRAY + Colorizer.ITALIC + "\n             Input 'start' to start.\n" + Colorizer.RESET);
+                Colorizer.LIGHT_GRAY + Colorizer.ITALIC);
+        println("             Input 'start' to start.\n" + Colorizer.RESET);
 
-        System.out.print(Colorizer.getDivider(60));
+        print(Colorizer.getDivider(60));
 
         boolean started = UserInputReader.getResponse().equals("start");
 
@@ -29,8 +32,31 @@ public class Main
                 adventureHandler.begin();
                 break;
             }
-            System.out.println(Colorizer.ITALIC + "Just say the word when you're ready to go." + Colorizer.RESET);
+            println(Colorizer.ITALIC + "Just say the word when you're ready to go." + Colorizer.RESET);
             started = UserInputReader.getResponse().equals("start");
         }
+    }
+
+    private static void handleArgumentConfig(String[] args)
+    {
+        myArgs = args;
+        for(String a : args) if (a.equalsIgnoreCase("-fancy"))
+        {
+            useTerminal = true;
+            break;
+        }
+    }
+
+    private static void print(String s)
+    {
+        Colorizer.print(s); 
+    }
+    private static void println(String s)
+    {
+        Colorizer.println(s);
+    }
+    private static void println()
+    {
+        Colorizer.println();
     }
 }

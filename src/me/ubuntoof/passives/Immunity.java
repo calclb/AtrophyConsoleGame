@@ -7,9 +7,8 @@ import me.ubuntoof.utils.Colorizer;
 
 public class Immunity extends Passive
 {
-    public Immunity(Actor owner)
+    public Immunity()
     {
-        super(owner);
         header = Colorizer.LIGHT_BLUE + "Immunity〉" + Colorizer.RESET;
     }
 

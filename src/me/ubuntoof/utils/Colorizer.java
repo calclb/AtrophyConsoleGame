@@ -1,5 +1,7 @@
 package me.ubuntoof.utils;
 
+import me.ubuntoof.Main;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -8,6 +10,10 @@ import java.util.Random;
 public class Colorizer
 {
     private static final Random random = new Random();
+    private static final int INDENT_LENGTH = Main.useTerminal ? 2 : 0;
+
+    public static final String ANSI_CLS = "\033[2J";
+    public static final String ANSI_HOME = "\u001b[H";
 
     public static final String RESET = "\u001B[0m";
     public static final String BOLD = "\u001B[1m";
@@ -61,9 +67,9 @@ public class Colorizer
         REVERSE("\u001B[7m"),
         STRIKETHROUGH("\u001B[9m");
 
-        private String val;
+        private final String val;
         Formats(String val) { this.val = val; }
-        public static final List<Formats> VALUES = Collections.unmodifiableList(Arrays.asList(Formats.values()));
+        public static final List<Formats> VALUES = List.of(Formats.values());
         public static String getRandomValue() { return VALUES.get(random.nextInt(VALUES.size())).toString(); }
         public String toString() { return val; }
 
@@ -89,9 +95,9 @@ public class Colorizer
         LIGHT_CYAN("\u001B[96m"),
         BLACK("\u001B[97m");
 
-        private String val;
+        private final String val;
         Colors(String val) { this.val = val; }
-        public static final List<Colors> VALUES = Collections.unmodifiableList(Arrays.asList(Colors.values()));
+        public static final List<Colors> VALUES = List.of(Colors.values());
         public static String getRandomValue() { return VALUES.get(random.nextInt(VALUES.size())).toString(); }
         public String toString() { return val; }
     }
@@ -116,9 +122,9 @@ public class Colorizer
         LIGHT_CYAN_BACKGROUND("\u001B[106m"),
         BLACK_BACKGROUND("\u001B[107m");
 
-        private String val;
+        private final String val;
         Backgrounds(String val) { this.val = val; }
-        public static final List<Backgrounds> VALUES = Collections.unmodifiableList(Arrays.asList(Backgrounds.values()));
+        public static final List<Backgrounds> VALUES = List.of(Backgrounds.values());
         public static String getRandomValue() { return VALUES.get(random.nextInt(VALUES.size())).toString(); }
         public String toString() { return val; }
     }
@@ -141,32 +147,56 @@ public class Colorizer
 
         private final String val;
         Icons(String val) { this.val = val; }
-        public static final List<Icons> VALUES = Collections.unmodifiableList(Arrays.asList(Icons.values()));
+        public static final List<Icons> VALUES = List.of(Icons.values());
         public static String getRandomValue() { return VALUES.get(random.nextInt(VALUES.size())).toString(); }
         public String toString() { return val; }
 
     }
 
-    public static String clear()
+    public static String indent()
     {
-        StringBuilder div = new StringBuilder();
-        for(int i = 0; i < 100; i++) div.append("\n");
-        return div.toString();
+        return " ".repeat(Math.max(0, INDENT_LENGTH));
     }
+
+    public static void clear()
+    {
+        if(!Main.useTerminal)
+        {
+            System.out.print(ANSI_CLS + ANSI_HOME);
+            System.out.flush();
+        }
+    }
+
+    public static void clear(boolean silent)
+    {
+        if(Main.useTerminal && !silent)
+        {
+            System.out.print(ANSI_CLS + ANSI_HOME);
+            System.out.flush();
+        }
+    }
+
     public static String getDivider(int len)
     {
-        StringBuilder div = new StringBuilder();
-        for(int i = 0; i < len; i++) div.append(" ");
-
-        return Colorizer.GRAY + Colorizer.STRIKETHROUGH + div + Colorizer.RESET + "\n";
+        return Colorizer.GRAY + Colorizer.STRIKETHROUGH + " ".repeat(Math.max(0, len)) + Colorizer.RESET + "\n";
     }
 
     public static String getSubdivider(int len)
     {
-        StringBuilder div = new StringBuilder();
-        for(int i = 0; i < len; i++) div.append(" ");
+        return Colorizer.LIGHT_GRAY + Colorizer.STRIKETHROUGH + " ".repeat(Math.max(0, len)) + Colorizer.RESET + "\n";
+    }
 
-        return Colorizer.LIGHT_GRAY + Colorizer.STRIKETHROUGH + div + Colorizer.RESET + "\n";
+    public static void print(String s)
+    {
+        System.out.print(Colorizer.indent() + s);
+    }
+    public static void println(String s)
+    {
+        System.out.println(Colorizer.indent() + s);
+    }
+    public static void println()
+    {
+        System.out.println();
     }
 }
 

@@ -25,8 +25,8 @@ public class Battle
     private final List<Actor> combatants = new ArrayList<>();
     private final Map<Actor, Team> incomingActors = new HashMap<>();
     private final Set<GlobalCondition> globalConditions = new HashSet<>();
+    public final boolean silent;
     private int turn;
-    private final boolean silent;
 
     public Battle(String bn, Team playerTeam, int numEnemies, boolean silent)
     {
@@ -230,7 +230,8 @@ public class Battle
 
         }
 
-        println(Colorizer.GRAY + "\nSee /stats <target> to display properties of a character." + Colorizer.RESET); // TODO implement commands (i.e. stats)
+        println();
+        println(Colorizer.GRAY + "See /stats <target> to display properties of a character." + Colorizer.RESET); // TODO implement commands (i.e. stats)
         println(Colorizer.getDivider(60));
     }
 
@@ -367,16 +368,16 @@ public class Battle
 
     public void announce(String s)
     {
-        System.out.println(s);
+        Colorizer.println(s);
     }
     public void print(String s)
     {
-        if(!silent) System.out.print(s);
+        if(!silent) Colorizer.print(s);
     }
-    public void println(String s) { if(!silent) System.out.println(s); }
+    public void println(String s) { if(!silent) Colorizer.println(s); }
     public void println()
     {
-        if(!silent) System.out.println();
+        if(!silent) Colorizer.println();
     }
 
     public int getTurn() { return turn; }

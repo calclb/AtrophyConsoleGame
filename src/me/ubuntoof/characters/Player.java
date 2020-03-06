@@ -45,7 +45,7 @@ public class Player extends Actor
 
     public void onGlobalTurnStarted()
     {
-        //System.out.print(Colorizer.clear());
+        //print(Colorizer.clear());
         if(isAlive())
         {
             getBattle().displayGlobalBattle(this);
@@ -61,7 +61,7 @@ public class Player extends Actor
 
         addExp(gainedExp);
 
-        System.out.println(Colorizer.WHITE + getName() + Colorizer.LIGHT_GRAY + " (Lv. " + getLevel() + ") " +
+        println(Colorizer.WHITE + getName() + Colorizer.LIGHT_GRAY + " (Lv. " + getLevel() + ") " +
                 Colorizer.GRAY + Colorizer.REVERSE + "[" + Colorizer.RESET +
                 TextFormatter.formatAsProgressBar("", exp, expTillNextLevel, 20, Colorizer.LIGHT_BLUE + "▰", Colorizer.GRAY + "▱") +
                 Colorizer.GRAY + Colorizer.REVERSE + "]" + Colorizer.RESET + Colorizer.BOLD + Colorizer.CYAN + " +" + gainedExp + " XP\n" + Colorizer.RESET);
@@ -76,7 +76,7 @@ public class Player extends Actor
             exp -= expTillNextLevel;
             levelUp();
             expTillNextLevel = getLevel();
-            System.out.println(Colorizer.LIGHT_YELLOW + Colorizer.BOLD + getName() + Colorizer.RESET + Colorizer.LIGHT_YELLOW + " leveled up to Lv. " + getLevel() + "!");
+            println(Colorizer.LIGHT_YELLOW + Colorizer.BOLD + getName() + Colorizer.RESET + Colorizer.LIGHT_YELLOW + " leveled up to Lv. " + getLevel() + "!");
         }
         return exp;
     }
@@ -92,13 +92,13 @@ public class Player extends Actor
         }
 
         if(matches == 1) { return matchingActor; }
-        else if(matches > 1) { System.out.println(TextFormatter.formatError("More than one potential target was found with that input.")); return null; }
+        else if(matches > 1) { println(TextFormatter.formatError("More than one potential target was found with that input.")); return null; }
 
         try
         {
             Actor a = getBattle().getCombatants().get(Integer.parseInt(s));
             if(a != null && a.isAlive()) return a;
-        } catch(Exception ignored) { System.out.println(TextFormatter.formatError("No potential targets were found with that input.")); }
+        } catch(Exception ignored) { println(TextFormatter.formatError("No potential targets were found with that input.")); }
 
         return null;
     }
@@ -114,12 +114,12 @@ public class Player extends Actor
         }
 
         if(matches == 1) { return matchingAction; }
-        else if(matches > 1) { System.out.println(TextFormatter.formatError("More than one action was found with that input.")); return null; }
+        else if(matches > 1) { println(TextFormatter.formatError("More than one action was found with that input.")); return null; }
 
         try
         {
             return getActions().get(Integer.parseInt(s));
-        } catch(Exception ignored) { System.out.println(TextFormatter.formatError("No actions were found with that input.")); }
+        } catch(Exception ignored) { println(TextFormatter.formatError("No actions were found with that input.")); }
 
         return null;
     }
@@ -133,8 +133,8 @@ public class Player extends Actor
         while(using == null)
         {
             // prompt user to select an action
-            System.out.println(Colorizer.RESET + Colorizer.UNDERLINE + "Select an action" + Colorizer.RESET + ": ");
-            if(!wereActionsShown) for(int i = 0; i < getActions().size(); i++) System.out.println(Colorizer.LIGHT_GRAY + Colorizer.BOLD + "[" + i + "] " + Colorizer.RESET + TextFormatter.formatAction(getActions().get(i)));
+            println(Colorizer.RESET + Colorizer.UNDERLINE + "Select an action" + Colorizer.RESET + ": ");
+            if(!wereActionsShown) for(int i = 0; i < getActions().size(); i++) println(Colorizer.LIGHT_GRAY + Colorizer.BOLD + "[" + i + "] " + Colorizer.RESET + TextFormatter.formatAction(getActions().get(i)));
             wereActionsShown = true;
             String input = UserInputReader.getResponse().toLowerCase().trim();
             if(!checkForCommandInput(input)) using = searchForActionWith(input);
@@ -142,11 +142,12 @@ public class Player extends Actor
 
         while(using.getRequiresTarget() && targetActor == null)
         {
-            System.out.println(Colorizer.RESET + Colorizer.UNDERLINE + "Select a target" + Colorizer.RESET + ": ");
-            /*for(Actor actor : getBattle().getCombatants()) if(actor.isAlive()) System.out.println(" - " + actor);*/
+            println(Colorizer.RESET + Colorizer.UNDERLINE + "Select a target" + Colorizer.RESET + ": ");
+            /*for(Actor actor : getBattle().getCombatants()) if(actor.isAlive()) println(" - " + actor);*/
             String input = UserInputReader.getResponse().toLowerCase().trim();
             if(!checkForCommandInput(input)) targetActor = searchForLivingActorWith(input);
         }
+        Colorizer.clear(getBattle().silent);
     }
 
     public boolean checkForCommandInput(String s)
@@ -159,25 +160,38 @@ public class Player extends Actor
 
         if(args[0].equalsIgnoreCase("stats"))
         {
-            System.out.println(TextFormatter.formatInfo("Stats command recognized."));
+            TextFormatter.displayOnSecondCounter(TextFormatter.formatInfo("Stats command recognized"), 3);
 
             Actor viewActor = null;
-            while(viewActor == null)
+            //while(viewActor == null)
             {
                 try
                 {
                     viewActor = searchForLivingActorWith(args[1]);
-                } catch(ArrayIndexOutOfBoundsException ignored) { System.out.println(TextFormatter.formatError(Colorizer.BOLD + "Syntax: " + Colorizer.RESET + Colorizer.RED + " /stats <target>")); }
+                } catch(Exception ignored) { TextFormatter.displayOnSecondCounter(TextFormatter.formatError(Colorizer.BOLD + "Syntax: " + Colorizer.RESET + Colorizer.RED + " /stats <target>"), 3); }
             }
 
         }
 
         else if(args[0].equalsIgnoreCase("desc"))
         {
-            System.out.println(TextFormatter.formatInfo("Description command recognized."));
+            TextFormatter.displayOnSecondCounter(TextFormatter.formatInfo("Description command recognized."), 3);
         }
 
         return true;
+    }
+    
+    private static void print(String s)
+    {
+        Colorizer.print(s);
+    }
+    private static void println(String s)
+    {
+        Colorizer.println(s);
+    }
+    private static void println()
+    {
+        Colorizer.println();
     }
 
 }
