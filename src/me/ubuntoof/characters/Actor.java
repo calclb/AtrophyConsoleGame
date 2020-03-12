@@ -297,8 +297,6 @@ public abstract class Actor implements BattleInteractions
     public Set<Ailment> getAilments() { return ailments; }
     public void addAilment(Ailment ailment)
     {
-        //for(Iterator<Ailment> it = ailments.iterator(); it.hasNext(); ) if(ailment.equals(it.next())) it.remove();
-        ailments.removeIf(ailment::equals);
         getBattle().battleInteractionsHandler.registerEvent(new AilmentAddEvent(ailment, this)); // it.remove();
     }
 
