@@ -1,6 +1,7 @@
 package me.ubuntoof.actions;
 
 import me.ubuntoof.characters.Actor;
+import me.ubuntoof.events.actors.ActorDamageEvent;
 import me.ubuntoof.utils.Colorizer;
 
 public class EsophagealBurn extends Action
@@ -12,11 +13,11 @@ public class EsophagealBurn extends Action
 
     @Override public void commit(Actor user, Actor target)
     {
-        int dmg = target.takeDamage((int)(user.getStrength() * 1.5d));
-        int recoil_dmg = user.takeDamage(dmg/3 + random.nextInt(dmg/4), true);
+        ActorDamageEvent ade = target.takeDamage((int)(user.getStrength() * 1.5d));
+        ActorDamageEvent recoil = user.takeDamage(ade.getDamage()/3 + random.nextInt(ade.getDamage()/4), true);
         String msg = "";
-        msg += (user + " used " + getName() + " on " + (target == user ? "itself" : target) + ", dealing " + Colorizer.RED + dmg + Colorizer.RESET + " damage.\n");
-        msg += (user + " took " + Colorizer.RED + recoil_dmg + Colorizer.RESET + " recoil damage.");
+        msg += (user + " used " + getName() + " on " + (target == user ? "itself" : target) + ", dealing " + Colorizer.RED + ade + Colorizer.RESET + " damage.\n");
+        msg += (user + " took " + Colorizer.RED + recoil.getDamage() + Colorizer.RESET + " recoil damage.");
         user.getBattle().println(msg);
     }
 }

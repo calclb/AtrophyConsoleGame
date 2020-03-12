@@ -1,8 +1,8 @@
-package me.ubuntoof.listeners;
+package me.ubuntoof.handlers;
 
 import me.ubuntoof.events.Event;
 
 public interface BattleInteractions
 {
-    default void notifyEvent(Event e) {}
+    default void onEvent(Event e) {}
 }

@@ -19,7 +19,7 @@ public class Paralysis extends Ailment
 
     @Override public void applyEffects(Actor actor)
     {
-        actor.addStatModifier(new StatModifier(Stats.SPEED, (2/3d), getDurationInTurns()));
+        actor.addStatModifier(new StatModifier(Stats.AGILITY, (2/3d), getDurationInTurns()));
         if(!actor.getEligibleToAct()) return;
         if(random.nextInt(2) < 1) {
             actor.setEligibleToAct(false);

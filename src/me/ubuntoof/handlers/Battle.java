@@ -6,7 +6,6 @@ import me.ubuntoof.events.globalconditions.GlobalConditionAddEvent;
 import me.ubuntoof.events.globalconditions.GlobalConditionRemoveEvent;
 import me.ubuntoof.events.globalconditions.GlobalConditionTriggerEvent;
 import me.ubuntoof.events.state.*;
-import me.ubuntoof.listeners.BattleInteractions;
 import me.ubuntoof.modifiers.Ailment;
 import me.ubuntoof.modifiers.GlobalCondition;
 import me.ubuntoof.modifiers.StatModifier;
@@ -99,7 +98,7 @@ public class Battle
         }
 
         List<BattleInteractions> newBattlerInteractionListeners = new ArrayList<>(incomingActors.keySet());
-        for(BattleInteractions nbi : newBattlerInteractionListeners) nbi.notifyEvent(new BattleStartEvent(this));
+        for(BattleInteractions nbi : newBattlerInteractionListeners) nbi.onEvent(new BattleStartEvent(this));
         battleInteractionsHandler.addAll(newBattlerInteractionListeners);
 
         incomingActors.clear();
@@ -192,8 +191,8 @@ public class Battle
             {
                 if(!isAscending)
                 {
-                    if (actorsToSort.get(index).getSpeed() < actorsToSort.get(j).getSpeed()) index = j;
-                } else if (actorsToSort.get(index).getSpeed() > actorsToSort.get(j).getSpeed()) index = j;
+                    if (actorsToSort.get(index).getAgility() < actorsToSort.get(j).getAgility()) index = j;
+                } else if (actorsToSort.get(index).getAgility() > actorsToSort.get(j).getAgility()) index = j;
             }
 
             Actor temp = actorsToSort.get(index); // exists for storing the actor whose index is going to be replaced in the selection sort
@@ -224,9 +223,9 @@ public class Battle
             Team actorTeam = getTeamOf(actor);
             println((perspectiveActor == actor ? Colorizer.BOLD + "〉" : "  ") + Colorizer.LIGHT_GRAY + "[" + i + "] " + actorTeam + " "
                     + (isActorOnSideOf(perspectiveActor, actor) ? Colorizer.BLUE : Colorizer.RED) + (perspectiveActor == actor ? Colorizer.BOLD : "")
-                    + actor.getName() + Colorizer.RESET + Colorizer.LIGHT_GRAY + " (" + actor.getHealth() + "/" + actor.getMaxHealth() + ") "
-                    + TextFormatter.formatAsHealthBar("", actor.getHealth(), actor.getBaseMaxHealth(), 10, "▰", "▱") + " "
-                    + returnAilmentIcons(actor) + Colorizer.RESET);
+                    + actor.getName() + Colorizer.RESET + Colorizer.LIGHT_GRAY + " (" + actor.getHealth() + "/" + actor.getStamina() + ") "
+                    + TextFormatter.formatAsHealthBar("", actor.getHealth(), actor.getStamina(), 15, "▰", "▱")
+                    + returnAilmentFormat(actor) + returnStatChangeFormat(actor) + Colorizer.RESET);
 
         }
 
@@ -249,9 +248,9 @@ public class Battle
             Actor actor = combatants.get(i);
             Team actorTeam = getTeamOf(actor);
             println(Colorizer.LIGHT_GRAY + "[" + i + "] " + actorTeam + " "
-                    + actor.getName() + Colorizer.RESET + Colorizer.LIGHT_GRAY + " (" + actor.getHealth() + "/" + actor.getMaxHealth() + ") " +
-                    TextFormatter.formatAsHealthBar("", actor.getHealth(), actor.getBaseMaxHealth(), 10, "▰", "▱") + " "
-                    + returnAilmentIcons(actor) + Colorizer.RESET);
+                    + actor.getName() + Colorizer.RESET + Colorizer.LIGHT_GRAY + " (" + actor.getHealth() + "/" + actor.getStamina() + ") "
+                    + TextFormatter.formatAsHealthBar("", actor.getHealth(), actor.getStamina(), 15, "▰", "▱")
+                    + returnAilmentFormat(actor) + returnStatChangeFormat(actor) + Colorizer.RESET);
 
         }
 
@@ -261,15 +260,24 @@ public class Battle
 
     private boolean isActorOnSideOf(Actor perspectiveActor, Actor actor)
     {
-        Actor[] allies = getFriendlies(perspectiveActor);
+        List<Actor> allies = getFriendlies(perspectiveActor);
         for(Actor a : allies) if(actor == a) return true;
         return false;
     }
 
-    private String returnAilmentIcons(Actor actor) {
+    private String returnAilmentFormat(Actor actor)
+    {
         StringBuilder sb = new StringBuilder();
         for(Ailment ailment : actor.getAilments()) sb.append(ailment.icon);
-        return sb.toString();
+        return sb.toString() + (sb.toString().length() > 0 ? " " : "");
+    }
+
+    private String returnStatChangeFormat(Actor actor)
+    {
+        StringBuilder sb = new StringBuilder();
+        List<StatModifier> smList = actor.getStatModifiers();
+        for(StatModifier sm : smList) sb.append(sm).append(" ");
+        return sb.toString() + (sb.toString().length() > 0 ? " " : "");
     }
 
     private boolean checkCombatantSidesAreAlive()
@@ -326,35 +334,32 @@ public class Battle
         return livingCombatants;
     }
 
+    public List<Actor> getFriendlies(Actor perspectiveActor)
+    {
+        return getFriendlies(perspectiveActor, false);
+    }
 
-    public Actor[] getFriendlies(Actor perspectiveActor)
+    public List<Actor> getFriendlies(Actor perspectiveActor, boolean filterAlive)
     {
         Team perspectiveActorTeam = getTeamOf(perspectiveActor);
 
-        Actor[] friendlies = new Actor[perspectiveActorTeam.size()];
-        for (int i = 0; i < perspectiveActorTeam.size(); i++) friendlies[i] = perspectiveActorTeam.getActors().get(i);
+        List<Actor> friendlies = new ArrayList<>();
+        for (Actor actor : perspectiveActorTeam.getActors()) if(!filterAlive || actor.isAlive()) friendlies.add(actor);
         return friendlies;
     }
 
-    public Actor[] getOpposition(Actor perspectiveActor)
+    public List<Actor> getOpposition(Actor perspectiveActor)
+    {
+        return getOpposition(perspectiveActor, false);
+    }
+
+    public List<Actor> getOpposition(Actor perspectiveActor, boolean filterAlive)
     {
         Team perspectiveActorTeam = getTeamOf(perspectiveActor);
-        int cumulativeSizeOfOpposition = combatants.size() - perspectiveActorTeam.size();
-        Actor[] opposition = new Actor[cumulativeSizeOfOpposition];
 
-        int cumulativeIndexesPassed = 0;
-        for(Team t : teams) if(t != perspectiveActorTeam)
-        {
-            for(int i = 0; i < t.size(); i++)
-            {
-                // require all actors to be added to combatants arraylist before teams
-                assert i + cumulativeIndexesPassed <= cumulativeSizeOfOpposition;
-                opposition[i + cumulativeIndexesPassed] = t.getActors().get(i);
-            }
-            cumulativeIndexesPassed += t.size();
-        }
-        if(opposition.length == 0) print(Colorizer.BOLD + Colorizer.RED + "No enemies of actor " + perspectiveActor + " found; perhaps there were no other teams to begin with?");
-        return opposition;
+        List<Actor> enemies = new ArrayList<>();
+        for (Actor actor : combatants) if(perspectiveActorTeam != getTeamOf(actor) && (!filterAlive || actor.isAlive())) enemies.add(actor);
+        return enemies;
     }
 
     // Warning - Potential source of NPE

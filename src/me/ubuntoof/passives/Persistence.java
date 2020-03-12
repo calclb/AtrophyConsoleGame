@@ -10,16 +10,17 @@ import me.ubuntoof.utils.Colorizer;
 public class Persistence extends Passive
 {
     private boolean userAttackPhase;
+
     public Persistence()
     {
         super();
         header = Colorizer.LIGHT_YELLOW + "Persistence〉" + Colorizer.RESET;
     }
 
-    @Override public void activate()
+    public void activate()
     {
         Battle b = owner.getBattle();
-        if(b.getOpposition(owner).length <= 1) return;
+        //if(b.getOpposition(owner).size() <= 1) return;
         String msg = (header + owner + " saw an opportunity to continue attacking.");
         b.println(msg);
 
@@ -27,23 +28,15 @@ public class Persistence extends Passive
         owner.onActorTurn();
     }
 
-    @Override public void notifyEvent(Event e) // called by the Actor class
+    public void onEvent(ActorDeathEvent e)
     {
-        if(!owner.isAlive() || !(e instanceof ActionCommitEvent || e instanceof ActorDeathEvent)) return;
-        // trigger when user kills target
-            // listen to ActionCommitEvent -- mutate state to true if user acts
-            // listen until next ActionCommitEvent for an ActionDeathEvent
-        Battle battle = owner.getBattle();
-        if(e instanceof ActionCommitEvent)
-        {
-            ActionCommitEvent ace = (ActionCommitEvent) e;
-            userAttackPhase = ace.user == owner;
-            if(userAttackPhase) ace.target.onTurnChanged();
-        }
-        else // other instances are guaranteed to be of ActorDeathEvent
-        {
-            ActorDeathEvent ade = (ActorDeathEvent) e;
-            if(!battle.getTeamOf(owner).getActors().contains(ade.actor) && userAttackPhase && battle.getOpposition(owner).length > 0) activate();
-        }
+        Battle battle = e.actor.getBattle();
+        if(!userAttackPhase || !owner.isAlive() || battle.getTeamOf(owner).getActors().contains(e.actor) || battle.getOpposition(owner).size() > 0) return;
+        activate();
+    }
+
+    public void onEvent(ActionCommitEvent e)
+    {
+        userAttackPhase = owner == e.user;
     }
 }

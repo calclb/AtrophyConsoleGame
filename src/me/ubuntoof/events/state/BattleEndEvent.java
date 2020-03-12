@@ -4,7 +4,7 @@ import me.ubuntoof.Team;
 import me.ubuntoof.events.Event;
 import me.ubuntoof.handlers.Battle;
 
-public class BattleEndEvent extends Event
+public class BattleEndEvent implements Event
 {
     public Battle battle;
     public Team winningTeam;
@@ -13,11 +13,5 @@ public class BattleEndEvent extends Event
     {
         this.battle = battle;
         this.winningTeam = winningTeam;
-        perform();
-    }
-
-    @Override public void perform()
-    {
-
     }
 }

@@ -1,6 +1,7 @@
 package me.ubuntoof.actions;
 
 import me.ubuntoof.characters.Actor;
+import me.ubuntoof.events.actors.ActorDamageEvent;
 import me.ubuntoof.utils.Colorizer;
 
 public class FireBlast extends Action
@@ -16,8 +17,8 @@ public class FireBlast extends Action
 
         for(Actor a : user.getBattle().getLivingCombatants()) if (a != user)
         {
-            int dmg = a.takeDamage(Math.max(user.getStrength() / 3 + a.getHealth() / 8 - a.getSpeed() / 2, 0));
-            msg += (user + " used " + getName() + " on " + a + ", dealing " + Colorizer.RED + dmg + Colorizer.RESET + " damage.\n");
+            ActorDamageEvent ade = a.takeDamage(Math.max(user.getStrength() / 3 + a.getHealth() / 8 - a.getAgility() / 2, 0));
+            msg += (user + " used " + getName() + " on " + a + ", dealing " + Colorizer.RED + ade + Colorizer.RESET + " damage.\n");
         }
 
         user.getBattle().print(msg);

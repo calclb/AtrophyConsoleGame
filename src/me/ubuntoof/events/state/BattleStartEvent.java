@@ -3,7 +3,7 @@ package me.ubuntoof.events.state;
 import me.ubuntoof.events.Event;
 import me.ubuntoof.handlers.Battle;
 
-public class BattleStartEvent extends Event
+public class BattleStartEvent implements Event
 {
     public final Battle battle;
 
@@ -11,10 +11,5 @@ public class BattleStartEvent extends Event
     {
         this.battle = battle;
         perform();
-    }
-
-    @Override public void perform()
-    {
-
     }
 }

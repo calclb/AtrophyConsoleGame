@@ -5,7 +5,7 @@ import me.ubuntoof.characters.Actor;
 import me.ubuntoof.events.Cancellable;
 import me.ubuntoof.events.Event;
 
-public class ActionCommitEvent extends Event implements Cancellable
+public class ActionCommitEvent implements Event, Cancellable
 {
     private boolean cancelled;
     public final Actor user;
@@ -19,15 +19,8 @@ public class ActionCommitEvent extends Event implements Cancellable
         this.target = target;
     }
 
-    @Override public boolean isCancelled()
-    {
-        return cancelled;
-    }
-
-    @Override public void setCancelled(boolean b)
-    {
-        cancelled = b;
-    }
+    @Override public boolean isDisallowed() { return cancelled; }
+    @Override public void disallow() { cancelled = true; }
 
     @Override public void perform()
     {

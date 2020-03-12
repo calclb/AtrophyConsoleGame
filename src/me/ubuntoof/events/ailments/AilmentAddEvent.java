@@ -5,7 +5,7 @@ import me.ubuntoof.events.Cancellable;
 import me.ubuntoof.events.Event;
 import me.ubuntoof.modifiers.Ailment;
 
-public class AilmentAddEvent extends Event implements Cancellable
+public class AilmentAddEvent implements Event, Cancellable
 {
     private boolean cancelled;
     public final Ailment ailment;
@@ -17,15 +17,8 @@ public class AilmentAddEvent extends Event implements Cancellable
         this.actor = actor;
     }
 
-    @Override public boolean isCancelled()
-    {
-        return cancelled;
-    }
-
-    @Override public void setCancelled(boolean b)
-    {
-        cancelled = b;
-    }
+    @Override public boolean isDisallowed() { return cancelled; }
+    @Override public void disallow() { cancelled = true; }
 
     @Override public void perform()
     {

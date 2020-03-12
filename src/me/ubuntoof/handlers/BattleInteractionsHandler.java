@@ -2,7 +2,6 @@ package me.ubuntoof.handlers;
 
 import me.ubuntoof.events.Cancellable;
 import me.ubuntoof.events.Event;
-import me.ubuntoof.listeners.BattleInteractions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +17,8 @@ public class BattleInteractionsHandler
 
     public void registerEvent(Event e)
     {
-        for(BattleInteractions bi : interactions) bi.notifyEvent(e);
-        if(e instanceof Cancellable && !(((Cancellable) e).isCancelled())) e.perform();
+        for(BattleInteractions bi : interactions) bi.onEvent(e);
+        if(e instanceof Cancellable && (((Cancellable) e).isDisallowed())) return;
+        e.perform();
     }
 }

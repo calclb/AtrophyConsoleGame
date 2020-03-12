@@ -1,7 +1,6 @@
 package me.ubuntoof.passives;
 
 import me.ubuntoof.Stats;
-import me.ubuntoof.characters.Actor;
 import me.ubuntoof.events.Event;
 import me.ubuntoof.events.state.GlobalTurnEndEvent;
 import me.ubuntoof.modifiers.StatModifier;
@@ -20,7 +19,7 @@ public class Inflame extends Passive
         header = Colorizer.LIGHT_RED + "Inflame〉" + Colorizer.RESET;
     }
 
-    @Override public void activate()
+    public void activate()
     {
         Stats randomStat = Stats.VALUES.get(random.nextInt(Stats.SIZE));
         double mod = 1.2d;
@@ -32,8 +31,8 @@ public class Inflame extends Passive
         owner.addStatModifier(new StatModifier(randomStat, mod, turnDuration));
     }
 
-    @Override public void notifyEvent(Event e) // called by the Actor class
+    public void onEvent(GlobalTurnEndEvent e) // called by the Actor class
     {
-        if(owner.isAlive() && e instanceof GlobalTurnEndEvent) activate();
+        if(owner.isAlive()) activate();
     }
 }

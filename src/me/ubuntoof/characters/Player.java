@@ -1,14 +1,17 @@
 package me.ubuntoof.characters;
 
+import me.ubuntoof.StatContainer;
 import me.ubuntoof.actions.Action;
 import me.ubuntoof.actions.Bop;
 import me.ubuntoof.events.Event;
 import me.ubuntoof.events.state.BattleEndEvent;
 import me.ubuntoof.events.state.GlobalTurnStartEvent;
+import me.ubuntoof.passives.Passive;
 import me.ubuntoof.utils.Colorizer;
 import me.ubuntoof.utils.TextFormatter;
 import me.ubuntoof.utils.UserInputReader;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Player extends Actor
@@ -20,25 +23,32 @@ public class Player extends Actor
 
     public Player(String name, List<Action> actions, int level)
     {
-        super(name, actions, level);
-
-        setBaseMaxHealth(10 + level);
-        setBaseHealth(getBaseMaxHealth());
-        setBaseStrength((int)(5 + Math.sqrt(level) + level/3));
-        setBaseSpeed((int)(5 + Math.sqrt(level) + level/3));
+        super(name, actions, level, new StatContainer(level + 5, 7, 7, 7, 7, 7, 7)); // TODO balance base stats
         expTillNextLevel = level;
     }
 
-    public static Action[] getDefaultActions() { return new Action[]{new Bop()}; }
+    public Player(String name, List<Action> actions, List<Passive> passives, int level)
+    {
+        super(name, actions, level, new StatContainer(level + 5, 7, 7, 7, 7, 7, 7));
+        getSignaturePassives().addAll(passives);
+        expTillNextLevel = level;
+    }
+
+    public static List<Action> getDefaultActions()
+    {
+        List<Action> defaults = new ArrayList<>();
+        defaults.add(new Bop());
+        return defaults;
+    }
 
     @Override public void onUserTurn()
     {
         doAction(using, targetActor);
     }
 
-    @Override public void notifyEvent(Event e)
+    @Override public void onEvent(Event e)
     {
-        super.notifyEvent(e);
+        super.onEvent(e);
         if(e instanceof GlobalTurnStartEvent) onGlobalTurnStarted();
         if(e instanceof BattleEndEvent) onBattleEnded();
     }
@@ -57,7 +67,7 @@ public class Player extends Actor
     {
         int gainedExp = 0;
 
-        for(Actor actor : getBattle().getOpposition(this)) gainedExp += actor.expValue;
+        for(Actor actor : getBattle().getOpposition(this)) gainedExp += actor.getExpValue();
 
         addExp(gainedExp);
 

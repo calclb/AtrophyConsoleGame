@@ -1,23 +1,23 @@
 package me.ubuntoof;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public enum Stats
 {
-    MAX_HEALTH("♥", "Max Health", "Maximum health capacity."),
-    HEALTH("♡", "Health", "Used to determine the living state of a combatant."),
-    STRENGTH("\uD83C\uDFCB", "Strength", "Damage multiplier applied to various attacks. More strength? More damage."),
-    DEFENSE("\uD83D\uDEE1", "Defense", "Reduces damage from attacks by the value of this stat."),
-    ARMOR("\uD83D\uDD30", "Armor", "Completely negates attack damage less than the value of this stat."),
-    SPEED("\uD83C\uDFC3", "Speed", "Determines turn order, among other things.");
 
-    private String icon;
-    private String name;
-    private String desc;
+    STAMINA("♥️", "Stamina", "Mental and physical well-being of a of a character."),
+    STRENGTH("\uD83D\uDCAA", "Strength", "Describes the capability of a character to move obstacles and fight via brute force."),
+    INTELLIGENCE("\uD83E\uDDE0", "Intelligence", "Capability of reading between the lines and making inferences."),
+    DEXTERITY("\uD83D\uDDE1️", "Dexterity", "Refers to weapon finesse, or the skill involved in wielding one."),
+    PERCEPTION("\uD83D\uDC41️", "Perception", "Skill of maintaining awareness through the senses to create a spatial understanding."),
+    STEALTH("\uD83D\uDC63", "Stealth", "Ability to go intentionally unnoticed."),
+    AGILITY("\uD83D\uDCA8", "Agility", "Describes a character's speed and evasion capabilities.");
 
-    public static final List<Stats> VALUES = Collections.unmodifiableList(Arrays.asList(values()));
+    private final String icon;
+    private final String name;
+    private final String desc;
+
+    public static final List<Stats> VALUES = List.of(values());
     public static final int SIZE = VALUES.size();
 
     public String getIcon() { return icon; }

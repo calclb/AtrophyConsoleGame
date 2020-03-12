@@ -86,7 +86,7 @@ public class TextFormatter
             sb.append(healthPercentage >= (double)i / barLength ? on : off);
             sb.append(unit);
         }
-        return sb.toString();
+        return sb.toString() + " ";
     }
 
     public static void print(String s)

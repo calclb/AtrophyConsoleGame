@@ -1,6 +1,6 @@
 package me.ubuntoof.events;
 
-public abstract class Event
+public interface Event
 {
-    public abstract void perform();
+    default void perform() {}
 }

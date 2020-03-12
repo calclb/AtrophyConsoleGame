@@ -7,7 +7,7 @@ import me.ubuntoof.handlers.Battle;
 import me.ubuntoof.modifiers.GlobalCondition;
 import me.ubuntoof.utils.Colorizer;
 
-public class GlobalConditionTriggerEvent extends Event implements Cancellable
+public class GlobalConditionTriggerEvent implements Event, Cancellable
 {
     private boolean cancelled;
     public final Battle battle;
@@ -19,15 +19,8 @@ public class GlobalConditionTriggerEvent extends Event implements Cancellable
         gc = globalCondition;
     }
 
-    @Override public boolean isCancelled()
-    {
-        return cancelled;
-    }
-
-    @Override public void setCancelled(boolean b)
-    {
-        cancelled = b;
-    }
+    @Override public boolean isDisallowed() { return cancelled; }
+    @Override public void disallow() { cancelled = true; }
 
     @Override public void perform()
     {

@@ -1,5 +1,6 @@
 package me.ubuntoof.characters;
 
+import me.ubuntoof.StatContainer;
 import me.ubuntoof.actions.Action;
 import me.ubuntoof.actions.Action.ActionType;
 import me.ubuntoof.handlers.Battle;
@@ -13,21 +14,15 @@ public class Druid extends Actor
 
     public Druid(int level) {
 
-        super("Druid", level);
+        super("Druid", level, new StatContainer(15, 2,7, 3, 5, 3, 3)); // TODO balance
         createActions();
-        setBaseMaxHealth(2 + level/2);
-        setBaseHealth(getBaseMaxHealth());
-        setBaseStrength((int)(2 + Math.sqrt(1.5*level)));
-        setBaseDefense((int)(Math.sqrt(level)/4));
-        setBaseArmor((int)(1 + Math.sqrt(level)));
-        setBaseSpeed((int)(3 + Math.sqrt(level)));
     }
 
     /* TODO Possible decision AI class? */
     @Override
     public void onUserTurn() {
 
-        Actor[] potentialTargets;
+        List<Actor> potentialTargets;
         List<Action> actions = getActions();
         Action action = actions.get(random.nextInt(actions.size()));
 
@@ -35,14 +30,14 @@ public class Druid extends Actor
         else potentialTargets = getBattle().getOpposition(this);
 
         Actor target;
-        do {target = potentialTargets[random.nextInt(potentialTargets.length)]; } while(!target.isAlive());
+        do {target = potentialTargets.get(random.nextInt(potentialTargets.size())); } while(!target.isAlive());
 
         doAction(action, target);
     }
 
     private void createActions()
     {
-        getActions().add(new Action(ActionType.STATUS, "Second Wind", "Heals the target by 5% of their HP over 5 turns.", true, false)
+        getSignatureActions().add(new Action(ActionType.STATUS, "Second Wind", "Heals the target by 5% of their HP over 5 turns.", true, false)
         {
             @Override public void commit(Actor user, Actor target)
             {
@@ -50,8 +45,8 @@ public class Druid extends Actor
                 {
                     @Override public void applyEffects(Actor target)
                     {
-                        int healAmt = (int)(Math.max(target.getMaxHealth()/20d, 1));
-                        target.setBaseHealth(target.getHealth() + healAmt);
+                        int healAmt = (int)(Math.max(target.getStamina()/20d, 1));
+                        target.setHealth(Math.min(target.getStamina(), target.getHealth() + healAmt));
                         target.getBattle().println(Colorizer.RESET + target.getName() + " was healed by "
                                 + name + " for " + Colorizer.GREEN + healAmt + Colorizer.RESET + " health.");
                     }
@@ -65,7 +60,7 @@ public class Druid extends Actor
             }
         });
 
-        getActions().add(new Action(ActionType.STATUS, "Summon", "Has a 50% chance to form two ally Druidimites.", true, false)
+        getSignatureActions().add(new Action(ActionType.STATUS, "Summon", "Has a 50% chance to form two ally Druidimites.", true, false)
         {
             @Override public void commit(Actor user, Actor target)
             {
@@ -86,11 +81,11 @@ public class Druid extends Actor
             }
         });
 
-        getActions().add(new Action(ActionType.STATUS, "Rejuvenate", "Heals target health by user's Strength.", true, false)
+        getSignatureActions().add(new Action(ActionType.STATUS, "Rejuvenate", "Heals target health by user's Strength.", true, false)
         {
             @Override public void commit(Actor user, Actor target)
             {
-                target.setBaseHealth(target.getHealth() + user.getStrength());
+                target.setHealth(Math.min(target.getStamina(), target.getHealth() + user.getStrength()));
                 user.getBattle().println(user + " used " + getName() + " on " + (target == user ? "itself" : target) + ", healing "
                         + Colorizer.GREEN + user.getLevel()/3 + Colorizer.RESET + " health.");
             }

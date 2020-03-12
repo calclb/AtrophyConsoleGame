@@ -2,6 +2,7 @@ package me.ubuntoof.actions;
 
 import me.ubuntoof.Stats;
 import me.ubuntoof.characters.Actor;
+import me.ubuntoof.events.actors.ActorDamageEvent;
 import me.ubuntoof.utils.Colorizer;
 
 public class Bop extends Action
@@ -13,7 +14,7 @@ public class Bop extends Action
 
     @Override public void commit(Actor user, Actor target)
     {
-        int dmg = target.takeDamage(user.getStrength());
-        user.getBattle().println(user + " used " + getName() + " on " + (target == user ? "itself" : target) + ", dealing " + Colorizer.RED + dmg + Colorizer.RESET + " damage.");
+        ActorDamageEvent ade = target.takeDamage(user.getStrength());
+        user.getBattle().println(user + " used " + getName() + " on " + (target == user ? "itself" : target) + ", dealing " + Colorizer.RED + ade + Colorizer.RESET + " damage.");
     }
 }

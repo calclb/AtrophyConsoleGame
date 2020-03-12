@@ -1,6 +1,7 @@
 package me.ubuntoof.actions;
 
 import me.ubuntoof.characters.Actor;
+import me.ubuntoof.events.actors.ActorDamageEvent;
 import me.ubuntoof.utils.Colorizer;
 
 public class Panic extends Action
@@ -14,8 +15,8 @@ public class Panic extends Action
         String msg = "";
         int targetIndex = random.nextInt(user.getBattle().getLivingCombatants().size());
         target = user.getBattle().getLivingCombatants().get(targetIndex);
-        int dmg = target.takeDamage(random.nextInt(user.getLevel() + target.getLevel()));
-        msg += (user + " used " + getName() + " on " + (target == user ? "itself" : target) + ", dealing " + Colorizer.RED + dmg + Colorizer.RESET + " damage.");
+        ActorDamageEvent ade = target.takeDamage(random.nextInt(user.getLevel() + target.getLevel()));
+        msg += (user + " used " + getName() + " on " + (target == user ? "itself" : target) + ", dealing " + Colorizer.RED + ade + Colorizer.RESET + " damage.");
         user.getBattle().println(msg);
     }
 }

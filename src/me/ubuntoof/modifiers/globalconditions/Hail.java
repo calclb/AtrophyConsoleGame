@@ -1,7 +1,8 @@
 package me.ubuntoof.modifiers.globalconditions;
 
 import me.ubuntoof.characters.Actor;
-import me.ubuntoof.listeners.BattleInteractions;
+import me.ubuntoof.events.actors.ActorDamageEvent;
+import me.ubuntoof.handlers.BattleInteractions;
 import me.ubuntoof.modifiers.GlobalCondition;
 import me.ubuntoof.utils.Colorizer;
 
@@ -17,8 +18,8 @@ public class Hail extends GlobalCondition implements BattleInteractions
     {
         if(actor.isAlive())
         {
-            int dmg = actor.takeDamage((int)Math.max(actor.getMaxHealth()/16d, 1), true);
-            actor.getBattle().println(icon + " " + actor.getAndFormatThisCombatantIndex() + " " + actor.getName() + Colorizer.LIGHT_BLUE + " was buffeted by hail, taking " + Colorizer.RED + dmg + Colorizer.LIGHT_BLUE + " damage." + Colorizer.RESET);
+            ActorDamageEvent ade = actor.takeDamage((int)Math.max(actor.getStamina()/16d, 1), true);
+            actor.getBattle().println(icon + " " + actor + Colorizer.LIGHT_BLUE + " was buffeted by hail, taking " + Colorizer.RED + ade + Colorizer.LIGHT_BLUE + " damage." + Colorizer.RESET);
         }
     }
 

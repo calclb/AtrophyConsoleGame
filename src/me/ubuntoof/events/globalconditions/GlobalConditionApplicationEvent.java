@@ -5,7 +5,7 @@ import me.ubuntoof.events.Cancellable;
 import me.ubuntoof.events.Event;
 import me.ubuntoof.modifiers.GlobalCondition;
 
-public class GlobalConditionApplicationEvent extends Event implements Cancellable
+public class GlobalConditionApplicationEvent implements Event, Cancellable
 {
 
     private boolean cancelled;
@@ -18,14 +18,8 @@ public class GlobalConditionApplicationEvent extends Event implements Cancellabl
         this.actor = actor;
     }
 
-    @Override public boolean isCancelled() {
-        return false;
-    }
-
-    @Override public void setCancelled(boolean b)
-    {
-        cancelled = b;
-    }
+    @Override public boolean isDisallowed() { return cancelled; }
+    @Override public void disallow() { cancelled = true; }
 
     @Override public void perform()
     {

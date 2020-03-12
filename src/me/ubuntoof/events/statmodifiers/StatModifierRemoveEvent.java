@@ -5,7 +5,7 @@ import me.ubuntoof.events.Cancellable;
 import me.ubuntoof.events.Event;
 import me.ubuntoof.modifiers.StatModifier;
 
-public class StatModifierRemoveEvent extends Event implements Cancellable
+public class StatModifierRemoveEvent implements Event, Cancellable
 {
     private boolean cancelled;
     public StatModifier sm;
@@ -17,18 +17,18 @@ public class StatModifierRemoveEvent extends Event implements Cancellable
         this.actor = actor;
     }
 
-    @Override public boolean isCancelled()
+    @Override public boolean isDisallowed()
     {
         return cancelled;
     }
 
-    @Override public void setCancelled(boolean b)
+    @Override public void disallow()
     {
-        cancelled = b;
+        cancelled = true;
     }
 
     @Override public void perform()
     {
-        if(!isCancelled()) actor.getStatModifiers().remove(sm);
+        actor.getStatModifiers().remove(sm);
     }
 }
