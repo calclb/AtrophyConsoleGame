@@ -22,6 +22,7 @@ public class AilmentAddEvent implements Event, Cancellable
 
     @Override public void perform()
     {
+        for(Ailment a : actor.getAilments()) if(ailment.equals(a)) { a.setDurationInTurns(Math.max(a.getDurationInTurns(), ailment.getDurationInTurns())); return; }
         actor.getAilments().add(ailment);
     }
 }
