@@ -4,7 +4,7 @@ import me.ubuntoof.characters.Actor;
 import me.ubuntoof.events.Event;
 import me.ubuntoof.utils.Colorizer;
 
-public class ActorDeathEvent implements Event
+public class ActorDeathEvent extends Event
 {
     public final Actor actor;
 
@@ -20,6 +20,6 @@ public class ActorDeathEvent implements Event
 
     @Override public void perform() // TODO perform after ActorDamageEvent
     {
-        actor.getBattle().println(Colorizer.RED + Colorizer.REVERSE + Colorizer.BOLD + "\uD83D\uDC80 " + actor.getName() + " has been eliminated." + Colorizer.RESET);
+        actor.battle.println(Colorizer.RED + Colorizer.REVERSE + Colorizer.BOLD + "\uD83D\uDC80 " + actor.name + " has been eliminated." + Colorizer.RESET);
     }
 }

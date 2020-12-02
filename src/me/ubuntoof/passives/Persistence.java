@@ -1,5 +1,6 @@
 package me.ubuntoof.passives;
 
+import me.ubuntoof.characters.Actor;
 import me.ubuntoof.characters.Player;
 import me.ubuntoof.events.Event;
 import me.ubuntoof.events.actors.ActionCommitEvent;
@@ -7,36 +8,43 @@ import me.ubuntoof.events.actors.ActorDeathEvent;
 import me.ubuntoof.handlers.Battle;
 import me.ubuntoof.utils.Colorizer;
 
-public class Persistence extends Passive
+public class Persistence extends Condition
 {
     private boolean userAttackPhase;
 
     public Persistence()
     {
-        super();
-        header = Colorizer.LIGHT_YELLOW + "Persistence〉" + Colorizer.RESET;
+        super("Persistence", "Allows user to move again after defeating an enemy.");
     }
 
-    public void activate()
+    private String getHeader() { return Colorizer.LIGHT_YELLOW + name + "〉" + Colorizer.RESET; }
+
+    public void activate(Actor owner)
     {
-        Battle b = owner.getBattle();
-        //if(b.getOpposition(owner).size() <= 1) return;
-        String msg = (header + owner + " saw an opportunity to continue attacking.");
+        Battle b = owner.battle;
+        String msg = (getHeader() + owner + " saw an opportunity to continue attacking.");
         b.println(msg);
 
-        if(owner instanceof Player) ((Player) owner).onGlobalTurnStarted();
+        if(owner instanceof Player) ((Player) owner).onGlobalTurnStarted(); // TODO refactor to make more descriptive
         owner.onActorTurn();
     }
 
-    public void onEvent(ActorDeathEvent e)
+    /**
+     * @param owner The owner of the Condition
+     * @param e The event that the Condition could activate by
+     */
+    @Override
+    public void on(Actor owner, Event e)
     {
-        Battle battle = e.actor.getBattle();
-        if(!userAttackPhase || !owner.isAlive() || battle.getTeamOf(owner).getActors().contains(e.actor) || battle.getOpposition(owner).size() > 0) return;
-        activate();
-    }
+        if(e instanceof ActionCommitEvent) userAttackPhase = owner == ((ActionCommitEvent)e).user;
 
-    public void onEvent(ActionCommitEvent e)
-    {
-        userAttackPhase = owner == e.user;
+        if(e instanceof ActorDeathEvent)
+        {
+            ActorDeathEvent ade = (ActorDeathEvent) e;
+            Battle b = ade.actor.battle;
+            if(!userAttackPhase || !owner.isAlive() || owner.getTeam().getActors().contains(ade.actor) || b.getOpposition(owner).size() > 0) return;
+            if(b.getOpposition(owner).size() > 1) activate(owner);
+        }
+
     }
 }

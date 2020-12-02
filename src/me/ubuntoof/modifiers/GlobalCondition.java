@@ -1,8 +1,9 @@
 package me.ubuntoof.modifiers;
 
 import me.ubuntoof.characters.Actor;
+import me.ubuntoof.handlers.BattleInteractions;
 
-public abstract class GlobalCondition extends Decrementable
+public abstract class GlobalCondition implements BattleInteractions
 {
     public final String icon;
     public final String name;
@@ -15,16 +16,6 @@ public abstract class GlobalCondition extends Decrementable
         this.name = name;
         this.description = description;
         this.appearMessage = appearMessage;
-        setPermanent();
-    }
-
-    protected GlobalCondition(String icon, String name, String description, int duration, String appearMessage)
-    {
-        this.icon = icon;
-        this.name = name;
-        this.description = description;
-        this.appearMessage = appearMessage;
-        setDurationInTurns(duration);
     }
 
     public abstract void applyEffects(Actor target);

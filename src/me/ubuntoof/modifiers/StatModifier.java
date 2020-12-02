@@ -9,7 +9,7 @@ public class StatModifier extends Decrementable
 {
     private final Stats type;
     private double multiplier;
-    private final NumberFormat pf = NumberFormat.getPercentInstance();
+    private static final NumberFormat pf = NumberFormat.getPercentInstance();
 
     public StatModifier(Stats statType, double multiplier)
     {
@@ -33,6 +33,19 @@ public class StatModifier extends Decrementable
     {
         String color = multiplier > 1 ? Colorizer.BLUE : multiplier < 1 ? Colorizer.RED : Colorizer.RESET;
         double percentRaised = multiplier - 1;
-        return color + "(" + type.getIcon() + " " + (percentRaised > 0 ? "+" : "") + pf.format(percentRaised) + ")" + Colorizer.RESET;
+        return Colorizer.REVERSE + color +  type.getIcon() + " " + (percentRaised > 0 ? "+" : "") + pf.format(percentRaised) + " (" + getDurationInTurns() + "t)" + Colorizer.RESET;
+    }
+
+    @Override public Object clone()
+    {
+        try
+        {
+            return super.clone();
+        }
+        catch(CloneNotSupportedException e)
+        {
+            e.printStackTrace();
+            return new CloneNotSupportedException();
+        }
     }
 }

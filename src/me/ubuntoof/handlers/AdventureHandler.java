@@ -1,15 +1,12 @@
 package me.ubuntoof.handlers;
 
-import me.ubuntoof.Team;
+import me.ubuntoof.Party;
 import me.ubuntoof.actions.*;
-import me.ubuntoof.characters.*;
-import me.ubuntoof.passives.*;
-import me.ubuntoof.utils.Colorizer;
-import me.ubuntoof.utils.TextFormatter;
-import me.ubuntoof.utils.UserInputReader;
-
-import java.util.ArrayList;
-import java.util.List;
+import me.ubuntoof.entities.Druid;
+import me.ubuntoof.entities.Entity;
+import me.ubuntoof.entities.Golem;
+import me.ubuntoof.passives.Immunity;
+import me.ubuntoof.passives.Inflame;
 
 public class AdventureHandler
 {
@@ -26,46 +23,42 @@ public class AdventureHandler
         this.currentArea = area;
     }
 
-    public void begin() {
+    public void begin()
+    {
 
-        TextFormatter.imitatePrinting(Colorizer.ITALIC + "...I know it may be rude to ask, but I can't place a finger on what I should call you.\n", 10);
+        Entity player = Entity.generatePlayerContainerFromDialogue();
+        player.setPlayerControlled(true);
+        player.addActions(Bop.class, Panic.class, FireBlast.class);
+        player.addPassives(Inflame.class);
+        Golem golem = new Golem();
 
-        String playerName = UserInputReader.getResponse();
+        Entity p2 = Entity.generatePlayerContainerFromDialogue();
+        p2.setPlayerControlled(false);
+        p2.addActions(EsophagealBurn.class, Combah.class, Panacea.class);
+        p2.addPassives(Immunity.class);
+        Druid druid = new Druid();
 
-        TextFormatter.imitatePrinting(Colorizer.ITALIC + "I hope you're not playing me for a fool. Please understand, in all honesty, that I'm in much of the same predicament as you.\n" + Colorizer.RESET, 10);
+        Party playerOneTeam = new Party("P1 Team", player, golem);
+        Party playerTwoTeam = new Party("P2 Team", p2, druid);
 
-        List<Action> p1moves = new ArrayList<>();
-        p1moves.add(new Combah()); p1moves.add(new Bop()); p1moves.add(new EsophagealBurn()); p1moves.add(new Taze()); p1moves.add(new Frighten());
-        Player player = new Player(playerName, p1moves, 50);
-        player.getSignaturePassives().add(new Persistence()); player.getSignaturePassives().add(new Bloodlust());
+        Tourney tourney = new Tourney(3, 4, playerOneTeam, playerTwoTeam);
 
-        Spaelcaster spaelcaster = new Spaelcaster(30);
-        Druid druid = new Druid(30);
-
-        List<Action> p2moves = new ArrayList<>();
-        p2moves.add(new Panic()); p2moves.add(new FireBlast()); p2moves.add(new Panacea());
-        Player player2 = new Player(playerName + "'s doppelganger", p2moves, 30);
-        player2.getSignaturePassives().add(new Immunity()); player2.getSignaturePassives().add(new Explosive());
-
-
-        Team playerTeam = new Team(new Actor[]{spaelcaster, player2});
-        Team otherPlayerTeam = new Team(new Actor[]{druid, player, new Goblin(10), new Spaelcaster(10)});
-
-
-        Battle battle = new Battle("Coliseum", new Team[]{playerTeam, otherPlayerTeam}, 4, false);
-        battle.startBattle();
+        tourney.runTourney();
+//        Battle battle = new Battle(new Team[]{new Team(pTem), new Team(p2Tem)}, 4);
+//        battle.run();
     }
-
 }
 
 enum Areas
 {
     VOID("Void");
 
-    private String label;
+    private final String label;
 
     Areas(String label)
     {
         this.label = label;
     }
+
+    @Override public String toString() { return label; }
 }

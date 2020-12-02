@@ -5,7 +5,7 @@ import me.ubuntoof.events.Cancellable;
 import me.ubuntoof.events.Event;
 import me.ubuntoof.modifiers.StatModifier;
 
-public class StatModifierRemoveEvent implements Event, Cancellable
+public class StatModifierRemoveEvent extends Event implements Cancellable
 {
     private boolean cancelled;
     public StatModifier sm;

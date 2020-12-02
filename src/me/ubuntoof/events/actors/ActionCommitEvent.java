@@ -5,7 +5,7 @@ import me.ubuntoof.characters.Actor;
 import me.ubuntoof.events.Cancellable;
 import me.ubuntoof.events.Event;
 
-public class ActionCommitEvent implements Event, Cancellable
+public class ActionCommitEvent extends Event implements Cancellable
 {
     private boolean cancelled;
     public final Actor user;

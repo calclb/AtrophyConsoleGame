@@ -9,7 +9,7 @@ public class Combah extends Action
 {
     public Combah()
     {
-        super(ActionType.ATTACK, "Combah", "Randomly hits 1-3 times using half of the user's " + Stats.STRENGTH.getName() + ".", false, true);
+        super(ActionType.BLUDGEONING, "Combah", "Randomly hits 1-3 times using half of the user's " + Stats.STRENGTH.getName() + ".", false, true);
     }
 
     @Override public void commit(Actor user, Actor target)
@@ -22,7 +22,7 @@ public class Combah extends Action
 
         for(int i = 1; i <= hits; i++)
         {
-            ade = target.takeDamage(Math.max(((user.getStrength() + random.nextInt(user.getStrength()/4) - user.getStrength()/4) / 2), 1));
+            ade = target.takeDamage(Math.max((user.getStrength() + random.nextInt(Math.max(1, user.getStrength()/4))) / 2, 1));
 
             msg += Colorizer.RED + ade + Colorizer.RESET;
             if(hits > 2 && hits - i > 1) msg += ", ";
@@ -31,6 +31,6 @@ public class Combah extends Action
 
         msg += " damage.";
 
-        user.getBattle().println(msg);
+        user.battle.println(msg);
     }
 }

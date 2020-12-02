@@ -5,7 +5,7 @@ import me.ubuntoof.events.Cancellable;
 import me.ubuntoof.events.Event;
 import me.ubuntoof.modifiers.GlobalCondition;
 
-public class GlobalConditionApplicationEvent implements Event, Cancellable
+public class GlobalConditionApplicationEvent extends Event implements Cancellable
 {
 
     private boolean cancelled;

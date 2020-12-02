@@ -7,11 +7,10 @@ import me.ubuntoof.utils.UserInputReader;
 public class Main
 {
     public static String[] myArgs;
-    public static boolean useTerminal = false;
+    private static boolean useTerminal = false;
     public static void main(String[] args)
     {
         handleArgumentConfig(args);
-
         print(Colorizer.getDivider(60));
         println();
         println(Colorizer.PURPLE + Colorizer.BOLD + "\uD83D\uDD31 Atrophy " + Colorizer.RESET + Colorizer.PURPLE + "|" +
@@ -32,7 +31,7 @@ public class Main
                 adventureHandler.begin();
                 break;
             }
-            println(Colorizer.ITALIC + "Just say the word when you're ready to go." + Colorizer.RESET);
+            println(Colorizer.ITALIC + "...Anytime, now. Just say the word when you're ready to go." + Colorizer.RESET);
             started = UserInputReader.getResponse().equals("start");
         }
     }
@@ -59,4 +58,5 @@ public class Main
     {
         Colorizer.println();
     }
+    public static boolean isTerminalBeingUsed() { return useTerminal; }
 }

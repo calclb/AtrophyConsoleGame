@@ -8,21 +8,21 @@ import me.ubuntoof.utils.Colorizer;
 
 public class Taze extends Action
 {
+    private static final int turns = 1;
     public Taze()
     {
-        super(ActionType.ATTACK, "Taze", "Deals low damage, but guarantees Paralysis infliction.", false, true);
+        super(ActionType.ELECTRIC, "Taze", "Deals low damage, but guarantees Paralysis infliction.", false, true);
     }
 
-    @Override
-    public void commit(Actor user, Actor target)
+    @Override public void commit(Actor user, Actor target)
     {
         ActorDamageEvent ade = target.takeDamage(user.getStrength()/3);
 
-        Paralysis paralysis = new Paralysis(1);
+        Paralysis paralysis = new Paralysis(turns);
 
-        user.getBattle().println(user + " used " + getName() + " on " + (target == user ? "itself" : target) + ", dealing " + Colorizer.RED + ade + Colorizer.RESET +
-                " damage and inflicting " + paralysis.name + Colorizer.RESET + " for " + paralysis.getDurationInTurns() + (paralysis.getDurationInTurns() == 1 ? " turn." : " turns."));
+        user.battle.println(user + " used " + getName() + " on " + (target == user ? "itself" : target) + ", dealing " + Colorizer.RED + ade + Colorizer.RESET +
+                " damage and inflicting " + paralysis.name + Colorizer.RESET + " for " + turns + (turns == 1 ? " turn." : " turns."));
 
-        user.getBattle().battleInteractionsHandler.registerEvent(new AilmentAddEvent(paralysis, target));
+        user.battle.registerEvent(new AilmentAddEvent(target, paralysis));
     }
 }

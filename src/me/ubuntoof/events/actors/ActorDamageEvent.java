@@ -4,7 +4,7 @@ import me.ubuntoof.characters.Actor;
 import me.ubuntoof.events.Cancellable;
 import me.ubuntoof.events.Event;
 
-public class ActorDamageEvent implements Event, Cancellable
+public class ActorDamageEvent extends Event implements Cancellable
 {
     private boolean cancelled;
     private Actor actor;

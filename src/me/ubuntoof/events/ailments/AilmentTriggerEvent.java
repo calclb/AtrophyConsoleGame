@@ -5,7 +5,7 @@ import me.ubuntoof.events.Cancellable;
 import me.ubuntoof.events.Event;
 import me.ubuntoof.modifiers.Ailment;
 
-public class AilmentTriggerEvent implements Event, Cancellable
+public class AilmentTriggerEvent extends Event implements Cancellable
 {
     private boolean cancelled;
     public final Ailment ailment;

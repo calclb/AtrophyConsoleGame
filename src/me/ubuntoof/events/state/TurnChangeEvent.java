@@ -3,7 +3,7 @@ package me.ubuntoof.events.state;
 import me.ubuntoof.characters.Actor;
 import me.ubuntoof.events.Event;
 
-public class TurnChangeEvent implements Event
+public class TurnChangeEvent extends Event
 {
     public Actor to;
 
@@ -14,7 +14,7 @@ public class TurnChangeEvent implements Event
 
     @Override public void perform()
     {
-        to.getBattle().getLivingCombatants().forEach(Actor::onTurnChanged);
+        to.battle.getLivingCombatants().forEach(Actor::onTurnChanged);
         to.onActorTurn();
     }
 }

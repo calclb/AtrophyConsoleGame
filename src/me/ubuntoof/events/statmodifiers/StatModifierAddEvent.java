@@ -5,16 +5,16 @@ import me.ubuntoof.events.Cancellable;
 import me.ubuntoof.events.Event;
 import me.ubuntoof.modifiers.StatModifier;
 
-public class StatModifierAddEvent implements Event, Cancellable
+public class StatModifierAddEvent extends Event implements Cancellable
 {
     private boolean cancelled;
     public StatModifier sm;
     public Actor actor;
 
-    public StatModifierAddEvent(StatModifier sm, Actor actor)
+    public StatModifierAddEvent(Actor actor, StatModifier sm)
     {
-        this.sm = sm;
         this.actor = actor;
+        this.sm = sm;
     }
 
     @Override public boolean isDisallowed()

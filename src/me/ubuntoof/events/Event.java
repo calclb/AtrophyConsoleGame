@@ -1,6 +1,9 @@
 package me.ubuntoof.events;
 
-public interface Event
+public abstract class Event
 {
-    default void perform() {}
+    /**
+     * Called after none of the observers disallow a Cancellable event, or immediately if the Event isn't Cancellable
+     */
+    public void perform() {}
 }

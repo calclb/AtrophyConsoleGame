@@ -1,26 +1,37 @@
 package me.ubuntoof.passives;
 
+import me.ubuntoof.characters.Actor;
+import me.ubuntoof.events.Event;
 import me.ubuntoof.events.ailments.AilmentAddEvent;
 import me.ubuntoof.utils.Colorizer;
 
-public class Immunity extends Passive
+public class Immunity extends Condition
 {
+    public static final String header = Colorizer.LIGHT_BLUE + "Immunity〉" + Colorizer.RESET;
+    public static final String description = "Prevents the affliction of ailments.";
+
     public Immunity()
     {
-        header = Colorizer.LIGHT_BLUE + "Immunity〉" + Colorizer.RESET;
+        super("Immunity", "Prevents the user from being afflicted with ailments.");
     }
 
-    public void activate()
+    public String getHeader() { return Colorizer.LIGHT_BLUE + name + "〉" + Colorizer.RESET; }
+
+    public void activate(Actor owner)
     {
-        String msg = (header + owner + " is immune to ailments.");
-        owner.getBattle().println(msg);
+        owner.battle.println(header + owner + " is immune to ailments.");
     }
 
-    public void onEvent(AilmentAddEvent e) // called by the Actor class
+    /**
+     * @param owner The Actor to run with the Condition
+     * @param e     The event to analyze
+     */
+    @Override public void on(Actor owner, Event e)
     {
-        if(!owner.isAlive()) return;
-        if (e.actor != owner) return;
-        activate();
-        e.disallow();
+        if(!(e instanceof AilmentAddEvent)) return;
+        AilmentAddEvent aae = (AilmentAddEvent) e;
+        if(!owner.isAlive() || aae.actor != owner) return;
+        activate(owner);
+        aae.disallow();
     }
 }

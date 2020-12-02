@@ -1,17 +1,20 @@
 package me.ubuntoof.modifiers.globalconditions;
 
 import me.ubuntoof.characters.Actor;
+import me.ubuntoof.events.Event;
 import me.ubuntoof.events.actors.ActorDamageEvent;
+import me.ubuntoof.events.ailments.AilmentTriggerEvent;
+import me.ubuntoof.events.globalconditions.GlobalConditionApplicationEvent;
+import me.ubuntoof.events.state.GlobalTurnEndEvent;
 import me.ubuntoof.handlers.BattleInteractions;
 import me.ubuntoof.modifiers.GlobalCondition;
 import me.ubuntoof.utils.Colorizer;
 
-public class Hail extends GlobalCondition implements BattleInteractions
+public class Hail extends GlobalCondition implements BattleInteractions // TODO rework
 {
     public Hail()
     {
-        super(Colorizer.LIGHT_BLUE + "❄", Colorizer.LIGHT_BLUE + "Hail", "Deals 1/16 of a combatant's health as damage.", 4,
-                Colorizer.BOLD + Colorizer.LIGHT_BLUE + "❄ Hail begins to pelt the combatants.\n" + Colorizer.RESET);
+        super(Colorizer.LIGHT_BLUE + "❄", Colorizer.LIGHT_BLUE + "Hail", "Deals 1/16 of a combatant's health as damage.",Colorizer.BOLD + Colorizer.LIGHT_BLUE + "❄ Hail begins to pelt the combatants.\n" + Colorizer.RESET);
     }
 
     @Override public void applyEffects(Actor actor)
@@ -19,11 +22,9 @@ public class Hail extends GlobalCondition implements BattleInteractions
         if(actor.isAlive())
         {
             ActorDamageEvent ade = actor.takeDamage((int)Math.max(actor.getStamina()/16d, 1), true);
-            actor.getBattle().println(icon + " " + actor + Colorizer.LIGHT_BLUE + " was buffeted by hail, taking " + Colorizer.RED + ade + Colorizer.LIGHT_BLUE + " damage." + Colorizer.RESET);
+            actor.battle.println(icon + " " + actor + Colorizer.LIGHT_BLUE + " was buffeted by hail, taking " + Colorizer.RED + ade + Colorizer.LIGHT_BLUE + " damage." + Colorizer.RESET);
         }
     }
 
-    @Override public boolean equals(Object o) {
-        return o instanceof Hail;
-    }
+    @Override public boolean equals(Object o) { return o instanceof Hail; }
 }

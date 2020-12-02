@@ -26,10 +26,14 @@ public abstract class Decrementable implements Comparable<Decrementable>
         }
     }
 
-    public void decrementTurnsRemaining() { if(!isPermanent) durationInTurns--; }
+    public int decrementTurnsRemaining()
+    {
+        if(!isPermanent) return durationInTurns = Math.max(durationInTurns - 1, 0);
+        return Integer.MAX_VALUE;
+    }
     public void setDurationInTurns(int duration)
     {
-        durationInTurns = duration;
+        durationInTurns = Math.max(0, duration);
         isPermanent = false;
     }
     public boolean isPermanent() { return isPermanent; }

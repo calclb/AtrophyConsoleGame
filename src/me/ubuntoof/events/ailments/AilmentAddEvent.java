@@ -5,16 +5,16 @@ import me.ubuntoof.events.Cancellable;
 import me.ubuntoof.events.Event;
 import me.ubuntoof.modifiers.Ailment;
 
-public class AilmentAddEvent implements Event, Cancellable
+public class AilmentAddEvent extends Event implements Cancellable
 {
     private boolean cancelled;
     public final Ailment ailment;
-    public Actor actor;
+    public final Actor actor;
 
-    public AilmentAddEvent(Ailment ailment, Actor actor)
+    public AilmentAddEvent(Actor actor, Ailment ailment)
     {
-        this.ailment = ailment;
         this.actor = actor;
+        this.ailment = ailment;
     }
 
     @Override public boolean isDisallowed() { return cancelled; }
@@ -22,7 +22,6 @@ public class AilmentAddEvent implements Event, Cancellable
 
     @Override public void perform()
     {
-        for(Ailment a : actor.getAilments()) if(ailment.equals(a)) { a.setDurationInTurns(Math.max(a.getDurationInTurns(), ailment.getDurationInTurns())); return; }
-        actor.getAilments().add(ailment);
+        actor.getConditions().add(ailment);
     }
 }

@@ -5,7 +5,7 @@ import me.ubuntoof.events.Event;
 import me.ubuntoof.handlers.Battle;
 import me.ubuntoof.modifiers.GlobalCondition;
 
-public class GlobalConditionRemoveEvent implements Event, Cancellable
+public class GlobalConditionRemoveEvent extends Event implements Cancellable
 {
     private boolean cancelled;
     public final Battle battle;

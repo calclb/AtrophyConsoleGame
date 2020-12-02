@@ -1,82 +1,77 @@
 package me.ubuntoof.handlers;
 
+import me.ubuntoof.Party;
 import me.ubuntoof.Team;
-import me.ubuntoof.characters.*;
-import me.ubuntoof.events.globalconditions.GlobalConditionAddEvent;
+import me.ubuntoof.WeightedSelector;
+import me.ubuntoof.characters.Actor;
+import me.ubuntoof.characters.Player;
+import me.ubuntoof.entities.*;
+import me.ubuntoof.events.Cancellable;
+import me.ubuntoof.events.Event;
+import me.ubuntoof.events.globalconditions.GlobalConditionApplicationEvent;
 import me.ubuntoof.events.globalconditions.GlobalConditionRemoveEvent;
-import me.ubuntoof.events.globalconditions.GlobalConditionTriggerEvent;
 import me.ubuntoof.events.state.*;
 import me.ubuntoof.modifiers.Ailment;
 import me.ubuntoof.modifiers.GlobalCondition;
 import me.ubuntoof.modifiers.StatModifier;
-import me.ubuntoof.modifiers.globalconditions.Hail;
 import me.ubuntoof.utils.Colorizer;
 import me.ubuntoof.utils.TextFormatter;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 public class Battle
 {
-    public final String battleName;
-
-    public final BattleInteractionsHandler battleInteractionsHandler = new BattleInteractionsHandler();
-    private Team[] teams;
+    public final Team[] teams;
+    private final Party[] parties;
     private final List<Actor> combatants = new ArrayList<>();
+    private final Map<Team, Party> teamToPartyMap = new HashMap<>();
     private final Map<Actor, Team> incomingActors = new HashMap<>();
-    private final Set<GlobalCondition> globalConditions = new HashSet<>();
-    public final boolean silent;
+    private final Map<GlobalCondition, Integer> globalConditions = new HashMap<>();
+
+    public final boolean silent; // true when no players are in battle
     private int turn;
 
-    public Battle(String bn, Team playerTeam, int numEnemies, boolean silent)
+    public Battle(Party[] parties)
     {
-        battleName = bn;
-        this.silent = silent;
-        combatants.addAll(playerTeam.getActors());
-        Team enemyTeam = new Team(createEnemies(numEnemies));
-        combatants.addAll(enemyTeam.getActors());
-        teams = new Team[]{playerTeam, enemyTeam};
+        this(parties, 0);
     }
 
-    public Battle(String bn, Team[] tms, boolean silent)
+    public Battle(Party[] parties, int actorsToGenerate, Actor... otherActors)
     {
-        battleName = bn;
-        this.silent = silent;
-        teams = new Team[tms.length];
-        System.arraycopy(tms, 0, teams, 0, tms.length);
+        this.parties = parties;
+
+        List<Team> theTeams = new ArrayList<>(createTeamsFromParties(parties));
+        if(actorsToGenerate > 0) theTeams.add(generateTeam(actorsToGenerate));
+        for(Actor a : otherActors)
+            theTeams.add(new Team(a));
+
+        teams = new Team[theTeams.size()];
+        for(int i = 0; i < teams.length; i++) teams[i] = theTeams.get(i);
+
+        for(Team t : teams)
+            combatants.addAll(t.getActors());
+
+        boolean isPlayerInBattle = false;
+        for(Actor a : combatants) if (a instanceof Player) { isPlayerInBattle = true; break; }
+        silent = false; //!isPlayerInBattle;
     }
 
-    public Battle(String bn, Team[] tms, int otherEnemies, boolean silent)
+    /**
+     * Adds an actor to a list that is added to the combatants list at the end of the turn.
+     * Nothing will be done if the actor's team does not match any of those currently in the battle.
+     * @param e The entity to create an Actor from and add to queue
+     * @param t The team to add the actor to
+     * @implNote The Actor being added will not persist across Battles where the same Team is used.
+     */
+    public void scheduleAddEntityToBattle(Entity e, Team t)
     {
-        battleName = bn;
-        this.silent = silent;
-        Team enemyTeam = new Team(createEnemies(otherEnemies));
-
-        teams = new Team[tms.length + 1];
-        System.arraycopy(tms, 0, teams, 0, tms.length);
-
-        teams[tms.length] = enemyTeam;
-
-        for(Team t : teams) combatants.addAll(t.getActors());
+       for(Team team : teams) if(team == t) { incomingActors.put(createActorFromEntity(e), t); break; }
     }
 
-
-    public void scheduleAddActorToBattle(Actor actor)
+    public void scheduleAddEntityToBattle(Entity... entities)
     {
-        Team newActorTeam = new Team(actor);
-        incomingActors.put(actor, newActorTeam);
-    }
-
-    private void addTeamToBattle(Team team)
-    {
-        Team[] newTeams = new Team[teams.length];
-        System.arraycopy(teams, 0, newTeams, 0, teams.length);
-        newTeams[teams.length] = team;
-        teams = newTeams;
-    }
-
-    public void scheduleAddActorToBattle(Actor actor, Team team)
-    {
-        incomingActors.put(actor, team);
+        for(Entity e : entities) scheduleAddEntityToBattle(e, new Team(createActorFromEntity(e)));
     }
 
     private void handleIncomingCombatants()
@@ -91,46 +86,41 @@ public class Battle
                 matchesAnyTeams = true;
                 break;
             }
-            if(!matchesAnyTeams) addTeamToBattle(incomingActorTeam);
+            if(!matchesAnyTeams) throw new NullPointerException("All actors should be given a team when entering the battle."); // addTeamToBattle(incomingActorTeam);
 
-            incomingActorTeam.getActors().add(actor);
+            incomingActorTeam.add(actor);
             combatants.add(actor);
+            actor.onEvent(new BattleStartEvent());
         }
-
-        List<BattleInteractions> newBattlerInteractionListeners = new ArrayList<>(incomingActors.keySet());
-        for(BattleInteractions nbi : newBattlerInteractionListeners) nbi.onEvent(new BattleStartEvent(this));
-        battleInteractionsHandler.addAll(newBattlerInteractionListeners);
 
         incomingActors.clear();
     }
 
-    public void startBattle()
+    // TODO refactor into smaller pieces to use for inheritance
+    public Party run()
     {
         boolean battleEnded = false;
-        for(BattleInteractions bi : combatants) battleInteractionsHandler.add(bi);
-        battleInteractionsHandler.registerEvent(new BattleStartEvent(this));
+        registerEvent(new BattleStartEvent());
 
-        battleInteractionsHandler.registerEvent(new GlobalConditionAddEvent(this, new Hail()));
         doBriefPause();
 
-        do
+        while(checkOpposingCombatantSidesAreAlive())
         {
-            sortActorsBySpeed(combatants, false);
+            sortActorsByAgility(combatants, false);
             turn++;
-            battleInteractionsHandler.registerEvent(new GlobalTurnStartEvent());
+            registerEvent(new GlobalTurnStartEvent());
 
             int playersLeft = 0;
             for(Actor actor : combatants) if(actor instanceof Player && actor.isAlive()) playersLeft++;
-            if(playersLeft == 0) displayGlobalBattle();
+            if(playersLeft == 0) displayScenario();
 
             for(Actor actor : combatants) if(actor.isAlive())
             {
-                println(Colorizer.RESET + "\n" + Colorizer.REVERSE + Colorizer.LIGHT_GRAY + "[" + getCombatantIndex(actor) + "] " + actor.getName() + "'s turn." + Colorizer.RESET);
-                battleInteractionsHandler.registerEvent(new TurnChangeEvent(actor));
-                for(StatModifier sm : actor.getStatModifiers()) sm.decrementTurnsRemaining();
+                println(Colorizer.RESET + "\n" + Colorizer.REVERSE + Colorizer.LIGHT_GRAY + "[" + getCombatantIndex(actor) + "] " + actor.name + "'s turn." + Colorizer.RESET);
+                registerEvent(new TurnChangeEvent(actor));
 
                 doBriefPause();
-                battleEnded = (!(checkCombatantSidesAreAlive()));
+                battleEnded = (!(checkOpposingCombatantSidesAreAlive()));
                 if(battleEnded) break;
             }
 
@@ -138,92 +128,94 @@ public class Battle
 
             if(!battleEnded)
             {
-                for (GlobalCondition gc : globalConditions)
+                for (Map.Entry<GlobalCondition, Integer> entry : globalConditions.entrySet())
                 {
-                    battleInteractionsHandler.registerEvent(new GlobalConditionTriggerEvent(this, gc));
-                    assert gc.getDurationInTurns() >= 0;
-                    if (gc.getDurationInTurns() == 0) battleInteractionsHandler.registerEvent(new GlobalConditionRemoveEvent(this, gc));
+                    GlobalCondition gc = entry.getKey();
+                    for (Actor a : getLivingCombatants()) registerEvent(new GlobalConditionApplicationEvent(gc, a));
+                    if (entry.getValue() == 0) registerEvent(new GlobalConditionRemoveEvent(this, gc));
                 }
 
                 println();
-
-                battleInteractionsHandler.registerEvent(new GlobalTurnEndEvent());
-                handleIncomingCombatants();
+                registerEvent(new GlobalTurnEndEvent());
                 doNotablePause();
+                handleIncomingCombatants();
             }
+        }
 
-        } while(checkCombatantSidesAreAlive());
+        Team winningTeam = getLivingCombatants().get(0).getTeam();
 
-        Team winningTeam = getTeamOf(getLivingCombatants().get(0));
         int teamsLeft = 1;
         for(Actor a : getLivingCombatants())
         {
-            Team aTeam = getTeamOf(a);
-            if(!(aTeam == winningTeam)) teamsLeft++;
+            Team aTeam = a.getTeam();
+            if(aTeam != winningTeam) teamsLeft++;
         }
 
-        println(Colorizer.getDivider(80));
         if(teamsLeft == 1)
         {
-
             announce(Colorizer.RESET + Colorizer.BOLD + Colorizer.YELLOW + "\n\uD83D\uDD31" + Colorizer.RESET +
                     winningTeam.format + " Team " + winningTeam + " emerged victorious!" + Colorizer.RESET);
             for(Actor oa : winningTeam.originalActors) announce(Colorizer.RESET + " - " + oa);
 
             announce("\n" + Colorizer.getSubdivider(50));
 
-            battleInteractionsHandler.registerEvent(new BattleEndEvent(this, winningTeam));
+            registerEvent(new BattleEndEvent(this, winningTeam));
 
-        } else announce(Colorizer.RED + "Something went wrong; battle ended with " + teamsLeft + " teams remaining.");
+        } else throw new IllegalStateException("Something went wrong; battle ended with " + teamsLeft + " teams remaining.");
         announce(Colorizer.getDivider(80));
+
+        return teamToPartyMap.get(winningTeam);
     }
 
-    // Selection sorting algorithm which orders actors by speed
-    private void sortActorsBySpeed(List<Actor> actorsToSort, boolean isAscending)
+    /**
+     * Performs a selection sort on combatant Actors by speed.
+     */
+    private void sortActorsByAgility(List<Actor> actorsToSort, boolean isAscending)
     {
-        int index; // used to index the 'temporary' Actor before replacement
-
+        int tIndex; // used to index the 'temporary' Actor before replacement
         for(int i = 0; i < actorsToSort.size() - 1; i++)
         {
-            index = i;
-
-            for(int j = i + 1; j < actorsToSort.size(); j++) // retrieves the next element(s)
-            {
-                if(!isAscending)
-                {
-                    if (actorsToSort.get(index).getAgility() < actorsToSort.get(j).getAgility()) index = j;
-                } else if (actorsToSort.get(index).getAgility() > actorsToSort.get(j).getAgility()) index = j;
-            }
-
-            Actor temp = actorsToSort.get(index); // exists for storing the actor whose index is going to be replaced in the selection sort
-            actorsToSort.set(index, actorsToSort.get(i));
+            tIndex = i;
+            for(int j = i + 1; j < actorsToSort.size(); j++)
+                if(isAscending ? actorsToSort.get(tIndex).getAgility() > actorsToSort.get(j).getAgility() : actorsToSort.get(tIndex).getAgility() < actorsToSort.get(j).getAgility()) tIndex = j;
+            Actor temp = actorsToSort.get(tIndex); // exists for storing the actor whose index is going to be replaced in the selection sort
+            actorsToSort.set(tIndex, actorsToSort.get(i));
             actorsToSort.set(i, temp);
         }
     }
 
+    /**
+     * @param actor The object reference to search for; will fail if null.
+     * @return The index of the actor's position in the {@code combatants} List.
+     */
     public int getCombatantIndex(Actor actor)
     {
-        if(actor == null) throw new IllegalArgumentException();
         for(int i = 0; i < combatants.size(); i++) if(combatants.get(i) == actor) return i;
         throw new NullPointerException("Actor " + actor + " does not currently exist in any team; perhaps they are about to enter the battle (located in " + incomingActors + ")?");
     }
 
-    public void displayGlobalBattle(Actor perspectiveActor)
+    public void displayScenario(Actor perspectiveActor)
     {
         println(Colorizer.getDivider(60));
         println(Colorizer.GRAY + "Turn " + turn + " (Displaying by index)" + Colorizer.RESET);
 
-        for(GlobalCondition gc : globalConditions) print(gc.name + " - " + gc.getDurationInTurns() + " turn" + (gc.getDurationInTurns() == 1 ? "" : "s") + " remaining" + Colorizer.RESET);
-        println();
+        for (Map.Entry<GlobalCondition, Integer> entry : globalConditions.entrySet())
+        {
+            GlobalCondition gc = entry.getKey();
+            int turnsRemaining = entry.getValue();
+            print(gc.name + " - " + turnsRemaining + " turn" + (turnsRemaining == 1 ? "" : "s") + " remaining" + Colorizer.RESET);
+        }
 
+
+        println("\n");
 
         for(int i = 0; i < combatants.size(); i++) if(combatants.get(i).isAlive())
         {
             Actor actor = combatants.get(i);
-            Team actorTeam = getTeamOf(actor);
+            Team actorTeam = actor.getTeam();
             println((perspectiveActor == actor ? Colorizer.BOLD + "〉" : "  ") + Colorizer.LIGHT_GRAY + "[" + i + "] " + actorTeam + " "
                     + (isActorOnSideOf(perspectiveActor, actor) ? Colorizer.BLUE : Colorizer.RED) + (perspectiveActor == actor ? Colorizer.BOLD : "")
-                    + actor.getName() + Colorizer.RESET + Colorizer.LIGHT_GRAY + " (" + actor.getHealth() + "/" + actor.getStamina() + ") "
+                    + actor.name + Colorizer.RESET + Colorizer.LIGHT_GRAY + " (" + actor.getHealth() + "/" + actor.getStamina() + ") "
                     + TextFormatter.formatAsHealthBar("", actor.getHealth(), actor.getStamina(), 15, "▰", "▱")
                     + returnAilmentFormat(actor) + returnStatChangeFormat(actor) + Colorizer.RESET);
 
@@ -234,21 +226,25 @@ public class Battle
         println(Colorizer.getDivider(60));
     }
 
-    public void displayGlobalBattle()
+    public void displayScenario()
     {
         println(Colorizer.getDivider(60));
         println(Colorizer.GRAY + "Turn " + turn + " (Displaying by index)" + Colorizer.RESET);
 
-        for(GlobalCondition gc : globalConditions) println(gc.name + " - " + gc.getDurationInTurns() + " turn" + (gc.getDurationInTurns() == 1 ? "" : "s") + " remaining" + Colorizer.RESET);
-        println();
+        for(Map.Entry<GlobalCondition, Integer> entry : globalConditions.entrySet())
+        {
+            int turnsRemaining = entry.getValue();
+            println(entry.getKey().name + " - " + turnsRemaining + " turn" + (turnsRemaining == 1 ? "" : "s") + " remaining" + Colorizer.RESET);
+        }
+        println("\n");
 
 
         for(int i = 0; i < combatants.size(); i++) if(combatants.get(i).isAlive())
         {
             Actor actor = combatants.get(i);
-            Team actorTeam = getTeamOf(actor);
+            Team actorTeam = actor.getTeam();
             println(Colorizer.LIGHT_GRAY + "[" + i + "] " + actorTeam + " "
-                    + actor.getName() + Colorizer.RESET + Colorizer.LIGHT_GRAY + " (" + actor.getHealth() + "/" + actor.getStamina() + ") "
+                    + actor.name + Colorizer.RESET + Colorizer.LIGHT_GRAY + " (" + actor.getHealth() + "/" + actor.getStamina() + ") "
                     + TextFormatter.formatAsHealthBar("", actor.getHealth(), actor.getStamina(), 15, "▰", "▱")
                     + returnAilmentFormat(actor) + returnStatChangeFormat(actor) + Colorizer.RESET);
 
@@ -268,65 +264,65 @@ public class Battle
     private String returnAilmentFormat(Actor actor)
     {
         StringBuilder sb = new StringBuilder();
-        for(Ailment ailment : actor.getAilments()) sb.append(ailment.icon);
+        for(Ailment ailment : actor.getAilments()) sb.append(ailment).append(' '); // sb.append(ailment.icon);
         return sb.toString() + (sb.toString().length() > 0 ? " " : "");
     }
 
     private String returnStatChangeFormat(Actor actor)
     {
         StringBuilder sb = new StringBuilder();
-        List<StatModifier> smList = actor.getStatModifiers();
-        for(StatModifier sm : smList) sb.append(sm).append(" ");
+        Set<StatModifier> smSet = actor.getStatModifiers();
+        for(StatModifier sm : smSet) sb.append(sm).append(" ");
         return sb.toString() + (sb.toString().length() > 0 ? " " : "");
     }
 
-    private boolean checkCombatantSidesAreAlive()
+    /**
+     * @return A boolean indicating whether or not more than one team remains in the battle.
+     */
+    private boolean checkOpposingCombatantSidesAreAlive()
     {
         int teamsAlive = 0;
-        for(Team t : teams) if(t.areMembersAlive()) teamsAlive++;
+        for(Team t : teams) if(t.areAnyMembersAlive()) teamsAlive++;
         return teamsAlive > 1;
     }
 
-    private boolean checkIfActorsAlive(Actor[] actors)
+    public Team generateTeam(int actors)
     {
-        for(Actor actor : actors) if(actor.isAlive()) return true;
-        return false;
+        return new Team(generateEnemies(actors));
     }
 
-    public Team generateTeam(int actors, double difficulty)
+    public Actor[] generateEnemies(int count)
     {
-        return new Team(createEnemies(actors));
-    }
-
-    private Actor[] createEnemies(int count)
-    {
-        Random r = new Random();
         Actor[] enemies = new Actor[count];
-
-        for(int i = 0; i < count; i++)
-        {
-            enemies[i] = matchEnemyIndex(r.nextInt(4));
-        }
+        for(int i = 0; i < count; i++) enemies[i] = generateEnemy();
         return enemies;
     }
 
-    // Potential source of NPE
-    private Actor matchEnemyIndex(int type) {
-        Random random = new Random();
-
-        switch (type)
+    public Actor generateEnemy()
+    {
+        WeightedSelector<Class<? extends Entity>> weightedSelector = new WeightedSelector<>();
+        weightedSelector.put(Bandit.class, 1)
+                .put(Druid.class, .65)
+                .put(Goblin.class, .9)
+                .put(Golem.class, .45)
+                .put(Spaelcaster.class, .7);
+        try
         {
-            case 0: return new Bandit(random.nextInt(25));
-            case 1: return new Goblin(random.nextInt(25));
-            case 2: return new Spaelcaster(random.nextInt(25));
-            case 3: return new Druid(random.nextInt(25));
-        }
+            Class<? extends Entity> clazz = weightedSelector.getRandom();
+            return createActorFromEntity(clazz.getConstructor(int.class).newInstance(5));
+        } catch(NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) { e.printStackTrace(); }
         return null;
     }
 
     // new Arraylist is returned to prevent clients from adding or removing actors directly to/from the battle
+    /**
+    * @return A copy of the {@code combatants} list.
+    */
     public List<Actor> getCombatants() { return new ArrayList<>(combatants); }
 
+    /**
+     * @return A list of all living combatants in the {@code combatants} list.
+     */
     public List<Actor> getLivingCombatants()
     {
         List<Actor> livingCombatants = new ArrayList<>();
@@ -341,7 +337,7 @@ public class Battle
 
     public List<Actor> getFriendlies(Actor perspectiveActor, boolean filterAlive)
     {
-        Team perspectiveActorTeam = getTeamOf(perspectiveActor);
+        Team perspectiveActorTeam = perspectiveActor.getTeam();
 
         List<Actor> friendlies = new ArrayList<>();
         for (Actor actor : perspectiveActorTeam.getActors()) if(!filterAlive || actor.isAlive()) friendlies.add(actor);
@@ -355,20 +351,10 @@ public class Battle
 
     public List<Actor> getOpposition(Actor perspectiveActor, boolean filterAlive)
     {
-        Team perspectiveActorTeam = getTeamOf(perspectiveActor);
-
+        Team perspectiveActorTeam = perspectiveActor.getTeam();
         List<Actor> enemies = new ArrayList<>();
-        for (Actor actor : combatants) if(perspectiveActorTeam != getTeamOf(actor) && (!filterAlive || actor.isAlive())) enemies.add(actor);
+        for (Actor actor : combatants) if(perspectiveActorTeam != actor.getTeam() && (!filterAlive || actor.isAlive())) enemies.add(actor);
         return enemies;
-    }
-
-    // Warning - Potential source of NPE
-    public Team getTeamOf(Actor actor)
-    {
-        for(Team t : teams) for(Actor a : t.getActors()) if(a == actor) return t;
-
-        // at this point, the actor isn't apart of any team.
-        return null;
     }
 
     public void announce(String s)
@@ -386,9 +372,41 @@ public class Battle
     }
 
     public int getTurn() { return turn; }
-    private void doBriefPause() { if(!silent) try {Thread.sleep(900); } catch(InterruptedException e) { e.printStackTrace(); } }
-    private void doNotablePause() { if(!silent) try {Thread.sleep(2000); } catch(InterruptedException e) { e.printStackTrace(); } }
+    private void doBriefPause() { if(!silent) try {Thread.sleep(900); } catch(InterruptedException ignored){} }
+    private void doNotablePause() { if(!silent) try {Thread.sleep(2000); } catch(InterruptedException ignored){} }
 
-    public void addGlobalCondition(GlobalCondition gc) { globalConditions.add(gc); }
+    public void addGlobalCondition(GlobalCondition gc, int turns) { globalConditions.put(gc, turns); }
     public void removeGlobalCondition(GlobalCondition gc) { globalConditions.remove(gc); }
+
+    public void registerEvent(Event e)
+    {
+        for(Actor a : combatants) a.onEvent(e);
+        for(GlobalCondition gc : globalConditions.keySet()) gc.onEvent(e);
+        if(e instanceof Cancellable && (((Cancellable) e).isDisallowed())) return;
+        e.perform();
+    }
+
+    private Actor createActorFromEntity(Entity e)
+    {
+        return e.isPlayerControlled() ? new Player(this, e) : new Actor(this, e);
+    }
+
+    private Actor[] createActorsFromEntities(List<Entity> es)
+    {
+        Actor[] res = new Actor[es.size()];
+        for(int i = 0; i < res.length; i++) res[i] = createActorFromEntity(es.get(i));
+        return res;
+    }
+
+    private List<Team> createTeamsFromParties(Party... ps)
+    {
+        List<Team> res = new ArrayList<>();
+        for(Party p : ps)
+        {
+            Team t = new Team(createActorsFromEntities(p.entities));
+            teamToPartyMap.put(t, p);
+            res.add(t);
+        }
+        return res;
+    }
 }

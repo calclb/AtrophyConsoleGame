@@ -14,10 +14,7 @@ public class TextFormatter
             {
                 Thread.sleep(msDelay);
             }
-            catch (InterruptedException e)
-            {
-                e.printStackTrace();
-            }
+            catch (InterruptedException ignored) {}
 
             System.out.print(c);
         }
@@ -41,9 +38,7 @@ public class TextFormatter
     public static String formatWarning(String s) { return Colorizer.BOLD + Colorizer.YELLOW + "[⚠️] " + Colorizer.RESET + Colorizer.YELLOW + Colorizer.UNDERLINE + s + Colorizer.RESET; }
     public static String formatError(String s) { return Colorizer.BOLD + Colorizer.RED + "[!] " + Colorizer.RESET + Colorizer.RED + Colorizer.UNDERLINE + s + Colorizer.RESET; }
 
-    public static String formatAction(Action action) { return "(" + action.getType() + ") " + action.getName() + " ― " + action.getDescription(); }
-
-    public static String formatAilment(String i, String n, String d) { return i; }
+    public static String formatAction(Action action) { return "(" + Colorizer.GRAY + action.getActionType() + Colorizer.RESET + ") " + action.getName() + " ― " + action.getDescription(); }
 
     public static String formatStat(Stats stat) { return "[" + stat.getIcon() + "] " + stat.getName() + " ― " + stat.getDescription(); }
 
@@ -89,6 +84,36 @@ public class TextFormatter
         return sb.toString() + " ";
     }
 
+    public static String superscript(String str)
+    {
+        str = str.replaceAll("0", "⁰");
+        str = str.replaceAll("1", "¹");
+        str = str.replaceAll("2", "²");
+        str = str.replaceAll("3", "³");
+        str = str.replaceAll("4", "⁴");
+        str = str.replaceAll("5", "⁵");
+        str = str.replaceAll("6", "⁶");
+        str = str.replaceAll("7", "⁷");
+        str = str.replaceAll("8", "⁸");
+        str = str.replaceAll("9", "⁹");
+        return str;
+    }
+
+    public static String subscript(String str)
+    {
+        str = str.replaceAll("0", "₀");
+        str = str.replaceAll("1", "₁");
+        str = str.replaceAll("2", "₂");
+        str = str.replaceAll("3", "₃");
+        str = str.replaceAll("4", "₄");
+        str = str.replaceAll("5", "₅");
+        str = str.replaceAll("6", "₆");
+        str = str.replaceAll("7", "₇");
+        str = str.replaceAll("8", "₈");
+        str = str.replaceAll("9", "₉");
+        return str;
+    }
+
     public static void print(String s)
     {
         System.out.print(Colorizer.indent() + s);
@@ -101,5 +126,4 @@ public class TextFormatter
     {
         System.out.println();
     }
-
 }

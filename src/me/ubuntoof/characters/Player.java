@@ -1,12 +1,11 @@
 package me.ubuntoof.characters;
 
-import me.ubuntoof.StatContainer;
 import me.ubuntoof.actions.Action;
 import me.ubuntoof.actions.Bop;
+import me.ubuntoof.entities.Entity;
 import me.ubuntoof.events.Event;
-import me.ubuntoof.events.state.BattleEndEvent;
 import me.ubuntoof.events.state.GlobalTurnStartEvent;
-import me.ubuntoof.passives.Passive;
+import me.ubuntoof.handlers.Battle;
 import me.ubuntoof.utils.Colorizer;
 import me.ubuntoof.utils.TextFormatter;
 import me.ubuntoof.utils.UserInputReader;
@@ -16,22 +15,13 @@ import java.util.List;
 
 public class Player extends Actor
 {
-    int exp = 0;
     int expTillNextLevel;
     private Action using;
     private Actor targetActor;
 
-    public Player(String name, List<Action> actions, int level)
+    public Player(Battle b, Entity e)
     {
-        super(name, actions, level, new StatContainer(level + 5, 7, 7, 7, 7, 7, 7)); // TODO balance base stats
-        expTillNextLevel = level;
-    }
-
-    public Player(String name, List<Action> actions, List<Passive> passives, int level)
-    {
-        super(name, actions, level, new StatContainer(level + 5, 7, 7, 7, 7, 7, 7));
-        getSignaturePassives().addAll(passives);
-        expTillNextLevel = level;
+        super(b, e);
     }
 
     public static List<Action> getDefaultActions()
@@ -50,7 +40,6 @@ public class Player extends Actor
     {
         super.onEvent(e);
         if(e instanceof GlobalTurnStartEvent) onGlobalTurnStarted();
-        if(e instanceof BattleEndEvent) onBattleEnded();
     }
 
     public void onGlobalTurnStarted()
@@ -58,44 +47,28 @@ public class Player extends Actor
         //print(Colorizer.clear());
         if(isAlive())
         {
-            getBattle().displayGlobalBattle(this);
+            battle.displayScenario(this);
             promptUserTurnInput();
         }
     }
 
-    public void onBattleEnded()
+    public void onBattleEnd()
     {
-        int gainedExp = 0;
+        super.onBattleEnd();
+        int gainedExp = getExp();
+        entity.addExp(gainedExp);
 
-        for(Actor actor : getBattle().getOpposition(this)) gainedExp += actor.getExpValue();
-
-        addExp(gainedExp);
-
-        println(Colorizer.WHITE + getName() + Colorizer.LIGHT_GRAY + " (Lv. " + getLevel() + ") " +
+        println(Colorizer.WHITE + name + Colorizer.LIGHT_GRAY + " (Lv. " + level + ") " +
                 Colorizer.GRAY + Colorizer.REVERSE + "[" + Colorizer.RESET +
-                TextFormatter.formatAsProgressBar("", exp, expTillNextLevel, 20, Colorizer.LIGHT_BLUE + "▰", Colorizer.GRAY + "▱") +
+                TextFormatter.formatAsProgressBar("", gainedExp, expTillNextLevel, 20, Colorizer.LIGHT_BLUE + "▰", Colorizer.GRAY + "▱") +
                 Colorizer.GRAY + Colorizer.REVERSE + "]" + Colorizer.RESET + Colorizer.BOLD + Colorizer.CYAN + " +" + gainedExp + " XP\n" + Colorizer.RESET);
-    }
-
-
-    public int addExp(int expToAdd)
-    {
-        exp += expToAdd;
-        while(exp >= expTillNextLevel)
-        {
-            exp -= expTillNextLevel;
-            levelUp();
-            expTillNextLevel = getLevel();
-            println(Colorizer.LIGHT_YELLOW + Colorizer.BOLD + getName() + Colorizer.RESET + Colorizer.LIGHT_YELLOW + " leveled up to Lv. " + getLevel() + "!");
-        }
-        return exp;
     }
 
     public Actor searchForLivingActorWith(String s)
     {
         Actor matchingActor = null;
         int matches = 0;
-        for(Actor actor : getBattle().getCombatants()) if(actor.isAlive() && actor.getName().toLowerCase().contains(s))
+        for(Actor actor : battle.getCombatants()) if(actor.isAlive() && actor.name.toLowerCase().contains(s))
         {
             matches++;
             matchingActor = actor;
@@ -106,9 +79,9 @@ public class Player extends Actor
 
         try
         {
-            Actor a = getBattle().getCombatants().get(Integer.parseInt(s));
+            Actor a = battle.getCombatants().get(Integer.parseInt(s));
             if(a != null && a.isAlive()) return a;
-        } catch(Exception ignored) { println(TextFormatter.formatError("No potential targets were found with that input.")); }
+        } catch(Exception ignored) { println(TextFormatter.formatError("No target was found with that input.")); }
 
         return null;
     }
@@ -153,11 +126,11 @@ public class Player extends Actor
         while(using.getRequiresTarget() && targetActor == null)
         {
             println(Colorizer.RESET + Colorizer.UNDERLINE + "Select a target" + Colorizer.RESET + ": ");
-            /*for(Actor actor : getBattle().getCombatants()) if(actor.isAlive()) println(" - " + actor);*/
+            /*for(Actor actor : getbattle.getCombatants()) if(actor.isAlive()) println(" - " + actor);*/
             String input = UserInputReader.getResponse().toLowerCase().trim();
             if(!checkForCommandInput(input)) targetActor = searchForLivingActorWith(input);
         }
-        Colorizer.clear(getBattle().silent);
+        Colorizer.clear(battle.silent);
     }
 
     public boolean checkForCommandInput(String s)
@@ -168,27 +141,40 @@ public class Player extends Actor
 
         String[] args = str.substring(commandOperand.length()).split(" ");
 
-        if(args[0].equalsIgnoreCase("stats"))
-        {
-            TextFormatter.displayOnSecondCounter(TextFormatter.formatInfo("Stats command recognized"), 3);
+        switch(args[0]) {
 
-            Actor viewActor = null;
-            //while(viewActor == null)
-            {
-                try
+            case "stats":
+                TextFormatter.displayOnSecondCounter(TextFormatter.formatInfo("Stats command recognized"), 3);
+
+                Actor viewActor = null;
+                //while(viewActor == null)
                 {
-                    viewActor = searchForLivingActorWith(args[1]);
-                } catch(Exception ignored) { TextFormatter.displayOnSecondCounter(TextFormatter.formatError(Colorizer.BOLD + "Syntax: " + Colorizer.RESET + Colorizer.RED + " /stats <target>"), 3); }
-            }
-
+                    try
+                    {
+                        viewActor = searchForLivingActorWith(args[1]);
+                        // TODO implement combatant stat viewing
+                    } catch(Exception ignored) { TextFormatter.displayOnSecondCounter(TextFormatter.formatError(Colorizer.BOLD + "Syntax: " + Colorizer.RESET + Colorizer.RED + " /stats <target>"), 3); }
+                }
+                break;
+            case "desc":
+                TextFormatter.displayOnSecondCounter(TextFormatter.formatInfo("Description command recognized."), 3);
+                break;
         }
-
-        else if(args[0].equalsIgnoreCase("desc"))
-        {
-            TextFormatter.displayOnSecondCounter(TextFormatter.formatInfo("Description command recognized."), 3);
-        }
-
         return true;
+    }
+
+    public String toString()
+    {
+        return Colorizer.RESET + getAndFormatThisCombatantIndex() + Colorizer.GRAY_BACKGROUND + " " + name + Colorizer.RESET;
+    }
+
+    public String getAndFormatThisCombatantIndex()
+    {
+        String actorFormat = Colorizer.RESET + Colorizer.GRAY_BACKGROUND;
+
+        return actorFormat +
+                Colorizer.ITALIC + "[" + (battle != null ? getTeam() + TextFormatter.subscript(String.valueOf(battle.getCombatantIndex(this))) : "")
+                + actorFormat + Colorizer.ITALIC + "]" + Colorizer.RESET;
     }
     
     private static void print(String s)

@@ -8,17 +8,27 @@ import java.util.Random;
 public class Colorizer
 {
     private static final Random random = new Random();
-    private static final int INDENT_LENGTH = Main.useTerminal ? 2 : 0;
+    private static final int INDENT_LENGTH = Main.isTerminalBeingUsed() ? 2 : 0;
 
     public static final String ANSI_CLS = "\033[2J";
     public static final String ANSI_HOME = "\u001b[H";
 
     public static final String RESET = "\u001B[0m";
     public static final String BOLD = "\u001B[1m";
+    public static final String UNBOLD = "\u001B[21m";
+
     public static final String ITALIC = "\u001B[3m";
+    public static final String UNITALIC = "\u001B[23m";
+
     public static final String UNDERLINE = "\u001B[4m";
+    public static final String UNUNDERLINE = "\u001B[24m";
+
     public static final String REVERSE = "\u001B[7m";
     public static final String STRIKETHROUGH = "\u001B[9m";
+
+    public static final String DEFAULT_BACKGROUND = "\u001B[49m";
+
+    public static final String FRAME = "\u001B[51m";
 
     public static final String WHITE = "\u001B[30m";
     public static final String RED = "\u001B[31m";
@@ -28,6 +38,7 @@ public class Colorizer
     public static final String PURPLE = "\u001B[35m";
     public static final String CYAN = "\u001B[36m";
     public static final String GRAY = "\u001B[90m";
+    public static final String BLACK = "\u001B[97m";
 
     public static final String LIGHT_GRAY = "\u001B[37m";
     public static final String LIGHT_RED = "\u001B[91m";
@@ -36,7 +47,6 @@ public class Colorizer
     public static final String LIGHT_BLUE = "\u001B[94m";
     public static final String LIGHT_PURPLE = "\u001B[95m";
     public static final String LIGHT_CYAN = "\u001B[96m";
-    public static final String BLACK = "\u001B[97m";
 
     public static final String WHITE_BACKGROUND = "\u001B[40m";
     public static final String RED_BACKGROUND = "\u001B[41m";
@@ -46,6 +56,7 @@ public class Colorizer
     public static final String PURPLE_BACKGROUND = "\u001B[45m";
     public static final String CYAN_BACKGROUND = "\u001B[46m";
     public static final String GRAY_BACKGROUND = "\u001B[100m";
+    public static final String BLACK_BACKGROUND = "\u001B[107m";
 
     public static final String LIGHT_GRAY_BACKGROUND = "\u001B[47m";
     public static final String LIGHT_RED_BACKGROUND = "\u001B[101m";
@@ -54,7 +65,6 @@ public class Colorizer
     public static final String LIGHT_BLUE_BACKGROUND = "\u001B[104m";
     public static final String LIGHT_PURPLE_BACKGROUND = "\u001B[105m";
     public static final String LIGHT_CYAN_BACKGROUND = "\u001B[106m";
-    public static final String BLACK_BACKGROUND = "\u001B[107m";
 
     public enum Formats
     {
@@ -158,7 +168,7 @@ public class Colorizer
 
     public static void clear()
     {
-        if(!Main.useTerminal)
+        if(!Main.isTerminalBeingUsed())
         {
             System.out.print(ANSI_CLS + ANSI_HOME);
             System.out.flush();
@@ -167,7 +177,7 @@ public class Colorizer
 
     public static void clear(boolean silent)
     {
-        if(Main.useTerminal && !silent)
+        if(Main.isTerminalBeingUsed() && !silent)
         {
             System.out.print(ANSI_CLS + ANSI_HOME);
             System.out.flush();
@@ -196,5 +206,8 @@ public class Colorizer
     {
         System.out.println();
     }
+
+    public static String rbgForeground(int r, int g, int b) { return "\\033[38;2;" + r + ";" + g + ";" + b + "m"; }
+    public static String rbgBackground(int r, int g, int b) { return "\\033[48;2;" + r + ";" + g + ";" + b + "m"; }
 }
 
