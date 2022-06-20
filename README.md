@@ -21,8 +21,8 @@ Figured I might as well try both.
 
 Choice two certainly feels more appealing, but there are important externalities that you will miss out on. I never went to a party in high school. I never went to a school event (outside of those required by marching band for freshman year). Together with COVID-19, I basically threw away my social life.
 
-Did I mention how stupidly hard it is to learn everything yourself while trying to balance life and family? Even at the time of writing, I still can't apply unit testing and CI/CD in my private projects well. I'm now out of my senior year of high school. Motivation sometimes fell through the floor, or kept me on a nightly high. On occasion, I would spend late nights trying to push out what I thought was a genius idea, or pulling my hair out because no matter what I do the same bug appears each time the program runs.
+Other responsibilities or the lack of motivation still get in your way, though. At the time of writing, I can't apply unit testing and CI/CD in my private projects at all. Part of the reason for that is because my coding sessions function like a motivational rollercoaster: sometimes my interest falls through the floor for months; sometimes I'm still focused on a personal project late at night. On occasion, I would spend late nights trying to push out what I thought was a genius idea, or pulling my hair out because no matter what I do the same bug appears each time the program runs. And then somehow fix it in minutes the next morning.
 
 None of that learning appears as an academic achievement. The only gratification you receive from this kind of undertaking is your pride and satisfaction in having the program compile and run the way you want it to. (Hopefully it runs the way you intended it.)
 
-Ultimately, though, I leave this here as my sophomore cornerstone, and a reminder to myself (and others) that the good code only comes after flawed code.
+Ultimately, though, I leave this here as my sophomore cornerstone, and a reminder to myself (and others) that the good code only comes after the flawed code.
