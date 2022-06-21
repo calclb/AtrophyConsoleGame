@@ -1,4 +1,6 @@
 # AtrophyConsoleGame
+See [patch](https://github.com/calculub/AtrophyConsoleGame/tree/patch) branch for latest code commits.
+
 This is a command-line game I spent my sophomore year of high school making. It is incomplete—but it is my first independent attempt at a large project, and a step away from tutorial hell.
 
 I admit what follows is in part a rant, and in part a story.
