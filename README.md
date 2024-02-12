@@ -21,7 +21,7 @@ This is by no means exhaustive. Yet none of them seem to be taught in a subsidiz
 
 Figured I might as well try both.
 
-Choice two certainly feels more appealing, but there are important externalities that you will miss out on. I never went to a party in high school. I never went to a school event (outside of those required by marching band for freshman year). Together with COVID-19, I basically threw away my social life.
+Choice two certainly feels more appealing, but there are important externalities that you will miss out on, namely, high school and college experiences.
 
 Other responsibilities or the lack of motivation still get in your way, though. At the time of writing, I can't apply unit testing and CI/CD in my private projects at all. Part of the reason for that is because my coding sessions function like a motivational rollercoaster: sometimes my interest falls through the floor for months; sometimes I'm still focused on a personal project late at night. On occasion, I would spend late nights trying to push out what I thought was a genius idea, or pulling my hair out because no matter what I do the same bug appears each time the program runs. And then somehow fix it in minutes the next morning.
 
